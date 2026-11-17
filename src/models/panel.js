@@ -1,5 +1,7 @@
+import { assertSampleBasis } from "../annotations/semantics.js";
 import {
   template,
+  VERSION,
   clone,
   STAGES,
   GENERATOR,
@@ -58,13 +60,13 @@ export function mountModels({ getProject, canOpen, onApply, onGuide, notify }) {
   const session = new PreviewSession(rebuild),
     dialog = document.createElement("dialog");
   dialog.id = "models-dialog";
-  dialog.innerHTML = `<div class="intake-header"><div><h2>모델 · 입력 양식 검토</h2><p>전체 CAD 프로그램 v1.3 · 임시 미리보기는 적용 전까지 현재 작업과 분리됩니다.</p></div><button id="intake-close">닫기 / 취소</button></div>
+  dialog.innerHTML = `<div class="intake-header"><div><h2>모델 · 입력 양식 검토</h2><p>전체 CAD 프로그램 v1.4 · 임시 미리보기는 적용 전까지 현재 작업과 분리됩니다.</p></div><button id="intake-close">닫기 / 취소</button></div>
  <div class="intake-toolbar"><button id="model-new">신규 모델</button><button id="model-revise">현재 모델 새 개정</button><button id="model-copy">다른 모델로 복사</button><button id="model-register">현재 작업 개정 저장</button><button id="library-save">모델 목록·실측 내보내기</button><button id="intake-upload">입력 JSON / 목록 열기</button><input hidden id="intake-file" type="file" accept=".json"></div>
  <details><summary>저장된 모델·개정 / 미완성 초안</summary><div id="model-list"></div></details>
  <p id="intake-message" role="status"></p><div id="intake-work" hidden>
  <div class="intake-toolbar"><label>생성 공정<select id="intake-stage"></select></label><button id="intake-template">현재 공정 빈 양식</button><button id="intake-template-all">전체 빈 양식</button><button id="intake-draft">초안 저장·다운로드</button><button id="intake-preview">임시 CAD 생성</button><button id="intake-apply" disabled>새 모델/개정 적용</button></div>
  <details><summary>입력 JSON 수정 · 모델 ID/개정/출처 포함</summary><textarea id="intake-json" spellcheck="false" rows="12"></textarea><button id="intake-json-apply">JSON 수정 반영 · 재검증</button></details>
- <div class="intake-grid"><div><div class="intake-toolbar"><label><input type="checkbox" id="intake-required" checked> 현재 공정 필수 항목만</label><input id="intake-search" placeholder="이름 / parameterId 검색"></div><div id="intake-errors"></div><div class="intake-table"><table><thead><tr><th>항목 · ID</th><th>원문값 / 단위</th><th>정규화</th><th>상태</th></tr></thead><tbody id="intake-rows"></tbody></table></div><pre id="intake-detail">항목을 선택하면 기준·출처와 3D 가이드를 표시합니다.</pre><button id="intake-review">선택 항목을 사용자 검토 완료로 기록</button><details><summary>기준 개정과 입력·출처 차이</summary><pre id="intake-diff"></pre></details></div>
+ <div class="intake-grid"><div><div class="intake-toolbar"><label><input type="checkbox" id="intake-required" checked> 현재 공정 필수 항목만</label><input id="intake-search" placeholder="이름 / parameterId 검색"></div><div id="intake-errors"></div><div class="intake-table"><table><thead><tr><th>항목 · ID</th><th>원문값 / 단위</th><th>정규화</th><th>상태</th></tr></thead><tbody id="intake-rows"></tbody></table></div><pre id="intake-detail">항목을 선택하면 기준·출처와 3D 가이드를 표시합니다.</pre><button id="intake-review">선택 항목을 사용자 검토 완료로 기록</button><details><summary>기준 개정과 입력·검사·출처·표시 차이</summary><pre id="intake-diff"></pre></details></div>
  <div><p id="intake-preview-label">임시 CAD 미생성</p><div id="intake-viewport"></div><div class="intake-toolbar"><button data-intake-view="front">정면</button><button data-intake-view="side">측면</button><button data-intake-view="iso">입체</button><button id="intake-section">Y 단면</button></div><p class="small">사내 실물 검증 전입니다. 형상 해석과 부품 연결은 기존 CAD 엔진을 사용합니다.</p></div></div></div>
  <details><summary>실측 샘플 · 설계 형상과 별도 저장</summary><p>저장된 모델 개정의 검사 항목에 여러 샘플을 연결합니다.</p><div class="intake-toolbar"><label>샘플 ID<input id="sample-id" placeholder="sample-001"></label><label>검사 itemId<select id="sample-item"></select></label><label>실측 mm<input id="sample-value" type="number" step="any"></label><button id="sample-add">현재 개정에 실측 추가</button></div><pre id="sample-list"></pre></details>`;
   document.body.append(dialog);
@@ -236,7 +238,7 @@ export function mountModels({ getProject, canOpen, onApply, onGuide, notify }) {
     selectedId = null;
     if (x.format !== "pouch-cell-intake") {
       say(
-        "pouch-cell-intake/1.0 양식이 필요합니다. 기존 프로젝트는 상단 JSON 열기를 이용하세요.",
+        "pouch-cell-intake/1.1 (구버전 1.0 호환) 양식이 필요합니다. 기존 프로젝트는 상단 JSON 열기를 이용하세요.",
       );
       return;
     }
@@ -315,8 +317,8 @@ export function mountModels({ getProject, canOpen, onApply, onGuide, notify }) {
       download(
         template(intake.model, scope ? STAGES : [$("intake-stage").value]),
         scope
-          ? "cell-intake-1.0-all.json"
-          : "cell-intake-1.0-" + $("intake-stage").value + ".json",
+          ? "cell-intake-" + VERSION + "-all.json"
+          : "cell-intake-" + VERSION + "-" + $("intake-stage").value + ".json",
       );
   $("intake-preview").onclick = async () => {
     try {
@@ -477,12 +479,7 @@ export function mountModels({ getProject, canOpen, onApply, onGuide, notify }) {
         ?.revisions.find(
           (r) => r.revision === p.modelIdentity?.revision,
         )?.project;
-      if (
-        !saved ||
-        JSON.stringify(saved.product) !== JSON.stringify(p.product) ||
-        JSON.stringify(saved.measurements) !== JSON.stringify(p.measurements)
-      )
-        throw Error("현재 작업을 새 개정으로 저장한 뒤 실측을 연결하세요.");
+      assertSampleBasis(saved, p, { itemId: $("sample-item").value });
       if (value === "") throw Error("실측값 필요");
       const next = new ModelLibrary(library.snapshot());
       next.addSample({
@@ -491,7 +488,7 @@ export function mountModels({ getProject, canOpen, onApply, onGuide, notify }) {
         modelRevision: p.modelIdentity?.revision,
         itemId: $("sample-item").value,
         value: Number(value),
-      });
+      }, p);
       persist(next);
       renderLibrary();
       say("실측 샘플 저장 · 설계 형상은 변경되지 않았습니다.");

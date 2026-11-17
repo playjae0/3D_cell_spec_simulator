@@ -3,6 +3,7 @@ import schema from "./schema.json" with { type: "json" };
 import {
   dictionaryFor,
   requiredField,
+  legacyUnknownSealant,
   componentFor,
   COMPONENTS,
   STAGES,
@@ -69,6 +70,7 @@ export function validateIntake(input, stage = "stacked") {
     for (const [kind, k] of Object.entries(COMPONENTS)) {
       const rank = STAGES.indexOf(stage);
       if (
+        !(kind === "leadFilm" && legacyUnknownSealant(d, side, stage)) &&
         rank >= k.min &&
         rank <= (k.max ?? 6) &&
         !d.componentInstances.some(
@@ -208,6 +210,8 @@ export function validateIntake(input, stage = "stacked") {
     d.coordinateMapping.targetConvention !== TARGET
   )
     issue("/coordinateMapping", "원점·축·극성 매핑 확인 필요");
+  for (const side of ["positive", "negative"])
+    if (legacyUnknownSealant(d, side, stage)) issue("/componentInstances", side + ".leadFilm: 구버전 S3 실런트 미확정 · 생성 제외, 부재로 확정하지 않음. 1.1 새 개정에서 검토 필요", side + ".leadFilm.enabled", false);
   for (const f of fields) {
     const p = params.get(f.parameterId),
       required = requiredField(f, d, stage),

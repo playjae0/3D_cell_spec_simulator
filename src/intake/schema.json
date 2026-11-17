@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Pouch cell intake 1.0",
+  "title": "Pouch cell intake 1.1 (1.0 legacy supported)",
   "description": "입력 양식 구조 검증용. CAD 생성 가능 여부, 사전별 타입/단위/조건/근거/충돌은 별도 의미 검증 필요.",
   "type": "object",
   "additionalProperties": false,
@@ -23,10 +23,16 @@
       "const": "pouch-cell-intake"
     },
     "formatVersion": {
-      "const": "1.0"
+      "enum": [
+        "1.0",
+        "1.1"
+      ]
     },
     "dictionaryVersion": {
-      "const": "cell-intake-1.0"
+      "enum": [
+        "cell-intake-1.0",
+        "cell-intake-1.1"
+      ]
     },
     "model": {
       "type": "object",
@@ -41,16 +47,28 @@
       ],
       "properties": {
         "modelId": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "modelName": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "revision": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "baseRevision": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "assemblyType": {
           "const": "sheet_stacked"
@@ -86,13 +104,20 @@
       ],
       "properties": {
         "sourceConvention": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "targetConvention": {
           "type": "string"
         },
         "mappingStatus": {
-          "enum": ["missing", "proposed", "reviewed"]
+          "enum": [
+            "missing",
+            "proposed",
+            "reviewed"
+          ]
         },
         "sourceRefs": {
           "$ref": "#/$defs/refs"
@@ -107,7 +132,11 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["sourceId", "documentName", "revision"],
+        "required": [
+          "sourceId",
+          "documentName",
+          "revision"
+        ],
         "properties": {
           "sourceId": {
             "type": "string",
@@ -117,7 +146,10 @@
             "type": "string"
           },
           "revision": {
-            "type": ["string", "null"]
+            "type": [
+              "string",
+              "null"
+            ]
           }
         },
         "additionalProperties": false
@@ -137,17 +169,30 @@
         ],
         "properties": {
           "polarity": {
-            "enum": ["positive", "negative"]
+            "enum": [
+              "positive",
+              "negative"
+            ]
           },
           "kind": {
-            "enum": ["preweld", "joint", "tape", "leadFilm", "preweldLead"]
+            "enum": [
+              "preweld",
+              "joint",
+              "tape",
+              "leadFilm",
+              "preweldLead"
+            ]
           },
           "instanceId": {
             "type": "string",
             "pattern": "^[-A-Za-z0-9_]+$"
           },
           "existenceStatus": {
-            "enum": ["unknown", "present", "absent"]
+            "enum": [
+              "unknown",
+              "present",
+              "absent"
+            ]
           },
           "sourceRefs": {
             "$ref": "#/$defs/refs"
@@ -199,7 +244,12 @@
           },
           "definition": {
             "type": "object",
-            "required": ["mode", "datumId", "a", "b"],
+            "required": [
+              "mode",
+              "datumId",
+              "a",
+              "b"
+            ],
             "properties": {
               "mode": {
                 "enum": [
@@ -214,36 +264,64 @@
                 ]
               },
               "datumId": {
-                "type": ["string", "null"]
+                "type": [
+                  "string",
+                  "null"
+                ]
               },
               "a": {
-                "type": ["string", "null"]
+                "type": [
+                  "string",
+                  "null"
+                ]
               },
               "b": {
-                "type": ["string", "null"]
+                "type": [
+                  "string",
+                  "null"
+                ]
               },
               "axis": {
-                "enum": ["x", "y", "z"]
+                "enum": [
+                  "x",
+                  "y",
+                  "z"
+                ]
               },
               "parameterId": {
-                "type": ["string", "null"]
+                "type": [
+                  "string",
+                  "null"
+                ]
               }
             },
             "additionalProperties": false
           },
           "target": {
-            "type": ["number", "null"]
+            "type": [
+              "number",
+              "null"
+            ]
           },
           "minus": {
-            "type": ["number", "null"],
+            "type": [
+              "number",
+              "null"
+            ],
             "minimum": 0
           },
           "plus": {
-            "type": ["number", "null"],
+            "type": [
+              "number",
+              "null"
+            ],
             "minimum": 0
           },
           "unit": {
-            "enum": ["mm", "deg"]
+            "enum": [
+              "mm",
+              "deg"
+            ]
           },
           "sourceRefs": {
             "$ref": "#/$defs/refs"
@@ -265,9 +343,17 @@
                 "type": "number"
               },
               "offsetAxis": {
-                "enum": ["x", "y", "z"]
+                "enum": [
+                  "x",
+                  "y",
+                  "z"
+                ]
               }
             }
+          },
+          "conditions": {
+            "type": "string",
+            "maxLength": 10000
           }
         },
         "additionalProperties": false
@@ -278,7 +364,11 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["requirementId", "description", "sourceRefs"],
+        "required": [
+          "requirementId",
+          "description",
+          "sourceRefs"
+        ],
         "properties": {
           "requirementId": {
             "type": "string"
@@ -298,7 +388,11 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["parameterId", "description", "sourceRefs"],
+        "required": [
+          "parameterId",
+          "description",
+          "sourceRefs"
+        ],
         "properties": {
           "parameterId": {
             "type": "string"
@@ -323,7 +417,10 @@
     "generator": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["version", "baselineCommit"],
+      "required": [
+        "version",
+        "baselineCommit"
+      ],
       "properties": {
         "version": {
           "type": "string"
@@ -339,7 +436,11 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["parameterId", "action", "at"],
+        "required": [
+          "parameterId",
+          "action",
+          "at"
+        ],
         "properties": {
           "parameterId": {
             "type": "string"
@@ -359,7 +460,12 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "name", "origin", "rotationZ"],
+        "required": [
+          "id",
+          "name",
+          "origin",
+          "rotationZ"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -388,7 +494,10 @@
     "legacyDatum": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["origin", "rotationZ"],
+      "required": [
+        "origin",
+        "rotationZ"
+      ],
       "properties": {
         "origin": {
           "type": "array",
@@ -412,7 +521,11 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "name", "baseFeatureId"],
+        "required": [
+          "id",
+          "name",
+          "baseFeatureId"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -425,7 +538,10 @@
             "type": "string"
           },
           "mode": {
-            "enum": ["relative", "fixed_mm"]
+            "enum": [
+              "relative",
+              "fixed_mm"
+            ]
           },
           "u": {
             "type": "number",
@@ -438,7 +554,13 @@
             "maximum": 1
           },
           "reference": {
-            "enum": ["origin", "u_minus", "u_plus", "v_minus", "v_plus"]
+            "enum": [
+              "origin",
+              "u_minus",
+              "u_plus",
+              "v_minus",
+              "v_plus"
+            ]
           },
           "distanceU": {
             "type": "number"
@@ -449,7 +571,10 @@
         },
         "oneOf": [
           {
-            "required": ["u", "v"],
+            "required": [
+              "u",
+              "v"
+            ],
             "properties": {
               "mode": {
                 "const": "relative"
@@ -457,7 +582,12 @@
             }
           },
           {
-            "required": ["mode", "reference", "distanceU", "distanceV"],
+            "required": [
+              "mode",
+              "reference",
+              "distanceU",
+              "distanceV"
+            ],
             "properties": {
               "mode": {
                 "const": "fixed_mm"
@@ -473,7 +603,10 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["sourceId", "locator"],
+        "required": [
+          "sourceId",
+          "locator"
+        ],
         "properties": {
           "sourceId": {
             "type": "string"
@@ -510,10 +643,22 @@
           "type": "string"
         },
         "value": {
-          "type": ["number", "string", "boolean", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "null"
+          ]
         },
         "unit": {
-          "enum": ["mm", "um", "µm", "μm", "deg", null]
+          "enum": [
+            "mm",
+            "um",
+            "µm",
+            "μm",
+            "deg",
+            null
+          ]
         },
         "status": {
           "enum": [
@@ -525,21 +670,37 @@
           ]
         },
         "reviewStatus": {
-          "enum": ["pending", "reviewed"]
+          "enum": [
+            "pending",
+            "reviewed"
+          ]
         },
         "sourceRefs": {
           "$ref": "#/$defs/refs"
         },
         "originalText": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "conversion": {
-          "type": ["object", "null"],
+          "type": [
+            "object",
+            "null"
+          ],
           "additionalProperties": false,
-          "required": ["op", "inputParameterIds"],
+          "required": [
+            "op",
+            "inputParameterIds"
+          ],
           "properties": {
             "op": {
-              "enum": ["unit_scale", "sum", "difference"]
+              "enum": [
+                "unit_scale",
+                "sum",
+                "difference"
+              ]
             },
             "inputParameterIds": {
               "type": "array",
@@ -557,10 +718,18 @@
           "type": "string"
         },
         "originalValue": {
-          "type": ["number", "string", "boolean", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "null"
+          ]
         },
         "originalUnit": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
       "allOf": [
@@ -568,7 +737,11 @@
           "if": {
             "properties": {
               "status": {
-                "enum": ["missing", "conflict", "not_applicable"]
+                "enum": [
+                  "missing",
+                  "conflict",
+                  "not_applicable"
+                ]
               }
             }
           },
@@ -584,7 +757,10 @@
           "if": {
             "properties": {
               "status": {
-                "enum": ["extracted", "derived"]
+                "enum": [
+                  "extracted",
+                  "derived"
+                ]
               }
             }
           },
@@ -619,5 +795,30 @@
         }
       ]
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "formatVersion": {
+            "const": "1.0"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "dictionaryVersion": {
+            "const": "cell-intake-1.0"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "dictionaryVersion": {
+            "const": "cell-intake-1.1"
+          }
+        }
+      }
+    }
+  ]
 }

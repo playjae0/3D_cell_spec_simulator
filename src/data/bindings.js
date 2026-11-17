@@ -97,7 +97,7 @@ function descriptor(p, stage, path, f, item) {
           : 1
         : ["prewelds", "preweldLead"].includes(section)
           ? 2
-          : section === "lead" || section === "joints"
+          : ["lead", "joints", "leadFilm"].includes(section)
             ? 3
             : 4;
     partId =

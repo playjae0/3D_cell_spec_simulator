@@ -349,7 +349,7 @@ const sectionNames = {
   lead: "S3 외부 리드 · 접촉 관계",
   joints: "S3 메인 용접 관리 영역",
   tapes: "S4 테이프 · 부착 경로",
-  leadFilm: "S4 리드 필름 (가정)",
+  leadFilm: "S3+ 리드 실런트 (실링 필름)",
   stack: "적층체 / Jellyroll · A/B/C",
   pouch: "포켓 → 실링 → 외곽 → 예시 접힘",
 };
@@ -408,7 +408,7 @@ function renderFields() {
         input.type = b.type || "number";
         if (input.type === "number") input.step = b.step || 0.1;
       }
-      if (input.type === "checkbox") input.checked = b.value;
+      if (input.type === "checkbox") { input.checked = b.value === true; input.indeterminate = b.value == null; if (b.value == null) label.textContent += " · 미확정"; }
       else input.value = b.value ?? "";
       const item = b.itemId
         ? draft[side][b.section].find((x) => x.id === b.itemId)
@@ -1159,14 +1159,13 @@ $("tape-toggle").onclick = () => {
 };
 $("joint-view").onclick = () => {
   if (!model) return;
-  state.view.hidden = model.parts
+  state.view.hidden = [...new Set([...state.view.hidden, ...model.parts
     .filter(
       (p) =>
         !p.id.startsWith("positive.") ||
-        p.id.includes(".tape.") ||
-        p.id.endsWith("leadFilm"),
+        p.id.includes(".tape."),
     )
-    .map((p) => p.id);
+    .map((p) => p.id)])];
   selected = "positive.tab";
   refreshView();
   viewer.fit("positive.tab");

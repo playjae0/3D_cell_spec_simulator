@@ -98,6 +98,7 @@ export function projectFromIntake(intake, stage) {
       axis: x.definition.axis,
       datumId: x.definition.datumId || "legacy",
       parameterId: x.definition.parameterId || null,
+      conditions: x.conditions || "",
       a: { featureId: x.definition.a || "unmapped." + x.itemId },
       b: { featureId: x.definition.b || "unmapped." + x.itemId },
       visible: x.display?.visible ?? true,
@@ -142,6 +143,7 @@ function inspectionItems(project) {
         ?.sourceRefs || [],
     ),
     description: m.spec.note,
+    conditions: m.conditions || "",
     display: {
       group: m.group,
       visible: m.visible,

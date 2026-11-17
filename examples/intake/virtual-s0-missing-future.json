@@ -1,10 +1,10 @@
 {
   "format": "pouch-cell-intake",
-  "formatVersion": "1.0",
-  "dictionaryVersion": "cell-intake-1.0",
+  "formatVersion": "1.1",
+  "dictionaryVersion": "cell-intake-1.1",
   "generator": {
-    "version": "1.3.0",
-    "baselineCommit": "3e0f9f8a3d63601a6f310d6a383f714650dfeff4"
+    "version": "1.4.0",
+    "baselineCommit": "4df91c9efdb2db4bf3c001ee6c1ef02cf1524837"
   },
   "demo": true,
   "model": {
@@ -590,7 +590,7 @@
     },
     {
       "parameterId": "positive.leadFilm.enabled",
-      "label": "리드 필름 사용",
+      "label": "리드 실런트 사용",
       "value": null,
       "unit": null,
       "status": "missing",
@@ -607,7 +607,7 @@
     },
     {
       "parameterId": "positive.leadFilm.start",
-      "label": "필름 시작 위치",
+      "label": "실런트 시작 위치",
       "value": null,
       "unit": "mm",
       "status": "missing",
@@ -624,7 +624,7 @@
     },
     {
       "parameterId": "positive.leadFilm.length",
-      "label": "필름 X 길이",
+      "label": "실런트 X 길이",
       "value": null,
       "unit": "mm",
       "status": "missing",
@@ -658,7 +658,7 @@
     },
     {
       "parameterId": "positive.leadFilm.thickness",
-      "label": "필름 공칭 두께",
+      "label": "실런트 공칭 두께",
       "value": null,
       "unit": "mm",
       "status": "missing",
@@ -1083,7 +1083,7 @@
     },
     {
       "parameterId": "negative.leadFilm.enabled",
-      "label": "리드 필름 사용",
+      "label": "리드 실런트 사용",
       "value": null,
       "unit": null,
       "status": "missing",
@@ -1100,7 +1100,7 @@
     },
     {
       "parameterId": "negative.leadFilm.start",
-      "label": "필름 시작 위치",
+      "label": "실런트 시작 위치",
       "value": null,
       "unit": "mm",
       "status": "missing",
@@ -1117,7 +1117,7 @@
     },
     {
       "parameterId": "negative.leadFilm.length",
-      "label": "필름 X 길이",
+      "label": "실런트 X 길이",
       "value": null,
       "unit": "mm",
       "status": "missing",
@@ -1151,7 +1151,7 @@
     },
     {
       "parameterId": "negative.leadFilm.thickness",
-      "label": "필름 공칭 두께",
+      "label": "실런트 공칭 두께",
       "value": null,
       "unit": "mm",
       "status": "missing",

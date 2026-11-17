@@ -68,7 +68,7 @@ def _validate_resolved(p,stage):
             if a['path']=='top': check(abs(a['offsetY'])+a['width']/2<=t['width']/2-t['edgeR'],f'{name}.tapes.{a["id"]}.width: 평면 테이프는 상면 평탄부 안에 있어야 합니다. 모서리 경로를 선택하세요')
             else: check(0<=a['edgeDrop']<=t['thickness']-2*t['edgeR'],f'{name}.tapes.{a["id"]}.edgeDrop: 감쌈 깊이가 탭 측면 높이를 벗어납니다')
         if f['enabled']:
-            check(f['length']>0 and f['thickness']>0 and f['overhang']>=0,f'{name}: 리드 필름 치수 오류')
+            check(f['length']>0 and f['thickness']>0 and f['overhang']>=0,f'{name}: 리드 실런트 치수 오류')
             check(f['start']>=t['length'] and f['start']+f['length']<=l['start']+l['length'],f'{name}: 리드 필름은 집속부 밖의 노출 리드에 놓여야 합니다')
     if stage not in ['packaged','finished']:
         if errors:raise ModelError(errors)
@@ -200,9 +200,9 @@ def build_pole(name,pole,s,stage='assembly'):
     if f['enabled']:
         outer=box(f['length'],l['width']+2*f['overhang'],l['thickness']+2*f['thickness'],g+f['start']+f['length']/2,leadY,leadZ)
         inner=box(f['length']+2,l['width'],l['thickness'],g+f['start']+f['length']/2,leadY,leadZ)
-        add('leadFilm','리드 실링 필름 (가정)',outer.cut(inner),'#9a8667')
+        add('leadFilm','리드 실런트 (실링 필름 · 단면 가정)',outer.cut(inner),'#9a8667')
         fx=g+f['start'];fz=leadZ+l['thickness']/2
-        for key,v in [('start',(fx,leadY,fz+f['thickness'])),('end',(fx+f['length'],leadY,fz+f['thickness'])),('leadSide',(fx,leadY+l['width']/2,leadZ)),('outerSide',(fx,leadY+l['width']/2+f['overhang'],leadZ)),('innerFace',(fx+f['length']/2,leadY,fz)),('outerFace',(fx+f['length']/2,leadY,fz+f['thickness']))]:point('leadFilm.'+key,'리드 필름 '+key,v,'face' if key.endswith('Face') else 'point')
+        for key,v in [('start',(fx,leadY,fz+f['thickness'])),('end',(fx+f['length'],leadY,fz+f['thickness'])),('leadSide',(fx,leadY+l['width']/2,leadZ)),('outerSide',(fx,leadY+l['width']/2+f['overhang'],leadZ)),('innerFace',(fx+f['length']/2,leadY,fz)),('outerFace',(fx+f['length']/2,leadY,fz+f['thickness']))]:point('leadFilm.'+key,'리드 실런트 '+key,v,'face' if key.endswith('Face') else 'point')
         features[name+'.leadFilm.innerFace']['normal']=[0,0,-1];features[name+'.leadFilm.outerFace']['normal']=[0,0,1]
     for key,title,v,kind in [
         ('tab.root','탭 뿌리 중심',(0,t['rootY'],t['rootZ']),'point'),('tab.gather','집속 중심',(g,t['gatherY'],t['gatherZ']),'point'),
@@ -369,6 +369,8 @@ def build(p,stage='assembly'):
                     features[f'pouch.{key}.{axis}.{label}']={'partId':'pouch.upper.'+part,'kind':'edge','name':key+' '+axis+' '+label,'point':point}
         # Explicit contact diagnostics. Not a silently claimed interference-free seal.
     warnings=['기본 데이터는 예시값입니다. 입력 모델의 치수·극성은 해당 출처와 검토 기록을 확인하세요.', '탭 경로는 부드러운 포락 형상이며 실제 포일 변형/용접 강도 해석이 아닙니다.', '리드 접촉면·리드 필름·테이프 모서리 감쌈과 완제품 접힘은 편집 가능한 구현 가정입니다.']
+    for side in ['positive','negative']:
+        if p[side].get('_leadFilmUnknown'):warnings.append(side+'.leadFilm: 구버전 S3 실런트 미확정 · 생성 제외. 부재로 확정하지 않았으며 검토가 필요합니다.')
     if stage in ['packaged','finished']: warnings.append('리드 통과부 실링 압축/국부 필름 성형은 미지원: 공칭 외장과 리드의 간섭 가능성을 단면에서 확인하세요.')
     for part in parts:
         if not part['shape'].isValid(): raise ModelError([part['id']+': CAD 형상이 유효하지 않습니다'])
@@ -394,7 +396,7 @@ def mark_unavailable(source,stage,features):
     for boundary,part in [('forming','pocket'),('sealInner','seal'),('sealOuter','seal'),('trim','margin')]:
         absent('pouch.'+boundary,[a+'.'+s for a in ['x','y'] for s in ['minus','plus']],'pouch.upper.'+part,'파우치 경계')
     for side in ['positive','negative']:
-        if source[side]['leadFilm']['enabled']:absent(side+'.leadFilm',['start','end','leadSide','outerSide','innerFace','outerFace'],side+'.leadFilm','리드 필름')
+        if source[side].get('leadFilm',{}).get('enabled') is not False:absent(side+'.leadFilm',['start','end','leadSide','outerSide','innerFace','outerFace'],side+'.leadFilm','리드 필름')
         absent(side+'.tab',['gather','gatherWidthMinus','gatherWidthPlus','gatherZBase','gatherYBase','gatherRootY','tipCenter','edgeR','stockEnd'],side+'.tab','포일 기준')
         absent(side+'.lead',['start','end','widthMinus','widthPlus','top','bottom','overlapStart','overlapEnd','overlapWidthMinus','overlapWidthPlus','edge.width','edge.length','center','yBase'],side+'.lead','리드 기준')
         for key,part in [('prewelds','preweld'),('joints','joint'),('tapes','tape')]:
