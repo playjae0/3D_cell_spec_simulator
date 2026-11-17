@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "modelVersion": "box-features-1",
+  "unit": "mm",
+  "stage": "S3",
+  "params": {
+    "length": 200,
+    "width": 65,
+    "thickness": 8,
+    "radius": 4,
+    "leadLength": 22,
+    "leadWidth": 28,
+    "leadThickness": 0.4,
+    "leadOffset": 0,
+    "tapeWidth": 34,
+    "tapeLength": 8
+  },
+  "measurements": [],
+  "hidden": [],
+  "camera": null,
+  "notes": "가상 제품 · 실제 제조 치수 아님"
+}
