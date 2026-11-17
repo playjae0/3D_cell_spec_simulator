@@ -1,3 +1,5 @@
+Read docs/spec-integrated.md and docs/validation-integrated.md first for v1.4. It extends full main 4df91c9 / PR #4. Keep the original CAD; no new pouch/executable/deployment work in this scope.
+
 Read docs/spec-v1.3.md and docs/intake/internal-copilot-prompt.md for the current intake contract. v1.3 extends the full main 3e0f9f8 app, never the read-only hosted review.
 
 # Pouch cell project constraints
@@ -31,4 +33,6 @@ Preserve single-flight latest-wins queue semantics and invalidate on input, not 
 Verify real live-cad API capabilities, save gating, grouped undo and JSON migration.
 Pouch geometry is reused; do not replace it with boxes or claim sealing-bar support.
 
-Intake 1.0 validation lives in src/intake/, immutable model revisions/samples in src/models/. Never merge demo numbers into missing intake. Keep source records/nulls and stable instance IDs. Regenerate contract artifacts with node scripts/generate-intake.mjs and run npm test. Signed coordinate modes must not change legacy distance semantics. Preview failure/cancel/stale responses must not mutate active state or history.
+Intake 1.1 (legacy 1.0 accepted) validation lives in src/intake/, immutable model revisions/samples in src/models/. Never merge demo numbers into missing intake. Keep source records/nulls and stable instance IDs. Regenerate contract artifacts with node scripts/generate-intake.mjs and run npm test. Signed coordinate modes must not change legacy distance semantics. Preview failure/cancel/stale responses must not mutate active state or history.
+
+Use shared annotations/semantics.js for sample guards and definition diff. Camera/layout is not inspection meaning; datum/anchor/spec/conditions are. S3 leadFilm is independent of S4 yellow tape; preserve unknown legacy S3 nulls. Compare cloned snapshots with independent CAD/cache; never mutate active state. Library import must preview conflicts and persist before publishing memory; preserve corrupt raw storage. New view presets must validate semantic references before applying.

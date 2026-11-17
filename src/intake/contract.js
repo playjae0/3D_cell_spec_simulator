@@ -63,12 +63,20 @@ export function componentFor(id, instances) {
 }
 export function legacyUnknownSealant(intake, side, stage) {
   if (intake.formatVersion !== "1.0" || stage !== "welded") return false;
-  const c = intake.componentInstances.find(c => c.polarity === side && c.kind === "leadFilm");
-  const enabled = intake.parameters.find(p => p.parameterId === side + ".leadFilm.enabled")?.value;
+  const c = intake.componentInstances.find(
+    (c) => c.polarity === side && c.kind === "leadFilm",
+  );
+  const enabled = intake.parameters.find(
+    (p) => p.parameterId === side + ".leadFilm.enabled",
+  )?.value;
   return (!c || c.existenceStatus === "unknown") && enabled == null;
 }
 export function requiredField(f, intake, stage) {
-  if (f.parameterId.includes(".leadFilm.") && legacyUnknownSealant(intake, f.parameterId.split(".")[0], stage)) return false;
+  if (
+    f.parameterId.includes(".leadFilm.") &&
+    legacyUnknownSealant(intake, f.parameterId.split(".")[0], stage)
+  )
+    return false;
   if (
     !f.activeStages.includes(stage) ||
     /\.(material|process)$/.test(f.parameterId)

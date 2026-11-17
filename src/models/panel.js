@@ -21,17 +21,17 @@ import { stages } from "../data/project.js";
 import { bindingFor, forecast } from "../data/bindings.js";
 import "./panel.css";
 const esc = (x) =>
-    String(x ?? "").replace(
-      /[&<>"']/g,
-      (c) =>
-        ({
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          '"': "&quot;",
-          "'": "&#39;",
-        })[c],
-    );
+  String(x ?? "").replace(
+    /[&<>"']/g,
+    (c) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[c],
+  );
 const download = (x, name) => {
   const u = URL.createObjectURL(
       new Blob([JSON.stringify(x, null, 2)], { type: "application/json" }),
@@ -44,7 +44,11 @@ const download = (x, name) => {
 };
 export function mountModels({ getProject, canOpen, onApply, onGuide, notify }) {
   const storage = new LibraryStorage(localStorage);
-  let library=storage.library,storageError=storage.error,mergeSource=null,mergeChoices=new Map(),mergePlan=null;
+  let library = storage.library,
+    storageError = storage.error,
+    mergeSource = null,
+    mergeChoices = new Map(),
+    mergePlan = null;
   let intake = null,
     report = null,
     selectedId = null,
@@ -72,28 +76,135 @@ export function mountModels({ getProject, canOpen, onApply, onGuide, notify }) {
   function say(s) {
     $("intake-message").textContent = s;
   }
-  function persist(next) { library=storage.save(next); }
-  function downloadText(text,name){const u=URL.createObjectURL(new Blob([text],{type:"application/json"}));const a=document.createElement("a");a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);}
-  function renderStorage(){
-    $("library-recovery").hidden=!storage.blocked;$("storage-error").textContent=storage.error;$("library-save").disabled=storage.blocked;
-    const backups=storage.backups();$("storage-history").hidden=!backups.length;$("storage-backups").replaceChildren(...backups.map(k=>new Option(k,k)));
+  function persist(next) {
+    library = storage.save(next);
   }
-  $("storage-raw").onclick=()=>{if(storage.raw!==null)downloadText(storage.raw,"pouch-library-recovery-original.json");else say("원본을 읽을 수 없어 다운로드할 수 없습니다.");};
-  $("storage-recover").onclick=()=>{try{const backup=storage.recover();library=storage.library;storageError="";renderLibrary();say("원본은 별도 키에 보존했습니다: "+backup);}catch(e){say("복구 실패 · 원본 유지: "+e.message);}};
-  $("storage-export-backup").onclick=()=>{try{downloadText(storage.backup($("storage-backups").value),"pouch-library-recovery-original.json");}catch(e){say(e.message);}};
-  function renderMerge(){
-    if(!mergeSource)return;
-    $("library-merge").hidden=false;$("merge-apply").disabled=true;
-    try{
-      mergePlan=planLibraryMerge(library,mergeSource,mergeChoices);
-      const s=mergePlan.summary;$("merge-summary").textContent=`추가: 모델 ${s.addedModels}, 개정 ${s.addedRevisions}, 실측 ${s.addedSamples}, 초안 ${s.addedDrafts}\n동일 중복 건너뛰기: 개정 ${s.duplicateRevisions}, 실측 ${s.duplicateSamples}, 초안 ${s.duplicateDrafts}\n사용자 제외: ${s.skipped} · 미해결 충돌 ${mergePlan.unresolved.length}\n기존 목록은 적용 전까지 바뀌지 않습니다.`;
+  function downloadText(text, name) {
+    const u = URL.createObjectURL(
+      new Blob([text], { type: "application/json" }),
+    );
+    const a = document.createElement("a");
+    a.href = u;
+    a.download = name;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(u), 1000);
+  }
+  function renderStorage() {
+    $("library-recovery").hidden = !storage.blocked;
+    $("storage-error").textContent = storage.error;
+    $("library-save").disabled = storage.blocked;
+    const backups = storage.backups();
+    $("storage-history").hidden = !backups.length;
+    $("storage-backups").replaceChildren(
+      ...backups.map((k) => new Option(k, k)),
+    );
+  }
+  $("storage-raw").onclick = () => {
+    if (storage.raw !== null)
+      downloadText(storage.raw, "pouch-library-recovery-original.json");
+    else say("원본을 읽을 수 없어 다운로드할 수 없습니다.");
+  };
+  $("storage-recover").onclick = () => {
+    try {
+      const backup = storage.recover();
+      library = storage.library;
+      storageError = "";
+      renderLibrary();
+      say("원본은 별도 키에 보존했습니다: " + backup);
+    } catch (e) {
+      say("복구 실패 · 원본 유지: " + e.message);
+    }
+  };
+  $("storage-export-backup").onclick = () => {
+    try {
+      downloadText(
+        storage.backup($("storage-backups").value),
+        "pouch-library-recovery-original.json",
+      );
+    } catch (e) {
+      say(e.message);
+    }
+  };
+  function renderMerge() {
+    if (!mergeSource) return;
+    $("library-merge").hidden = false;
+    $("merge-apply").disabled = true;
+    try {
+      mergePlan = planLibraryMerge(library, mergeSource, mergeChoices);
+      const s = mergePlan.summary;
+      $("merge-summary").textContent =
+        `추가: 모델 ${s.addedModels}, 개정 ${s.addedRevisions}, 실측 ${s.addedSamples}, 초안 ${s.addedDrafts}\n동일 중복 건너뛰기: 개정 ${s.duplicateRevisions}, 실측 ${s.duplicateSamples}, 초안 ${s.duplicateDrafts}\n사용자 제외: ${s.skipped} · 미해결 충돌 ${mergePlan.unresolved.length}\n기존 목록은 적용 전까지 바뀌지 않습니다.`;
       $("merge-conflicts").replaceChildren();
-      for(const c of mergePlan.conflicts){const block=document.createElement("div"),label=document.createElement("p"),sel=document.createElement("select"),target=document.createElement("input");label.textContent=c.label;sel.setAttribute("aria-label",c.label);sel.append(new Option("충돌 처리 선택 (필수)",""));for(const action of c.options)sel.append(new Option({skip:"기존 유지 · 이 입력 제외",copy_model:"새 모델 ID로 복사",copy_revisions:"새 개정 가지로 복사 · 부모/샘플 함께 매핑",rename:c.type==="draft"?"새 초안 개정으로 복사":"새 샘플 ID로 복사"}[action],action));const choice=mergeChoices.get(c.key);sel.value=choice?.action||"";target.placeholder="새 ID/개정 접미사 (비우면 충돌 없는 이름)";target.value=choice?.target||"";target.setAttribute("aria-label",c.label+" 새 식별자");const change=()=>{if(sel.value)mergeChoices.set(c.key,{action:sel.value,target:target.value});else mergeChoices.delete(c.key);renderMerge();};sel.onchange=change;target.onchange=change;block.append(label,sel,target);$("merge-conflicts").append(block);}
-      $("merge-apply").disabled=!mergePlan.candidate||storage.blocked;
-    }catch(e){mergePlan=null;$("merge-summary").textContent="병합 검토 오류 · 원본 유지: "+e.message;}
+      for (const c of mergePlan.conflicts) {
+        const block = document.createElement("div"),
+          label = document.createElement("p"),
+          sel = document.createElement("select"),
+          target = document.createElement("input");
+        label.textContent = c.label;
+        sel.setAttribute("aria-label", c.label);
+        sel.append(new Option("충돌 처리 선택 (필수)", ""));
+        for (const action of c.options)
+          sel.append(
+            new Option(
+              {
+                skip: "기존 유지 · 이 입력 제외",
+                copy_model: "새 모델 ID로 복사",
+                copy_revisions: "새 개정 가지로 복사 · 부모/샘플 함께 매핑",
+                rename:
+                  c.type === "draft"
+                    ? "새 초안 개정으로 복사"
+                    : "새 샘플 ID로 복사",
+              }[action],
+              action,
+            ),
+          );
+        const choice = mergeChoices.get(c.key);
+        sel.value = choice?.action || "";
+        target.placeholder = "새 ID/개정 접미사 (비우면 충돌 없는 이름)";
+        target.value = choice?.target || "";
+        target.setAttribute("aria-label", c.label + " 새 식별자");
+        const change = () => {
+          if (sel.value)
+            mergeChoices.set(c.key, {
+              action: sel.value,
+              target: target.value,
+            });
+          else mergeChoices.delete(c.key);
+          renderMerge();
+        };
+        sel.onchange = change;
+        target.onchange = change;
+        block.append(label, sel, target);
+        $("merge-conflicts").append(block);
+      }
+      $("merge-apply").disabled = !mergePlan.candidate || storage.blocked;
+    } catch (e) {
+      mergePlan = null;
+      $("merge-summary").textContent =
+        "병합 검토 오류 · 원본 유지: " + e.message;
+    }
   }
-  $("merge-cancel").onclick=()=>{mergeSource=null;mergePlan=null;mergeChoices.clear();$("library-merge").hidden=true;say("병합 취소 · 기존 보관함 유지");};
-  $("merge-apply").onclick=()=>{try{const plan=planLibraryMerge(library,mergeSource,mergeChoices);if(!plan.candidate)throw Error("모든 충돌을 먼저 검토하세요");persist(plan.candidate);mergeSource=null;mergePlan=null;$("library-merge").hidden=true;renderLibrary();say("보관함 병합 저장 완료 · 활성 셀과 기존 개정은 유지했습니다.");}catch(e){say(e.message);}};
+  $("merge-cancel").onclick = () => {
+    mergeSource = null;
+    mergePlan = null;
+    mergeChoices.clear();
+    $("library-merge").hidden = true;
+    say("병합 취소 · 기존 보관함 유지");
+  };
+  $("merge-apply").onclick = () => {
+    try {
+      const plan = planLibraryMerge(library, mergeSource, mergeChoices);
+      if (!plan.candidate) throw Error("모든 충돌을 먼저 검토하세요");
+      persist(plan.candidate);
+      mergeSource = null;
+      mergePlan = null;
+      $("library-merge").hidden = true;
+      renderLibrary();
+      say("보관함 병합 저장 완료 · 활성 셀과 기존 개정은 유지했습니다.");
+    } catch (e) {
+      say(e.message);
+    }
+  };
   function renderLibrary() {
     renderStorage();
     const host = $("model-list");
@@ -139,7 +250,9 @@ export function mountModels({ getProject, canOpen, onApply, onGuide, notify }) {
     const p = getProject();
     const previousItem = $("sample-item").value;
     $("sample-item").replaceChildren(
-      ...p.measurements.filter(m=>m.stage===p.stage).map((m) => new Option(m.name + " · " + m.id, m.id)),
+      ...p.measurements
+        .filter((m) => m.stage === p.stage)
+        .map((m) => new Option(m.name + " · " + m.id, m.id)),
     );
     if (p.measurements.some((m) => m.id === previousItem))
       $("sample-item").value = previousItem;
@@ -235,7 +348,13 @@ export function mountModels({ getProject, canOpen, onApply, onGuide, notify }) {
     const b = bindingFor(p.product, p.stage, path);
     if (session.preview && b) {
       previewViewer.select(b.partId);
-      previewViewer.setHighlight({partId:b.partId,guide:forecast(b,p.product,p.stage),label:b.label,pending:false,path:b.path});
+      previewViewer.setHighlight({
+        partId: b.partId,
+        guide: forecast(b, p.product, p.stage),
+        label: b.label,
+        pending: false,
+        path: b.path,
+      });
     } else onGuide(path);
   }
   function openIntake(x, base = null) {
@@ -269,10 +388,17 @@ export function mountModels({ getProject, canOpen, onApply, onGuide, notify }) {
   }
   $("intake-close").onclick = () => {
     invalidate();
-    mergeSource=null;mergePlan=null;$("library-merge").hidden=true;
+    mergeSource = null;
+    mergePlan = null;
+    $("library-merge").hidden = true;
     dialog.close();
   };
-  dialog.addEventListener("cancel", () => {invalidate();mergeSource=null;mergePlan=null;$("library-merge").hidden=true;});
+  dialog.addEventListener("cancel", () => {
+    invalidate();
+    mergeSource = null;
+    mergePlan = null;
+    $("library-merge").hidden = true;
+  });
   $("intake-stage").onchange = () => {
     invalidate();
     renderReview();
@@ -494,13 +620,16 @@ export function mountModels({ getProject, canOpen, onApply, onGuide, notify }) {
       assertSampleBasis(saved, p, { itemId: $("sample-item").value });
       if (value === "") throw Error("실측값 필요");
       const next = new ModelLibrary(library.snapshot());
-      next.addSample({
-        sampleId: $("sample-id").value,
-        modelId: p.modelIdentity?.modelId,
-        modelRevision: p.modelIdentity?.revision,
-        itemId: $("sample-item").value,
-        value: Number(value),
-      }, p);
+      next.addSample(
+        {
+          sampleId: $("sample-id").value,
+          modelId: p.modelIdentity?.modelId,
+          modelRevision: p.modelIdentity?.revision,
+          itemId: $("sample-item").value,
+          value: Number(value),
+        },
+        p,
+      );
       persist(next);
       renderLibrary();
       say("실측 샘플 저장 · 설계 형상은 변경되지 않았습니다.");
@@ -514,10 +643,15 @@ export function mountModels({ getProject, canOpen, onApply, onGuide, notify }) {
     try {
       if (!f) return;
       if (f.size > 12 * 1024 * 1024) throw Error("12 MB 이하 파일 필요");
-      invalidate();const generation=session.generation;
-      const raw = JSON.parse(await f.text());if(generation!==session.generation)return;
+      invalidate();
+      const generation = session.generation;
+      const raw = JSON.parse(await f.text());
+      if (generation !== session.generation) return;
       if (raw.format === "pouch-model-library") {
-        mergeSource=new ModelLibrary(raw).snapshot();mergeChoices=new Map();renderMerge();say("보관함 병합 요약과 충돌을 검토한 뒤 적용하세요.");
+        mergeSource = new ModelLibrary(raw).snapshot();
+        mergeChoices = new Map();
+        renderMerge();
+        say("보관함 병합 요약과 충돌을 검토한 뒤 적용하세요.");
       } else openIntake(raw);
     } catch (err) {
       say(err.message);

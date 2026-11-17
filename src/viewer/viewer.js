@@ -342,7 +342,7 @@ export class Viewer {
     for (const mesh of this.meshes) {
       const id = mesh.userData.part.id;
       mesh.material.emissive?.set(
-        (id === this.highlight?.partId || this.highlight?.partIds?.includes(id))
+        id === this.highlight?.partId || this.highlight?.partIds?.includes(id)
           ? "#513810"
           : id === this.selected
             ? "#173f40"
@@ -528,16 +528,34 @@ export class Viewer {
     if (h?.guide) {
       const g = h.guide,
         color = h.pending ? "#ca7c1c" : "#167d86",
-        d = dimensionLayout(g.measurement, g.features, g.context || {
-          origin: [0, 0, 0],
-          rotationZ: 0,
-        });
+        d = dimensionLayout(
+          g.measurement,
+          g.features,
+          g.context || {
+            origin: [0, 0, 0],
+            rotationZ: 0,
+          },
+        );
       if (d) {
         line(d.a, d.c, color, 1, true);
         line(d.b, d.d, color, 1, true);
         line(d.c, d.d, color, 2, h.pending);
-        const ca=this.project(d.c), cb=this.project(d.d), len=Math.hypot(cb[0]-ca[0],cb[1]-ca[1]);
-        if(len>1e-8){const u=[(cb[0]-ca[0])/len,(cb[1]-ca[1])/len];for(const [v,sign] of [[ca,1],[cb,-1]])svg.append(sv("path",{d:`M${v[0]} ${v[1]} L${v[0]+sign*u[0]*8-u[1]*3} ${v[1]+sign*u[1]*8+u[0]*3} L${v[0]+sign*u[0]*8+u[1]*3} ${v[1]+sign*u[1]*8-u[0]*3} Z`,fill:color}));}
+        const ca = this.project(d.c),
+          cb = this.project(d.d),
+          len = Math.hypot(cb[0] - ca[0], cb[1] - ca[1]);
+        if (len > 1e-8) {
+          const u = [(cb[0] - ca[0]) / len, (cb[1] - ca[1]) / len];
+          for (const [v, sign] of [
+            [ca, 1],
+            [cb, -1],
+          ])
+            svg.append(
+              sv("path", {
+                d: `M${v[0]} ${v[1]} L${v[0] + sign * u[0] * 8 - u[1] * 3} ${v[1] + sign * u[1] * 8 + u[0] * 3} L${v[0] + sign * u[0] * 8 + u[1] * 3} ${v[1] + sign * u[1] * 8 - u[0] * 3} Z`,
+                fill: color,
+              }),
+            );
+        }
         for (const pt of [d.a, d.b]) {
           const [cx, cy] = this.project(pt);
           svg.append(

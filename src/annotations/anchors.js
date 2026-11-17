@@ -50,8 +50,12 @@ export function anchorPoint(host, a) {
   );
 }
 export function withAnchors(data, anchors = []) {
-  const features = Object.fromEntries(Object.entries(data.features).filter(([id,f])=>!id.startsWith("anchor.")&&!f.anchor)),
-    diagnostics = data.diagnostics.filter(d=>!d.anchorId);
+  const features = Object.fromEntries(
+      Object.entries(data.features).filter(
+        ([id, f]) => !id.startsWith("anchor.") && !f.anchor,
+      ),
+    ),
+    diagnostics = data.diagnostics.filter((d) => !d.anchorId);
   for (const a of anchors) {
     const host = features[a.baseFeatureId],
       point = anchorPoint(host, a);
@@ -64,10 +68,33 @@ export function withAnchors(data, anchors = []) {
         anchor: true,
       };
     else {
-      const code = host?.available === false ? host.reasonCode || "stage_absent" : !host ? "reference_lost" : "anchor_outside";
-      const reason = code === "stage_absent" ? "해당 공정에 없음" : code === "reference_lost" ? "부착 기준 참조 소실" : "측정점이 평탄 패치 범위를 벗어남";
-      features[a.id] = {partId:host?.partId,name:a.name,kind:"invalid",available:false,reasonCode:code,reason};
-      diagnostics.push({anchorId:a.id,level:code === "stage_absent"?"info":"error",message:a.name+": "+reason+" · 자동 재연결하지 않음"});
+      const code =
+        host?.available === false
+          ? host.reasonCode || "stage_absent"
+          : !host
+            ? "reference_lost"
+            : "anchor_outside";
+      const reason =
+        code === "stage_absent"
+          ? "해당 공정에 없음"
+          : code === "reference_lost"
+            ? "부착 기준 참조 소실"
+            : host?.available === false
+              ? host.reason || "부착 기준 미확정"
+              : "측정점이 평탄 패치 범위를 벗어남";
+      features[a.id] = {
+        partId: host?.partId,
+        name: a.name,
+        kind: "invalid",
+        available: false,
+        reasonCode: code,
+        reason,
+      };
+      diagnostics.push({
+        anchorId: a.id,
+        level: code === "stage_absent" ? "info" : "error",
+        message: a.name + ": " + reason + " · 자동 재연결하지 않음",
+      });
     }
   }
   return { ...data, features, diagnostics };

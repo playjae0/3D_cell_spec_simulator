@@ -177,7 +177,8 @@ export function validateProject(p) {
       (m.mode !== "radius" && typeof m.b?.featureId !== "string")
     )
       err("치수 기준 ID 필요");
-    if (m.conditions !== undefined && typeof m.conditions !== "string") err("측정 조건 형식 오류");
+    if (m.conditions !== undefined && typeof m.conditions !== "string")
+      err("측정 조건 형식 오류");
     if (!m.spec || typeof m.spec.note !== "string") err("스펙 설명 필요");
     for (const k of ["target", "minus", "plus", "measured"])
       if (m.spec[k] !== null && !Number.isFinite(m.spec[k]))

@@ -155,5 +155,90 @@
   }
 }
 
-#comparison-dialog{width:min(1500px,96vw);max-width:96vw;max-height:94vh;overflow:auto;border:1px solid #bcced1;border-radius:12px;background:#f4f7f7;padding:20px;color:#163238}
-#comparison-dialog::backdrop{background:#102a35a6}.compare-sources,.compare-views{display:grid;grid-template-columns:1fr 1fr;gap:18px}.compare-viewport{height:380px;position:relative;background:#e4ebeb;overflow:hidden}.compare-viewport canvas,.compare-viewport svg{position:absolute;inset:0}.compare-viewport svg{width:100%;height:100%;pointer-events:none}.compare-table{max-height:350px;overflow:auto}#comparison-dialog table{width:100%;border-collapse:collapse;font-size:12px}#comparison-dialog th,#comparison-dialog td{padding:8px;border-bottom:1px solid #d5e0de;text-align:left}#comparison-dialog tbody tr{cursor:pointer}#comparison-dialog tbody tr:focus,#comparison-dialog tbody tr:hover{background:#deefeb}.compare-row{display:block;text-align:left;white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%;margin:5px 0;font-size:12px}#compare-inputs,#compare-parts{max-height:330px;overflow:auto}#compare-position{width:90px}#compare-status{white-space:pre-wrap}@media(max-width:850px){.compare-views,.compare-sources{grid-template-columns:1fr}.compare-viewport{height:300px}}
+#comparison-dialog {
+  width: min(1500px, 96vw);
+  max-width: 96vw;
+  max-height: 94vh;
+  overflow: auto;
+  border: 1px solid #bcced1;
+  border-radius: 12px;
+  background: #f4f7f7;
+  padding: 20px;
+  color: #163238;
+}
+#comparison-dialog::backdrop {
+  background: #102a35a6;
+}
+.compare-sources,
+.compare-views {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.compare-viewport {
+  height: 380px;
+  position: relative;
+  background: #e4ebeb;
+  overflow: hidden;
+}
+.compare-viewport canvas,
+.compare-viewport svg {
+  position: absolute;
+  inset: 0;
+}
+.compare-viewport svg {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.compare-table {
+  max-height: 350px;
+  overflow: auto;
+}
+#comparison-dialog table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+#comparison-dialog th,
+#comparison-dialog td {
+  padding: 8px;
+  border-bottom: 1px solid #d5e0de;
+  text-align: left;
+}
+#comparison-dialog tbody tr {
+  cursor: pointer;
+}
+#comparison-dialog tbody tr:focus,
+#comparison-dialog tbody tr:hover {
+  background: #deefeb;
+}
+.compare-row {
+  display: block;
+  text-align: left;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+  margin: 5px 0;
+  font-size: 12px;
+}
+#compare-inputs,
+#compare-parts {
+  max-height: 330px;
+  overflow: auto;
+}
+#compare-position {
+  width: 90px;
+}
+#compare-status {
+  white-space: pre-wrap;
+}
+@media (max-width: 850px) {
+  .compare-views,
+  .compare-sources {
+    grid-template-columns: 1fr;
+  }
+  .compare-viewport {
+    height: 300px;
+  }
+}
