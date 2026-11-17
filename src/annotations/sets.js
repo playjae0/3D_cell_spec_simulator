@@ -24,6 +24,7 @@ export function basicMeasurements(project, data, datumId = "legacy") {
     for(const feature of ["tab.root","tab.gather","lead.start","lead.end","lead.center","leadFilm.start","leadFilm.end"])
       for(const axis of (feature.startsWith("tab.")?["y","z"]:["x"]))
         candidates.push(measurement(title(side)+" "+(data.features[side+"."+feature]?.name||feature)+" "+axis.toUpperCase()+" 좌표",side+"."+feature,side+"."+feature,"signed_coordinate",project.stage,{datumId,axis,group:title(side)+" 위치",visible:false}));
+  for(const side of ["positive","negative"])candidates.push(measurement(title(side)+" 실런트 전체 폭",side+".leadFilm.widthMinus",side+".leadFilm.widthPlus","y",project.stage,{datumId,group:title(side)+" 실런트",visible:false}));
   const keys=new Set(project.measurements.map(m=>measurementKey(m))), added=[], unsupported=[];
   for(const m of candidates){
     const key=measurementKey(m); if(keys.has(key)) continue;

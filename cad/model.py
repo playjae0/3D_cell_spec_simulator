@@ -202,7 +202,7 @@ def build_pole(name,pole,s,stage='assembly'):
         inner=box(f['length']+2,l['width'],l['thickness'],g+f['start']+f['length']/2,leadY,leadZ)
         add('leadFilm','리드 실런트 (실링 필름 · 단면 가정)',outer.cut(inner),'#9a8667')
         fx=g+f['start'];fz=leadZ+l['thickness']/2
-        for key,v in [('start',(fx,leadY,fz+f['thickness'])),('end',(fx+f['length'],leadY,fz+f['thickness'])),('leadSide',(fx,leadY+l['width']/2,leadZ)),('outerSide',(fx,leadY+l['width']/2+f['overhang'],leadZ)),('innerFace',(fx+f['length']/2,leadY,fz)),('outerFace',(fx+f['length']/2,leadY,fz+f['thickness']))]:point('leadFilm.'+key,'리드 실런트 '+key,v,'face' if key.endswith('Face') else 'point')
+        for key,v in [('start',(fx,leadY,fz+f['thickness'])),('end',(fx+f['length'],leadY,fz+f['thickness'])),('leadSide',(fx,leadY+l['width']/2,leadZ)),('outerSide',(fx,leadY+l['width']/2+f['overhang'],leadZ)),('widthMinus',(fx+f['length']/2,leadY-l['width']/2-f['overhang'],fz+f['thickness'])),('widthPlus',(fx+f['length']/2,leadY+l['width']/2+f['overhang'],fz+f['thickness'])),('innerFace',(fx+f['length']/2,leadY,fz)),('outerFace',(fx+f['length']/2,leadY,fz+f['thickness']))]:point('leadFilm.'+key,'리드 실런트 '+key,v,'face' if key.endswith('Face') else 'point')
         features[name+'.leadFilm.innerFace']['normal']=[0,0,-1];features[name+'.leadFilm.outerFace']['normal']=[0,0,1]
     for key,title,v,kind in [
         ('tab.root','탭 뿌리 중심',(0,t['rootY'],t['rootZ']),'point'),('tab.gather','집속 중심',(g,t['gatherY'],t['gatherZ']),'point'),
@@ -396,7 +396,10 @@ def mark_unavailable(source,stage,features):
     for boundary,part in [('forming','pocket'),('sealInner','seal'),('sealOuter','seal'),('trim','margin')]:
         absent('pouch.'+boundary,[a+'.'+s for a in ['x','y'] for s in ['minus','plus']],'pouch.upper.'+part,'파우치 경계')
     for side in ['positive','negative']:
-        if source[side].get('leadFilm',{}).get('enabled') is not False:absent(side+'.leadFilm',['start','end','leadSide','outerSide','innerFace','outerFace'],side+'.leadFilm','리드 필름')
+        if source[side].get('leadFilm',{}).get('enabled') is not False:absent(side+'.leadFilm',['start','end','widthMinus','widthPlus','leadSide','outerSide','innerFace','outerFace'],side+'.leadFilm','리드 실런트')
+        if stage=='welded' and source[side].get('leadFilm',{}).get('enabled') is None:
+            for fid,f in features.items():
+                if fid.startswith(side+'.leadFilm.') and f.get('available') is False:f.update(reasonCode='unconfirmed',reason='실런트 존재/입력 미확정 · 구버전 S3 호환')
         absent(side+'.tab',['gather','gatherWidthMinus','gatherWidthPlus','gatherZBase','gatherYBase','gatherRootY','tipCenter','edgeR','stockEnd'],side+'.tab','포일 기준')
         absent(side+'.lead',['start','end','widthMinus','widthPlus','top','bottom','overlapStart','overlapEnd','overlapWidthMinus','overlapWidthPlus','edge.width','edge.length','center','yBase'],side+'.lead','리드 기준')
         for key,part in [('prewelds','preweld'),('joints','joint'),('tapes','tape')]:

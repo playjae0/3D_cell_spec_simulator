@@ -12,6 +12,8 @@ import { basicMeasurements } from "../src/annotations/sets.js";
 import { captureInspectionView, applyInspectionView } from "../src/annotations/presets.js";
 import { withAnchors } from "../src/annotations/anchors.js";
 import { ComparisonSession,calculatedDifferences,partDifferences } from "../src/models/compare.js";
+import { planLibraryMerge } from "../src/models/merge.js";
+import { LibraryStorage, LIBRARY_KEY } from "../src/models/storage.js";
 export function inspectionFixture() {
   const p = initial();
   p.stage = "assembly";
@@ -97,4 +99,38 @@ test("comparison cache keys product+stage, serializes CAD and preserves snapshot
   const moved=structuredClone(p);moved.view.section={axis:"x",position:4};await s.run(p,moved,["welded","welded"]);assert.equal(calls,1);
   await s.run(p,p,["preweld","assembly"]);assert.equal(calls,3);assert.equal(max,1);assert.deepEqual(p,before);
   let resolve;const pending=new ComparisonSession(()=>new Promise(r=>resolve=r));const job=pending.run(p,p,["welded","welded"]);await new Promise(r=>setImmediate(r));pending.invalidate();resolve({parts:[],features:{},diagnostics:[]});assert.equal(await job,null);assert.equal(pending.result,null);assert.deepEqual(p,before);
+});
+test("library merge skips identical revisions and adds a child without changing the original",()=>{
+  const p=inspectionFixture(),local=new ModelLibrary();local.commit(p);const incoming=new ModelLibrary(local.snapshot());const child=structuredClone(p);child.modelIdentity.revision="2";child.modelIdentity.baseRevision="1";child.product.positive.lead.offsetY+=.2;incoming.commit(child);
+  const before=local.snapshot(),plan=planLibraryMerge(local,incoming);assert.equal(plan.summary.duplicateRevisions,1);assert.equal(plan.summary.addedRevisions,1);assert.deepEqual(local.snapshot(),before);assert.equal(plan.candidate.data.models[0].revisions.length,2);
+  const repeat=planLibraryMerge(plan.candidate,incoming);assert.equal(repeat.summary.addedRevisions,0);assert.equal(repeat.summary.duplicateRevisions,2);
+});
+test("conflicting model copies remap parent, sample and saved-view references as a unit",()=>{
+  const p=projectFromIntake(JSON.parse(fs.readFileSync("examples/intake/virtual-complete.json")),"assembly"),local=new ModelLibrary();local.commit(p);
+  const incoming=new ModelLibrary(),changed=structuredClone(p);changed.datumSet.origin[1]=10;incoming.commit(changed);const child=structuredClone(changed);child.modelIdentity.revision="2";child.modelIdentity.baseRevision="1";child.intake.model.revision="2";child.intake.model.baseRevision="1";
+  const camera={position:[0,0,400],target:[0,0,0],up:[0,1,0],zoom:1};child.inspectionViews=[captureInspectionView(child,{parts:[],features:{}},{name:"보기",camera})];incoming.commit(child);incoming.addSample({sampleId:"A",modelId:p.modelIdentity.modelId,modelRevision:"2",itemId:"root-y",value:-11});
+  const preview=planLibraryMerge(local,incoming);assert.equal(preview.candidate,null);assert.equal(preview.unresolved.length,1);
+  for(const action of ["copy_model","copy_revisions"]){const choices=new Map([[preview.conflicts[0].key,{action}]]),plan=planLibraryMerge(local,incoming,choices);assert.ok(plan.candidate);const sample=plan.candidate.data.samples[0];const model=plan.candidate.data.models.find(m=>m.modelId===sample.modelId),rev=model.revisions.find(r=>r.revision===sample.modelRevision);assert.ok(model.revisions.some(r=>r.revision===rev.baseRevision));assert.equal(rev.project.inspectionViews[0].owner.modelId,model.modelId);assert.equal(rev.project.inspectionViews[0].owner.revision,rev.revision);assert.equal(rev.project.intake.model.revision,rev.revision);}
+  assert.equal(local.data.models.length,1);assert.equal(local.data.samples.length,0);
+});
+test("sample and draft conflicts require choices and copy without overwriting raw unknown fields",()=>{
+  const p=inspectionFixture(),a=new ModelLibrary();a.commit(p);a.addSample({sampleId:"A",modelId:"review-fixture",modelRevision:"1",itemId:"root-y",value:-1});
+  const draft=template({modelId:"review-fixture",revision:"draft",baseRevision:"1"});draft.unknownFutureField={value:17};a.saveDraft(draft);
+  const b=new ModelLibrary(a.snapshot());b.data.samples[0].value=-2;b.data.drafts[0].intake.unknownFutureField.value=18;
+  const plan=planLibraryMerge(a,b);assert.equal(plan.candidate,null);assert.equal(plan.conflicts.length,2);
+  const resolved=planLibraryMerge(a,b,new Map(plan.conflicts.map(c=>[c.key,{action:"rename"}])));assert.equal(resolved.candidate.data.samples.length,2);assert.equal(resolved.candidate.data.drafts.length,2);assert.equal(resolved.candidate.data.drafts[1].intake.unknownFutureField.value,18);assert.notEqual(resolved.candidate.data.drafts[1].intake.model.revision,"draft");assert.equal(a.data.drafts[0].intake.unknownFutureField.value,17);
+});
+test("library validates dangling or cyclic revision parents before accepting backup data",()=>{
+  const l=new ModelLibrary();l.commit(inspectionFixture());const data=l.snapshot();data.models[0].revisions[0].baseRevision="missing";data.models[0].revisions[0].project.modelIdentity.baseRevision="missing";assert.throws(()=>new ModelLibrary(data),/참照|참조/);
+  data.models[0].revisions[0].baseRevision="1";data.models[0].revisions[0].project.modelIdentity.baseRevision="1";assert.throws(()=>new ModelLibrary(data),/순환/);
+});
+function memoryStorage(raw=null){const values=new Map(raw===null?[]:[[LIBRARY_KEY,raw]]);return {values,fail:false,get length(){return values.size;},key:i=>[...values.keys()][i],getItem:k=>values.get(k)??null,setItem(k,v){if(this.fail&&k===LIBRARY_KEY)throw Error("quota");values.set(k,v);}};}
+test("save failure keeps memory and original bytes; corrupt/sample-only storage cannot be overwritten",()=>{
+  const local=new ModelLibrary();local.commit(inspectionFixture());const raw=JSON.stringify(local.snapshot()),memory=memoryStorage(raw),store=new LibraryStorage(memory),next=new ModelLibrary(local.snapshot());next.saveDraft(template({modelId:"draft",revision:"1"}));memory.fail=true;
+  assert.throws(()=>store.save(next),/기존 데이터 유지/);assert.equal(memory.getItem(LIBRARY_KEY),raw);assert.equal(store.library.data.drafts.length,0);
+  for(const corrupt of ["{broken",JSON.stringify({format:"pouch-model-library",version:1,models:[],drafts:[],samples:[{sampleId:"orphan",value:1}]})]){const m=memoryStorage(corrupt),s=new LibraryStorage(m);assert.equal(s.blocked,true);assert.throws(()=>s.save(new ModelLibrary()),/백업/);assert.equal(m.getItem(LIBRARY_KEY),corrupt);const backup=s.recover();assert.equal(m.getItem(backup),corrupt);assert.equal(s.blocked,false);assert.equal(s.backups().length,1);}
+});
+test("draft-only libraries are preserved by merge, including cancel and failed recovery writes",()=>{
+  const a=new ModelLibrary();a.saveDraft(template({modelId:"draft",revision:"1"}));const before=a.snapshot(),b=new ModelLibrary();b.commit(inspectionFixture());const plan=planLibraryMerge(a,b);assert.equal(plan.candidate.data.drafts.length,1);assert.deepEqual(a.snapshot(),before);
+  const mem=memoryStorage("{broken"),store=new LibraryStorage(mem);mem.fail=true;assert.throws(()=>store.recover(),/quota/);assert.equal(store.blocked,true);assert.equal(mem.getItem(LIBRARY_KEY),"{broken");assert.equal(store.backups().length,1);
 });
