@@ -11,6 +11,7 @@ import { projectFromIntake, intakeFromProject } from "../src/intake/adapter.js";
 import { basicMeasurements } from "../src/annotations/sets.js";
 import { captureInspectionView, applyInspectionView } from "../src/annotations/presets.js";
 import { withAnchors } from "../src/annotations/anchors.js";
+import { ComparisonSession,calculatedDifferences,partDifferences } from "../src/models/compare.js";
 export function inspectionFixture() {
   const p = initial();
   p.stage = "assembly";
@@ -80,4 +81,20 @@ test("anchor outside, absent stage and removed host are distinct and never clamp
   for(const [feature,code] of [[host,"anchor_outside"],[{available:false},"stage_absent"],[undefined,"reference_lost"]]){
     const data=withAnchors({features:feature?{host:feature}:{},diagnostics:[]},[a]);assert.equal(evaluate(m,data.features).code,code);assert.equal(data.features[a.id].point,undefined);
   }
+});
+test("comparison separates changed inspection datum from geometry and never invents a zero delta",()=>{
+  const a=inspectionFixture(),b=structuredClone(a);b.datumSet.origin[1]=10;
+  const data={parts:[{id:"positive.tab",name:"탭",bounds:{min:[-130,-5,-1],max:[-120,5,1]},volume:200}],features:{"positive.tab.root":{point:[-120,-1,0],partId:"positive.tab"}},diagnostics:[]};
+  const rows=calculatedDifferences([a,b],[data,data]),r=rows.find(x=>x.items[0]?.id==="root-y");assert.deepEqual(r.results.map(x=>x.value),[-1,-11]);assert.equal(r.delta,null);assert.match(r.reason,/직접 비교 불가/);assert.equal(partDifferences([data,data])[0].changed,false);
+  const common=calculatedDifferences([a,b],[data,data],{common:true}).find(x=>x.items[0]?.id==="root-y");assert.equal(common.delta,0);
+  const absent={...data,parts:[],features:{"positive.tab.root":{partId:"positive.tab",available:false}}};assert.equal(partDifferences([absent,data])[0].states[0],"해당 공정에 없음");
+  const missing=calculatedDifferences([a,b],[absent,data]).find(x=>x.items[0]?.id==="root-y");assert.equal(missing.delta,null);assert.equal(missing.results[0].valid,false);
+});
+test("comparison cache keys product+stage, serializes CAD and preserves snapshots on cancel/stale results",async()=>{
+  const p=inspectionFixture(),before=structuredClone(p);let calls=0,active=0,max=0;
+  const s=new ComparisonSession(async project=>{calls++;active++;max=Math.max(max,active);await Promise.resolve();active--;return {parts:[],features:{},diagnostics:[],stage:project.stage};});
+  await s.run(p,p,["welded","welded"]);assert.equal(calls,1);
+  const moved=structuredClone(p);moved.view.section={axis:"x",position:4};await s.run(p,moved,["welded","welded"]);assert.equal(calls,1);
+  await s.run(p,p,["preweld","assembly"]);assert.equal(calls,3);assert.equal(max,1);assert.deepEqual(p,before);
+  let resolve;const pending=new ComparisonSession(()=>new Promise(r=>resolve=r));const job=pending.run(p,p,["welded","welded"]);await new Promise(r=>setImmediate(r));pending.invalidate();resolve({parts:[],features:{},diagnostics:[]});assert.equal(await job,null);assert.equal(pending.result,null);assert.deepEqual(p,before);
 });

@@ -174,6 +174,7 @@ export class Viewer {
     new ResizeObserver(() => {
       const w = host.clientWidth,
         h = host.clientHeight;
+      if (w <= 0 || h <= 0) return;
       this.renderer.setSize(w, h);
       const half = 115;
       this.camera.left = (-half * w) / h;

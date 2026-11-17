@@ -1,3 +1,4 @@
+import { mountComparison } from "./models/compare-panel.js";
 import { basicMeasurements } from "./annotations/sets.js";
 import { mountInspection } from "./annotations/panel.js";
 import { mountModels } from "./models/panel.js";
@@ -1604,6 +1605,8 @@ const models = mountModels({
   },
 });
 $("models").onclick = () => models.open();
+const comparison=mountComparison({getProject:()=>state,getLibrary:()=>models.library(),canOpen:()=>live&&!dirty&&!busy&&!queue.pending,notify:status});
+$("compare").onclick=()=>comparison.open();
 boot();
 
 function previewInspection(){
