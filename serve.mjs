@@ -1,2 +1,8 @@
-import {createServer} from 'node:http';import {readFile} from 'node:fs/promises';import {resolve,extname} from 'node:path';
-const root=resolve('dist');createServer(async(req,res)=>{try{const path=resolve(root,'.'+decodeURIComponent(new URL(req.url,'http://localhost').pathname));if(path!==root&&!path.startsWith(root+'/')&&!path.startsWith(root+'\\')){res.writeHead(403);return res.end();}const file=path===root?resolve(root,'index.html'):path;const data=await readFile(file);res.setHeader('Content-Type',({'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css'})[extname(file)]||'application/octet-stream');res.end(data);}catch{res.writeHead(404);res.end('Not found');}}).listen(4173,'127.0.0.1',()=>console.log('http://127.0.0.1:4173'));
+import {spawn} from 'node:child_process';
+import {existsSync} from 'node:fs';
+const local=process.platform==='win32'?'.venv/Scripts/python.exe':'.venv/bin/python';
+const python=process.env.POUCH_PYTHON||(existsSync(local)?local:'python');
+const child=spawn(python,['cad/server.py'],{stdio:'inherit'});
+child.on('error',error=>{console.error('로컬 Python/CadQuery 필요:',error.message);process.exitCode=1;});
+child.on('exit',code=>process.exitCode=code??1);
+process.on('SIGINT',()=>child.kill('SIGINT'));

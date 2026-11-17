@@ -1,0 +1,17 @@
+test_A_asymmetric_central_gathering (proof_geometry.ProofTests.test_A_asymmetric_central_gathering) ... ok
+test_B_tape_top_and_wrapped_contact (proof_geometry.ProofTests.test_B_tape_top_and_wrapped_contact) ... ok
+test_C_independent_pocket_radii_and_step_roundtrip (proof_geometry.ProofTests.test_C_independent_pocket_radii_and_step_roundtrip) ... ok
+test_deleted_tape_feature_is_absent (test_geometry.Regression.test_deleted_tape_feature_is_absent) ... ok
+test_full_step_roundtrip_each_state (test_geometry.Regression.test_full_step_roundtrip_each_state) ... ok
+test_invalid_conditions_rejected_without_mutation (test_geometry.Regression.test_invalid_conditions_rejected_without_mutation) ... ok
+test_lead_contact_side_and_tape_host_face_are_explicit (test_geometry.Regression.test_lead_contact_side_and_tape_host_face_are_explicit) ... ok
+test_mesh_resolution_does_not_change_measurements (test_geometry.Regression.test_mesh_resolution_does_not_change_measurements) ... ok
+test_named_planar_face_centers_are_on_cad_faces (test_geometry.Regression.test_named_planar_face_centers_are_on_cad_faces) ... ok
+test_pouch_film_and_wrapped_tape_refs_are_on_surfaces (test_geometry.Regression.test_pouch_film_and_wrapped_tape_refs_are_on_surfaces) ... ok
+test_separate_seal_and_trim_dimensions (test_geometry.Regression.test_separate_seal_and_trim_dimensions) ... ok
+test_three_states_keep_internal_part_identity (test_geometry.Regression.test_three_states_keep_internal_part_identity) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 51.893s
+
+OK

@@ -1,0 +1,24 @@
+
+> cell-spec-simulator@1.1.0 test
+> node tests/measurement.test.js
+
+✔ Euclidean versus datum-axis projection (6.779034ms)
+✔ Z thickness requires opposite corresponding faces; cannot relabel arbitrary distance (0.240199ms)
+✔ Radius line starts at arc center and terminates on arc (2.1897ms)
+✔ Projection drawing agrees with number, also in rotated inspection datum (0.383355ms)
+✔ Dangling semantic references are errors and never reassigned (0.156765ms)
+✔ 10,000 dimensions with specs and visibility survive JSON roundtrip (158.772443ms)
+✔ Reject incompatible version, NaN, bad tolerance, duplicate IDs, malformed camera (1.12803ms)
+✔ Measured values affect inspection only, never product parameters (0.285358ms)
+✔ Undo/redo keeps independent copies (0.408211ms)
+✔ Display section clips triangle and leaves source geometry unchanged (0.433089ms)
+✔ Surface anchors track analytic patch changes and invalidate a removed host (0.421532ms)
+✔ Surface points in a removed rounded corner are invalid, never clamped (0.11334ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 184.423497

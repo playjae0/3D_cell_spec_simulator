@@ -1,0 +1,23 @@
+[
+  {
+    "stage": "assembly",
+    "unit": "mm",
+    "solids": 9,
+    "maxBBoxErrorMm": 0.0,
+    "volumeErrorMm3": 1.0288204066455364e-08
+  },
+  {
+    "stage": "packaged",
+    "unit": "mm",
+    "solids": 19,
+    "maxBBoxErrorMm": 2.0000001832443104e-07,
+    "volumeErrorMm3": 7.959897629916668e-09
+  },
+  {
+    "stage": "finished",
+    "unit": "mm",
+    "solids": 23,
+    "maxBBoxErrorMm": 2.0000001832443104e-07,
+    "volumeErrorMm3": 6.56291376799345e-09
+  }
+]
