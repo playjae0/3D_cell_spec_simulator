@@ -11,7 +11,7 @@ ROOT=Path(__file__).resolve().parents[1]
 LOCK=threading.Lock()
 CACHE={}
 def model_for(project):
-    if project.get('schemaVersion')!=3 or project.get('modelVersion')!='pouch-process-cad-2' or project.get('unit')!='mm': raise ModelError(['지원하지 않는 프로젝트 버전 또는 단위'])
+    if project.get('schemaVersion') not in [3,4] or project.get('modelVersion')!='pouch-process-cad-2' or project.get('unit')!='mm': raise ModelError(['지원하지 않는 프로젝트 버전 또는 단위'])
     if project.get('stage') not in STAGES: raise ModelError(['지원하지 않는 상태'])
     key=hashlib.sha256(json.dumps([project['product'],project['stage']],sort_keys=True,allow_nan=False).encode()).hexdigest()
     if key not in CACHE:
@@ -26,7 +26,7 @@ class Handler(SimpleHTTPRequestHandler):
     def send_json(self,code,data):
         body=json.dumps(data,ensure_ascii=False,allow_nan=False).encode();self.send_response(code);self.send_header('Content-Type','application/json; charset=utf-8');self.send_header('Content-Length',str(len(body)));self.send_header('Cache-Control','no-store');self.end_headers();self.wfile.write(body)
     def do_GET(self):
-        if self.path=='/api/health': return self.send_json(200,{'engine':'CadQuery','version':cq.__version__,'unit':'mm','status':'ready','mode':'live-cad','schemaVersion':3,'capabilities':['rebuild','step','process-states']})
+        if self.path=='/api/health': return self.send_json(200,{'engine':'CadQuery','version':cq.__version__,'unit':'mm','status':'ready','mode':'live-cad','schemaVersion':4,'capabilities':['rebuild','step','process-states']})
         super().do_GET()
     def do_POST(self):
         try:

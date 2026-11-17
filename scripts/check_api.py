@@ -5,7 +5,7 @@ root=Path(__file__).resolve().parents[1];base=sys.argv[1] if len(sys.argv)>1 els
 def post(project,revision):
  req=urllib.request.Request(base+'/api/rebuild',json.dumps({'project':project,'revision':revision,'requestToken':str(revision)}).encode(),{'Content-Type':'application/json'})
  with urllib.request.urlopen(req,timeout=90) as response:return json.load(response)
-health=json.load(urllib.request.urlopen(base+'/api/health'));assert health['mode']=='live-cad' and health['schemaVersion']==3
+health=json.load(urllib.request.urlopen(base+'/api/health'));assert health['mode']=='live-cad' and health['schemaVersion'] in [3,4]
 assert 'Pouch Cell' in urllib.request.urlopen(base).read().decode()
 p=json.loads((root/'examples/demo.json').read_text())
 for i,stage in enumerate(['stacked','gathered','preweld','welded','assembly','packaged','finished']):

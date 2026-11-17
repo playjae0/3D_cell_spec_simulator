@@ -1,3 +1,4 @@
+import { productFromIntake } from "../intake/adapter.js";
 import demo from "../../examples/demo.json" with { type: "json" };
 export const clone = (x) => structuredClone(x);
 export const initial = () => ({ ...clone(demo), anchors: [] });
@@ -15,7 +16,7 @@ export function validateProject(p) {
     throw Error(m);
   };
   if (
-    p?.schemaVersion !== 3 ||
+    ![3, 4].includes(p?.schemaVersion) ||
     p.modelVersion !== "pouch-process-cad-2" ||
     p.unit !== "mm"
   )
@@ -68,7 +69,42 @@ export function validateProject(p) {
         err(path + "." + k + " 유한한 수 필요");
     }
   };
-  walk(p.product, demo.product, "product");
+  if (p.schemaVersion === 4 && p.intake) {
+    const expected = productFromIntake(p.intake, p.stage);
+    const canonical = (v) =>
+      v && typeof v === "object"
+        ? Array.isArray(v)
+          ? v.map(canonical)
+          : Object.fromEntries(
+              Object.keys(v)
+                .sort()
+                .map((k) => [k, canonical(v[k])]),
+            )
+        : v;
+    if (
+      JSON.stringify(canonical(expected)) !==
+      JSON.stringify(canonical(p.product))
+    )
+      err("입력 양식과 CAD 입력 불일치");
+    if (
+      p.modelIdentity?.modelId !== p.intake.model.modelId ||
+      p.modelIdentity?.revision !== p.intake.model.revision
+    )
+      err("모델 식별/개정 불일치");
+  } else walk(p.product, demo.product, "product");
+  const datumIds = new Set(["legacy"]);
+  for (const d of p.inspectionDatums || []) {
+    if (
+      typeof d.id !== "string" ||
+      !d.id ||
+      datumIds.has(d.id) ||
+      !vector(d.origin) ||
+      !Number.isFinite(d.rotationZ) ||
+      typeof d.name !== "string"
+    )
+      err("검사 데이텀 ID/좌표 오류");
+    datumIds.add(d.id);
+  }
   if (p.anchors !== undefined) {
     if (!Array.isArray(p.anchors)) err("표면 기준점 목록 오류");
     const ids = new Set();
@@ -79,7 +115,11 @@ export function validateProject(p) {
         ids.has(a.id) ||
         typeof a.name !== "string" ||
         typeof a.baseFeatureId !== "string" ||
-        ![a.u, a.v].every((x) => Number.isFinite(x) && Math.abs(x) <= 1)
+        (a.mode === "fixed_mm"
+          ? !["origin", "u_minus", "u_plus", "v_minus", "v_plus"].includes(
+              a.reference,
+            ) || ![a.distanceU, a.distanceV].every(Number.isFinite)
+          : ![a.u, a.v].every((x) => Number.isFinite(x) && Math.abs(x) <= 1))
       )
         err("표면 기준점 형식 오류");
       ids.add(a.id);
@@ -105,12 +145,31 @@ export function validateProject(p) {
       typeof m.group !== "string" ||
       !stages[m.stage] ||
       typeof m.visible !== "boolean" ||
-      !["distance", "x", "y", "z", "thickness", "radius"].includes(m.mode) ||
+      ![
+        "distance",
+        "x",
+        "y",
+        "z",
+        "thickness",
+        "radius",
+        "signed_coordinate",
+        "signed_offset",
+      ].includes(m.mode) ||
       !Number.isFinite(m.offset) ||
       !["x", "y", "z"].includes(m.offsetAxis)
     )
       err("치수 정의 형식 오류");
     ids.add(m.id);
+    if (m.mode.startsWith("signed_") && !["x", "y", "z"].includes(m.axis))
+      err("부호 치수 축 필요");
+    if (m.datumId !== undefined && typeof m.datumId !== "string")
+      err("datumId 형식 오류");
+    if (
+      m.parameterId !== undefined &&
+      m.parameterId !== null &&
+      typeof m.parameterId !== "string"
+    )
+      err("parameterId 형식 오류");
     if (
       typeof m.a?.featureId !== "string" ||
       (m.mode !== "radius" && typeof m.b?.featureId !== "string")

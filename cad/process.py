@@ -18,18 +18,19 @@ def resolve_pole(source, stage='assembly'):
     p=deepcopy(source);t=p['tab']
     if 'foilWidth' not in t:
         raise ModelError(['기존 포일 폭 데이터입니다. JSON 불러오기에서 뿌리/집속 폭을 명시적으로 선택해 변환하세요.'])
-    for key in ['foilWidth','rootLength','axialShortening']:
+    for key in (['foilWidth','rootLength'] if stage=='stacked' else ['foilWidth','rootLength','axialShortening']):
         value=t.get(key)
         if not isinstance(value,(int,float)) or isinstance(value,bool) or not math.isfinite(value):
             raise ModelError([f'tab.{key}: 유한한 숫자가 필요합니다'])
     t['rootWidth']=t['width']=t['foilWidth']
-    t['length']=t['rootLength']-t['gatherDistance']-t['axialShortening']
+    if stage!='stacked':t['length']=t['rootLength']-t['gatherDistance']-t['axialShortening']
     p['_stage']=stage
     p['_hasLead']=stage in STAGES[3:] or (stage=='preweld' and p['preweldLead']['included'])
-    if stage=='preweld':p['lead']={k:v for k,v in p['preweldLead'].items() if k!='included'}
+    if stage=='preweld' and p['_hasLead']:p['lead']={k:v for k,v in p['preweldLead'].items() if k!='included'}
     if stage not in STAGES[2:]:p['prewelds']=[]
     if stage not in STAGES[3:]:p['joints']=[]
-    if stage not in STAGES[4:]:p['tapes']=[];p['leadFilm']['enabled']=False
+    if stage not in STAGES[4:]:p['tapes']=[];p['leadFilm']={'enabled':False}
+    if not p['_hasLead']:p['lead']={}
     return p
 
 def resolve_product(source,stage):

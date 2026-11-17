@@ -1,0 +1,2348 @@
+{
+  "format": "pouch-cell-intake",
+  "formatVersion": "1.0",
+  "dictionaryVersion": "cell-intake-1.0",
+  "generator": {
+    "version": "1.3.0",
+    "baselineCommit": "3e0f9f8a3d63601a6f310d6a383f714650dfeff4"
+  },
+  "demo": true,
+  "model": {
+    "modelId": "virtual-validation-001",
+    "modelName": "가상 검증 셀 · 실제 제품값 아님",
+    "revision": "1",
+    "baseRevision": null,
+    "assemblyType": "sheet_stacked",
+    "tabLayout": "opposite_ends"
+  },
+  "requestedStages": [
+    "assembly",
+    "stacked",
+    "gathered",
+    "preweld",
+    "welded",
+    "packaged",
+    "finished"
+  ],
+  "coordinateMapping": {
+    "sourceConvention": "기존 앱 mm, A/B/C",
+    "targetConvention": "X=조립체 길이, Y=폭, Z=두께; A=Z0, B=Y0, C=X0; 원점=조립체 중심",
+    "mappingStatus": "reviewed",
+    "sourceRefs": [
+      {
+        "sourceId": "legacy-project",
+        "locator": "product"
+      }
+    ],
+    "note": "사진 방향으로 극성을 판정하지 않음. 원점/축과 치수 시작·끝 확인."
+  },
+  "sources": [
+    {
+      "sourceId": "legacy-project",
+      "documentName": "가상 검증 입력 · 실제 제조 문서가 아님",
+      "revision": "3"
+    }
+  ],
+  "componentInstances": [
+    {
+      "polarity": "positive",
+      "kind": "preweld",
+      "instanceId": "pre-1",
+      "existenceStatus": "present",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ]
+    },
+    {
+      "polarity": "positive",
+      "kind": "joint",
+      "instanceId": "main",
+      "existenceStatus": "present",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ]
+    },
+    {
+      "polarity": "positive",
+      "kind": "tape",
+      "instanceId": "yellow",
+      "existenceStatus": "present",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ]
+    },
+    {
+      "polarity": "positive",
+      "kind": "leadFilm",
+      "instanceId": "leadFilm",
+      "existenceStatus": "present",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ]
+    },
+    {
+      "polarity": "positive",
+      "kind": "preweldLead",
+      "instanceId": "preweldLead",
+      "existenceStatus": "absent",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ]
+    },
+    {
+      "polarity": "negative",
+      "kind": "preweld",
+      "instanceId": "pre-1",
+      "existenceStatus": "present",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ]
+    },
+    {
+      "polarity": "negative",
+      "kind": "joint",
+      "instanceId": "main",
+      "existenceStatus": "present",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ]
+    },
+    {
+      "polarity": "negative",
+      "kind": "tape",
+      "instanceId": "yellow",
+      "existenceStatus": "present",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ]
+    },
+    {
+      "polarity": "negative",
+      "kind": "leadFilm",
+      "instanceId": "leadFilm",
+      "existenceStatus": "present",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ]
+    },
+    {
+      "polarity": "negative",
+      "kind": "preweldLead",
+      "instanceId": "preweldLead",
+      "existenceStatus": "absent",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ]
+    }
+  ],
+  "parameters": [
+    {
+      "parameterId": "stack.length",
+      "label": "조립체 길이 X",
+      "value": 240,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "stack.width",
+      "label": "조립체 폭 Y",
+      "value": 68,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "stack.thickness",
+      "label": "조립체 두께 Z",
+      "value": 7,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "stack.cornerR",
+      "label": "평면 코너 R",
+      "value": 1.2,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.tab.foilWidth",
+      "label": "포일 폭 · 뿌리부터 일정",
+      "value": 32,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.tab.rootLength",
+      "label": "집속 전 돌출 길이",
+      "value": 21,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.tab.rootSpread",
+      "label": "뿌리 두께 분포",
+      "value": 6.4,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.tab.rootY",
+      "label": "뿌리 Y 중심",
+      "value": -1,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.tab.rootZ",
+      "label": "뿌리 Z 중심",
+      "value": 0,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.tab.gatherDistance",
+      "label": "뿌리→집속 거리",
+      "value": 10,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.tab.gatherY",
+      "label": "집속 Y 중심",
+      "value": -1,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.tab.gatherZ",
+      "label": "집속 Z 오프셋",
+      "value": 0,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.tab.thickness",
+      "label": "집속 후 두께",
+      "value": 0.6,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.tab.gatheredLength",
+      "label": "집속 후 길이",
+      "value": 11,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.tab.edgeR",
+      "label": "집속 단면 모서리 R",
+      "value": 0.1,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.preweldLead.included",
+      "label": "S2 리드 포함",
+      "value": false,
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.preweldLead.start",
+      "label": "리드 시작 거리",
+      "value": 2,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.preweldLead.length",
+      "label": "리드 전체 길이",
+      "value": 38,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.preweldLead.width",
+      "label": "리드 폭",
+      "value": 36,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.preweldLead.thickness",
+      "label": "리드 두께",
+      "value": 0.35,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.preweldLead.offsetY",
+      "label": "집속 중심 대비 Y",
+      "value": 0.5,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.preweldLead.contactSide",
+      "label": "탭과 접촉하는 위치",
+      "value": "below",
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.lead.start",
+      "label": "리드 시작 거리",
+      "value": 2,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.lead.length",
+      "label": "리드 전체 길이",
+      "value": 38,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.lead.width",
+      "label": "리드 폭",
+      "value": 36,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.lead.thickness",
+      "label": "리드 두께",
+      "value": 350,
+      "unit": "µm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": "가상 리드 공칭 두께 350 µm",
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도.",
+      "originalValue": 350,
+      "originalUnit": "µm"
+    },
+    {
+      "parameterId": "positive.lead.offsetY",
+      "label": "집속 중심 대비 Y",
+      "value": 0.5,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.lead.contactSide",
+      "label": "탭과 접촉하는 위치",
+      "value": "below",
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.leadFilm.enabled",
+      "label": "리드 필름 사용",
+      "value": true,
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.leadFilm.start",
+      "label": "필름 시작 위치",
+      "value": 20,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.leadFilm.length",
+      "label": "필름 X 길이",
+      "value": 5,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.leadFilm.overhang",
+      "label": "양쪽 Y 피복 여유",
+      "value": 2,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.leadFilm.thickness",
+      "label": "필름 공칭 두께",
+      "value": 0.12,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.tab.foilWidth",
+      "label": "포일 폭 · 뿌리부터 일정",
+      "value": 29,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.tab.rootLength",
+      "label": "집속 전 돌출 길이",
+      "value": 21,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.tab.rootSpread",
+      "label": "뿌리 두께 분포",
+      "value": 6,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.tab.rootY",
+      "label": "뿌리 Y 중심",
+      "value": 1.5,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.tab.rootZ",
+      "label": "뿌리 Z 중심",
+      "value": 0,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.tab.gatherDistance",
+      "label": "뿌리→집속 거리",
+      "value": 9,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.tab.gatherY",
+      "label": "집속 Y 중심",
+      "value": 1.5,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.tab.gatherZ",
+      "label": "집속 Z 오프셋",
+      "value": 0,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.tab.thickness",
+      "label": "집속 후 두께",
+      "value": 0.5,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.tab.gatheredLength",
+      "label": "집속 후 길이",
+      "value": 12,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.tab.edgeR",
+      "label": "집속 단면 모서리 R",
+      "value": 0.08,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.preweldLead.included",
+      "label": "S2 리드 포함",
+      "value": false,
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.preweldLead.start",
+      "label": "리드 시작 거리",
+      "value": 2.5,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.preweldLead.length",
+      "label": "리드 전체 길이",
+      "value": 40,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.preweldLead.width",
+      "label": "리드 폭",
+      "value": 34,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.preweldLead.thickness",
+      "label": "리드 두께",
+      "value": 0.25,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.preweldLead.offsetY",
+      "label": "집속 중심 대비 Y",
+      "value": -0.5,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.preweldLead.contactSide",
+      "label": "탭과 접촉하는 위치",
+      "value": "below",
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.lead.start",
+      "label": "리드 시작 거리",
+      "value": 2.5,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.lead.length",
+      "label": "리드 전체 길이",
+      "value": 40,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.lead.width",
+      "label": "리드 폭",
+      "value": 34,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.lead.thickness",
+      "label": "리드 두께",
+      "value": 0.25,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.lead.offsetY",
+      "label": "집속 중심 대비 Y",
+      "value": -0.5,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.lead.contactSide",
+      "label": "탭과 접촉하는 위치",
+      "value": "below",
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.leadFilm.enabled",
+      "label": "리드 필름 사용",
+      "value": true,
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.leadFilm.start",
+      "label": "필름 시작 위치",
+      "value": 21,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.leadFilm.length",
+      "label": "필름 X 길이",
+      "value": 5,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.leadFilm.overhang",
+      "label": "양쪽 Y 피복 여유",
+      "value": 1.5,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.leadFilm.thickness",
+      "label": "필름 공칭 두께",
+      "value": 0.1,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "pouch.openingLength",
+      "label": "성형 개구 길이 X",
+      "value": 298,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "pouch.openingWidth",
+      "label": "성형 개구 폭 Y",
+      "value": 79,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "pouch.planR",
+      "label": "평면 코너 R",
+      "value": 7,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "pouch.filmThickness",
+      "label": "외장 필름 두께",
+      "value": 0.15,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "pouch.upperDepth",
+      "label": "상부 성형 깊이",
+      "value": 4.3,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "pouch.upperFloorR",
+      "label": "상부 바닥 연결 R",
+      "value": 1.2,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "pouch.upperRimR",
+      "label": "상부 상단 연결 R",
+      "value": 0.85,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "pouch.lowerDepth",
+      "label": "하부 성형 깊이",
+      "value": 4.2,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "pouch.lowerFloorR",
+      "label": "하부 바닥 연결 R",
+      "value": 1.1,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "pouch.lowerRimR",
+      "label": "하부 상단 연결 R",
+      "value": 0.8,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "pouch.sealGap",
+      "label": "성형–실링 간격",
+      "value": 1.2,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "pouch.sealWidth",
+      "label": "실링 관리 폭",
+      "value": 3.5,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "pouch.trimMargin",
+      "label": "실링 밖 외곽 여유",
+      "value": 2.5,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "pouch.foldAngle",
+      "label": "긴 변 접힘 각도 °",
+      "value": 90,
+      "unit": "deg",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "pouch.foldR",
+      "label": "긴 변 접힘 내측 R",
+      "value": 0.8,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "pouch.packagingExtraYMinus",
+      "label": "패키징 −Y 추가 외장 여유",
+      "value": 14,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "pouch.packagingExtraYPlus",
+      "label": "패키징 +Y 추가 외장 여유",
+      "value": 0,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.end",
+      "label": "양극 배치 끝",
+      "value": -1,
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.material",
+      "label": "양극 재질 기록",
+      "value": "미지정 · 양극 예시",
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.end",
+      "label": "음극 배치 끝",
+      "value": 1,
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.material",
+      "label": "음극 재질 기록",
+      "value": "미지정 · 음극 예시",
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.prewelds.pre-1.enabled",
+      "label": "가용접 영역 사용",
+      "value": true,
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.prewelds.pre-1.start",
+      "label": "가용접 시작 위치",
+      "value": 0.5,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.prewelds.pre-1.length",
+      "label": "가용접 영역 길이",
+      "value": 2,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.prewelds.pre-1.width",
+      "label": "가용접 영역 폭",
+      "value": 24,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.prewelds.pre-1.offsetY",
+      "label": "가용접 Y 위치",
+      "value": 0,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.prewelds.pre-1.process",
+      "label": "용접 공법 기록",
+      "value": "unspecified",
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.joints.main.enabled",
+      "label": "접합 영역 사용",
+      "value": true,
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.joints.main.start",
+      "label": "접합 시작 위치",
+      "value": 4,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.joints.main.length",
+      "label": "접합 영역 길이",
+      "value": 4.5,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.joints.main.width",
+      "label": "접합 영역 폭",
+      "value": 26,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.joints.main.offsetY",
+      "label": "접합 Y 위치",
+      "value": 0,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.joints.main.process",
+      "label": "용접 공법 기록",
+      "value": "unspecified",
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.tapes.yellow.enabled",
+      "label": "테이프 사용",
+      "value": true,
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.tapes.yellow.face",
+      "label": "테이프 부착면",
+      "value": "top",
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.tapes.yellow.path",
+      "label": "부착 경로",
+      "value": "top",
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.tapes.yellow.start",
+      "label": "부착 시작 위치",
+      "value": 3.5,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.tapes.yellow.length",
+      "label": "테이프 X 길이",
+      "value": 5,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.tapes.yellow.width",
+      "label": "상면 피복 폭",
+      "value": 31,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.tapes.yellow.offsetY",
+      "label": "상면 Y 위치",
+      "value": 0,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.tapes.yellow.thickness",
+      "label": "테이프 두께",
+      "value": 0.08,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "positive.tapes.yellow.edgeDrop",
+      "label": "모서리 아래 부착 길이",
+      "value": 0.2,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.prewelds.pre-1.enabled",
+      "label": "가용접 영역 사용",
+      "value": true,
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.prewelds.pre-1.start",
+      "label": "가용접 시작 위치",
+      "value": 0.5,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.prewelds.pre-1.length",
+      "label": "가용접 영역 길이",
+      "value": 2,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.prewelds.pre-1.width",
+      "label": "가용접 영역 폭",
+      "value": 22,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.prewelds.pre-1.offsetY",
+      "label": "가용접 Y 위치",
+      "value": 0,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.prewelds.pre-1.process",
+      "label": "용접 공법 기록",
+      "value": "unspecified",
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.joints.main.enabled",
+      "label": "접합 영역 사용",
+      "value": true,
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.joints.main.start",
+      "label": "접합 시작 위치",
+      "value": 5,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.joints.main.length",
+      "label": "접합 영역 길이",
+      "value": 4,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.joints.main.width",
+      "label": "접합 영역 폭",
+      "value": 24,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.joints.main.offsetY",
+      "label": "접합 Y 위치",
+      "value": 0,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.joints.main.process",
+      "label": "용접 공법 기록",
+      "value": "unspecified",
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.tapes.yellow.enabled",
+      "label": "테이프 사용",
+      "value": true,
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.tapes.yellow.face",
+      "label": "테이프 부착면",
+      "value": "top",
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.tapes.yellow.path",
+      "label": "부착 경로",
+      "value": "top",
+      "unit": null,
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.tapes.yellow.start",
+      "label": "부착 시작 위치",
+      "value": 4,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.tapes.yellow.length",
+      "label": "테이프 X 길이",
+      "value": 5,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.tapes.yellow.width",
+      "label": "상면 피복 폭",
+      "value": 28,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.tapes.yellow.offsetY",
+      "label": "상면 Y 위치",
+      "value": 0,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.tapes.yellow.thickness",
+      "label": "테이프 두께",
+      "value": 0.07,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    },
+    {
+      "parameterId": "negative.tapes.yellow.edgeDrop",
+      "label": "모서리 아래 부착 길이",
+      "value": 0.18,
+      "unit": "mm",
+      "status": "extracted",
+      "reviewStatus": "reviewed",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "product"
+        }
+      ],
+      "originalText": null,
+      "conversion": null,
+      "note": "기존 프로젝트에서 가져옴. 원문 검토는 별도."
+    }
+  ],
+  "inspectionDatums": [
+    {
+      "id": "fixture-frame",
+      "name": "가상 검사 지그",
+      "origin": [
+        0,
+        2,
+        0
+      ],
+      "rotationZ": 0,
+      "visible": true
+    }
+  ],
+  "inspectionItems": [
+    {
+      "itemId": "root-y",
+      "name": "양극 뿌리 Y 부호 위치",
+      "stage": "stacked",
+      "definition": {
+        "mode": "signed_coordinate",
+        "axis": "y",
+        "datumId": "legacy",
+        "a": "positive.tab.root",
+        "b": null,
+        "parameterId": "positive.tab.rootY"
+      },
+      "target": -1,
+      "minus": 0.2,
+      "plus": 0.2,
+      "unit": "mm",
+      "sourceRefs": [
+        {
+          "sourceId": "legacy-project",
+          "locator": "가상 검사 항목 1"
+        }
+      ]
+    }
+  ],
+  "reviewLog": [],
+  "unmappedRequirements": [],
+  "conflicts": [],
+  "legacyDatum": {
+    "id": "model",
+    "origin": [
+      0,
+      0,
+      0
+    ],
+    "rotationZ": 0
+  },
+  "anchors": []
+}

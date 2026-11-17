@@ -3,7 +3,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { SoftwareRenderer } from "./software.js";
 import { clipMesh } from "./clip.js";
 import { locateOnPatch } from "../annotations/anchors.js";
-import { dimensionLayout } from "../annotations/measure.js";
+import { dimensionLayout, worldVector } from "../annotations/measure.js";
 const NS = "http://www.w3.org/2000/svg";
 const sv = (tag, attrs = {}, text) => {
   const e = document.createElementNS(NS, tag);
@@ -468,12 +468,30 @@ export class Viewer {
       line([0, 0, -18], [0, 0, 18], "#718ac5", 0.8, true);
       text([L * 0.6, 0, 0], "X · C");
       text([0, W * 0.8, 0], "Y · B");
-      text([0, 0, 18], "Z · A");
+      text([0, 0, 18], "Z · A (설계)");
+      const frames = [
+        { id: "legacy", name: "기본 검사", ...this.state.datumSet },
+        ...(this.state.inspectionDatums || []),
+      ];
+      for (const f of frames) {
+        if (f.visible === false) continue;
+        for (const [axis, color] of [
+          ["x", "#b36ac0"],
+          ["y", "#279597"],
+          ["z", "#5d64c4"],
+        ]) {
+          const v = [0, 0, 0];
+          v[["x", "y", "z"].indexOf(axis)] = 16;
+          const end = worldVector(v, f).map((x, i) => x + f.origin[i]);
+          line(f.origin, end, color, 1.6);
+          text(end, `${f.name} ${axis.toUpperCase()}`, color);
+        }
+      }
     }
     let shown = 0;
     for (const m of this.state?.measurements || []) {
       if (!m.visible || m.stage !== this.state.stage || shown >= 200) continue;
-      const d = dimensionLayout(m, this.data.features, this.state.datumSet);
+      const d = dimensionLayout(m, this.data.features, this.state);
       if (!d) continue;
       shown++;
       line(d.a, d.c, "#559b96", 0.8);

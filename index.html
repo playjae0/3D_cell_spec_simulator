@@ -9,13 +9,14 @@
     <header>
       <div class="brand">
         <span class="brandmark">▱</span>
-        <div><b>POUCH CELL</b><small>치수 & 스펙 스튜디오 / 1.2</small></div>
-        <span class="demo">DEMO · 예시값</span>
+        <div><b>POUCH CELL</b><small>치수 & 스펙 스튜디오 / 1.3</small></div>
+        <span class="demo" id="data-origin">DEMO · 예시값</span>
       </div>
       <div class="header-actions">
         <button id="undo" title="이전 설계">↶</button
         ><button id="redo" title="다음 설계">↷</button
         ><button id="save">JSON 저장</button><button id="open">불러오기</button
+        ><button id="models">모델 / 입력 양식</button
         ><input id="file" type="file" accept=".json" hidden /><button id="step">
           STEP 내보내기
         </button>
@@ -166,6 +167,15 @@
             <p class="small muted">
               모델 A: Z=0, B: Y=0, C: X=0. 아래 값은 측정 방향만 바꿉니다.
             </p>
+            <label
+              >검사 데이텀<select id="datum-select">
+                <option value="legacy">기본 검사</option>
+              </select></label
+            ><label
+              >새 검사 프레임 이름<input
+                id="datum-name"
+                value="검사 지그 1" /></label
+            ><button id="datum-add">검사 프레임 추가</button>
             <div id="datum-fields"></div>
           </details>
           <label>프로젝트 설명<textarea id="notes" rows="4"></textarea></label>
@@ -186,9 +196,24 @@
                 <option value="z">Z 방향 투영</option>
                 <option value="thickness">Z 대응 면 두께</option>
                 <option value="radius">반경 R</option>
+                <option value="signed_coordinate">
+                  부호 좌표 · 검사 원점→A
+                </option>
+                <option value="signed_offset">부호 오프셋 · A→B</option>
               </select></label
             >
           </div>
+          <label
+            >측정 검사 프레임<select id="measurement-datum">
+              <option value="legacy">기본 검사</option>
+            </select></label
+          ><label
+            >부호 좌표/오프셋 축<select id="signed-axis">
+              <option>x</option>
+              <option>y</option>
+              <option>z</option>
+            </select></label
+          >
           <label
             >스냅 종류<select id="snap-kind">
               <option value="point">기준점</option>
@@ -198,7 +223,32 @@
               <option value="surface">평면 자유점 (리드/조립체 상하면)</option>
             </select></label
           ><label>새 표면점 이름<input id="anchor-name" value="표면점" /></label
-          ><button id="pick" class="outline">모델에서 기준 선택 시작</button>
+          ><label
+            >표면점 기준<select id="anchor-mode">
+              <option value="relative">면 상대 위치 u/v</option>
+              <option value="fixed_mm">기준에서 고정 mm</option>
+            </select></label
+          ><label
+            >고정 mm 시작 기준<select id="anchor-reference">
+              <option value="origin">면 중심</option>
+              <option value="u_minus">U− 모서리 중점</option>
+              <option value="u_plus">U+ 모서리 중점</option>
+              <option value="v_minus">V− 모서리 중점</option>
+              <option value="v_plus">V+ 모서리 중점</option>
+            </select></label
+          >
+          <div class="two-col">
+            <label
+              >U 거리 mm<input
+                id="anchor-u"
+                type="number"
+                value="5"
+                step="any" /></label
+            ><label
+              >V 거리 mm<input id="anchor-v" type="number" value="0" step="any"
+            /></label>
+          </div>
+          <button id="pick" class="outline">모델에서 기준 선택 시작</button>
           <p id="pick-hint" class="small muted">
             기준 마커 또는 부품을 누르면 가장 가까운 등록 기준에 스냅합니다.
           </p>

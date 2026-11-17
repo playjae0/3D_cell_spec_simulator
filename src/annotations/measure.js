@@ -1,3 +1,8 @@
+export function datumFor(m, context) {
+  if (!context?.datumSet) return context || { origin: [0, 0, 0], rotationZ: 0 };
+  if (!m.datumId || m.datumId === "legacy") return context.datumSet;
+  return context.inspectionDatums?.find((d) => d.id === m.datumId) || null;
+}
 const sub = (a, b) => a.map((v, i) => v - b[i]);
 const add = (a, b) => a.map((v, i) => v + b[i]);
 export function datumPoint(p, datum) {
@@ -22,20 +27,36 @@ export function evaluate(
   features,
   datum = { origin: [0, 0, 0], rotationZ: 0 },
 ) {
+  datum = datumFor(m, datum);
+  if (!datum)
+    return { valid: false, error: "검사 datumId가 없음 · 재선택 필요" };
+  const single = ["radius", "signed_coordinate"].includes(m.mode);
   const a = features[m.a?.featureId],
     b = features[m.b?.featureId];
-  if (a?.available === false || (m.mode !== "radius" && b?.available === false))
+  if (a?.available === false || (!single && b?.available === false))
     return {
       valid: false,
       error: "해당 상태에서 사용 불가 · 원래 부품/기준 ID 보존",
     };
-  if (!a || (m.mode !== "radius" && !b))
+  if (!a || (!single && !b))
     return { valid: false, error: "참조가 없음 · 재선택 필요" };
   if (m.mode === "radius")
     return a.kind === "radius"
       ? { valid: true, value: a.value, a: a.center, b: a.point }
       : { valid: false, error: "반경 feature를 선택하세요" };
+  const axis = ["x", "y", "z"].indexOf(m.axis);
+  if (m.mode.startsWith("signed_") && axis < 0)
+    return { valid: false, error: "부호 좌표/오프셋의 축 필요" };
+  if (m.mode === "signed_coordinate")
+    return {
+      valid: true,
+      value: datumPoint(a.point, datum)[axis],
+      a: datum.origin,
+      b: a.point,
+    };
   const d = sub(datumPoint(b.point, datum), datumPoint(a.point, datum));
+  if (m.mode === "signed_offset")
+    return { valid: true, value: d[axis], a: a.point, b: b.point };
   let value;
   if (m.mode === "thickness") {
     if (
@@ -62,10 +83,17 @@ export function evaluate(
 export function dimensionLayout(m, features, datum) {
   const result = evaluate(m, features, datum);
   if (!result.valid) return null;
+  datum = datumFor(m, datum);
   const { a, b } = result;
   let c = [...a],
     d = [...b];
-  const index = ["x", "y", "z"].indexOf(m.mode === "thickness" ? "z" : m.mode);
+  const index = ["x", "y", "z"].indexOf(
+    m.mode.startsWith("signed_")
+      ? m.axis
+      : m.mode === "thickness"
+        ? "z"
+        : m.mode,
+  );
   if (index >= 0) {
     const av = datumPoint(a, datum),
       bv = datumPoint(b, datum),

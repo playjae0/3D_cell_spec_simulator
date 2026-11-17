@@ -1,0 +1,623 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Pouch cell intake 1.0",
+  "description": "입력 양식 구조 검증용. CAD 생성 가능 여부, 사전별 타입/단위/조건/근거/충돌은 별도 의미 검증 필요.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "formatVersion",
+    "dictionaryVersion",
+    "model",
+    "requestedStages",
+    "coordinateMapping",
+    "sources",
+    "componentInstances",
+    "parameters",
+    "inspectionItems",
+    "unmappedRequirements",
+    "conflicts"
+  ],
+  "properties": {
+    "format": {
+      "const": "pouch-cell-intake"
+    },
+    "formatVersion": {
+      "const": "1.0"
+    },
+    "dictionaryVersion": {
+      "const": "cell-intake-1.0"
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "modelId",
+        "modelName",
+        "revision",
+        "baseRevision",
+        "assemblyType",
+        "tabLayout"
+      ],
+      "properties": {
+        "modelId": {
+          "type": ["string", "null"]
+        },
+        "modelName": {
+          "type": ["string", "null"]
+        },
+        "revision": {
+          "type": ["string", "null"]
+        },
+        "baseRevision": {
+          "type": ["string", "null"]
+        },
+        "assemblyType": {
+          "const": "sheet_stacked"
+        },
+        "tabLayout": {
+          "const": "opposite_ends"
+        }
+      }
+    },
+    "requestedStages": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "stacked",
+          "gathered",
+          "preweld",
+          "welded",
+          "assembly",
+          "packaged",
+          "finished"
+        ]
+      }
+    },
+    "coordinateMapping": {
+      "type": "object",
+      "required": [
+        "sourceConvention",
+        "targetConvention",
+        "mappingStatus",
+        "sourceRefs",
+        "note"
+      ],
+      "properties": {
+        "sourceConvention": {
+          "type": ["string", "null"]
+        },
+        "targetConvention": {
+          "type": "string"
+        },
+        "mappingStatus": {
+          "enum": ["missing", "proposed", "reviewed"]
+        },
+        "sourceRefs": {
+          "$ref": "#/$defs/refs"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["sourceId", "documentName", "revision"],
+        "properties": {
+          "sourceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "documentName": {
+            "type": "string"
+          },
+          "revision": {
+            "type": ["string", "null"]
+          }
+        },
+        "additionalProperties": false
+      },
+      "maxItems": 2000
+    },
+    "componentInstances": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "polarity",
+          "kind",
+          "instanceId",
+          "existenceStatus",
+          "sourceRefs"
+        ],
+        "properties": {
+          "polarity": {
+            "enum": ["positive", "negative"]
+          },
+          "kind": {
+            "enum": ["preweld", "joint", "tape", "leadFilm", "preweldLead"]
+          },
+          "instanceId": {
+            "type": "string",
+            "pattern": "^[-A-Za-z0-9_]+$"
+          },
+          "existenceStatus": {
+            "enum": ["unknown", "present", "absent"]
+          },
+          "sourceRefs": {
+            "$ref": "#/$defs/refs"
+          }
+        },
+        "additionalProperties": false
+      },
+      "maxItems": 2000
+    },
+    "parameters": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/parameter"
+      },
+      "maxItems": 5000
+    },
+    "inspectionItems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "itemId",
+          "stage",
+          "name",
+          "definition",
+          "target",
+          "minus",
+          "plus",
+          "unit",
+          "sourceRefs"
+        ],
+        "properties": {
+          "itemId": {
+            "type": "string"
+          },
+          "stage": {
+            "enum": [
+              "stacked",
+              "gathered",
+              "preweld",
+              "welded",
+              "assembly",
+              "packaged",
+              "finished"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "definition": {
+            "type": "object",
+            "required": ["mode", "datumId", "a", "b"],
+            "properties": {
+              "mode": {
+                "enum": [
+                  "distance",
+                  "x",
+                  "y",
+                  "z",
+                  "thickness",
+                  "radius",
+                  "signed_coordinate",
+                  "signed_offset"
+                ]
+              },
+              "datumId": {
+                "type": ["string", "null"]
+              },
+              "a": {
+                "type": ["string", "null"]
+              },
+              "b": {
+                "type": ["string", "null"]
+              },
+              "axis": {
+                "enum": ["x", "y", "z"]
+              },
+              "parameterId": {
+                "type": ["string", "null"]
+              }
+            },
+            "additionalProperties": false
+          },
+          "target": {
+            "type": ["number", "null"]
+          },
+          "minus": {
+            "type": ["number", "null"],
+            "minimum": 0
+          },
+          "plus": {
+            "type": ["number", "null"],
+            "minimum": 0
+          },
+          "unit": {
+            "enum": ["mm", "deg"]
+          },
+          "sourceRefs": {
+            "$ref": "#/$defs/refs"
+          },
+          "description": {
+            "type": "string"
+          },
+          "display": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "group": {
+                "type": "string"
+              },
+              "visible": {
+                "type": "boolean"
+              },
+              "offset": {
+                "type": "number"
+              },
+              "offsetAxis": {
+                "enum": ["x", "y", "z"]
+              }
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "maxItems": 20000
+    },
+    "unmappedRequirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["requirementId", "description", "sourceRefs"],
+        "properties": {
+          "requirementId": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "sourceRefs": {
+            "$ref": "#/$defs/refs"
+          }
+        },
+        "additionalProperties": false
+      },
+      "maxItems": 2000
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["parameterId", "description", "sourceRefs"],
+        "properties": {
+          "parameterId": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "sourceRefs": {
+            "$ref": "#/$defs/refs"
+          }
+        },
+        "additionalProperties": false
+      },
+      "maxItems": 2000
+    },
+    "demo": {
+      "type": "boolean"
+    },
+    "sourceContractVersion": {
+      "type": "string"
+    },
+    "generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "baselineCommit"],
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "baselineCommit": {
+          "type": "string"
+        }
+      }
+    },
+    "reviewLog": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["parameterId", "action", "at"],
+        "properties": {
+          "parameterId": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "inspectionDatums": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "origin", "rotationZ"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[-A-Za-z0-9_]+$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "origin": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "rotationZ": {
+            "type": "number"
+          },
+          "visible": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "legacyDatum": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["origin", "rotationZ"],
+      "properties": {
+        "origin": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "number"
+          }
+        },
+        "rotationZ": {
+          "type": "number"
+        },
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "anchors": {
+      "type": "array",
+      "maxItems": 20000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "baseFeatureId"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^anchor\\."
+          },
+          "name": {
+            "type": "string"
+          },
+          "baseFeatureId": {
+            "type": "string"
+          },
+          "mode": {
+            "enum": ["relative", "fixed_mm"]
+          },
+          "u": {
+            "type": "number",
+            "minimum": -1,
+            "maximum": 1
+          },
+          "v": {
+            "type": "number",
+            "minimum": -1,
+            "maximum": 1
+          },
+          "reference": {
+            "enum": ["origin", "u_minus", "u_plus", "v_minus", "v_plus"]
+          },
+          "distanceU": {
+            "type": "number"
+          },
+          "distanceV": {
+            "type": "number"
+          }
+        },
+        "oneOf": [
+          {
+            "required": ["u", "v"],
+            "properties": {
+              "mode": {
+                "const": "relative"
+              }
+            }
+          },
+          {
+            "required": ["mode", "reference", "distanceU", "distanceV"],
+            "properties": {
+              "mode": {
+                "const": "fixed_mm"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["sourceId", "locator"],
+        "properties": {
+          "sourceId": {
+            "type": "string"
+          },
+          "locator": {
+            "type": "string",
+            "description": "페이지/도면번호/뷰/치수번호/표 행 등 확인 가능한 위치"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "parameter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "parameterId",
+        "label",
+        "value",
+        "unit",
+        "status",
+        "reviewStatus",
+        "sourceRefs",
+        "originalText",
+        "conversion",
+        "note"
+      ],
+      "properties": {
+        "parameterId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string"
+        },
+        "value": {
+          "type": ["number", "string", "boolean", "null"]
+        },
+        "unit": {
+          "enum": ["mm", "um", "µm", "μm", "deg", null]
+        },
+        "status": {
+          "enum": [
+            "missing",
+            "extracted",
+            "derived",
+            "conflict",
+            "not_applicable"
+          ]
+        },
+        "reviewStatus": {
+          "enum": ["pending", "reviewed"]
+        },
+        "sourceRefs": {
+          "$ref": "#/$defs/refs"
+        },
+        "originalText": {
+          "type": ["string", "null"]
+        },
+        "conversion": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "required": ["op", "inputParameterIds"],
+          "properties": {
+            "op": {
+              "enum": ["unit_scale", "sum", "difference"]
+            },
+            "inputParameterIds": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 20
+            },
+            "expression": {
+              "type": "string"
+            }
+          }
+        },
+        "note": {
+          "type": "string"
+        },
+        "originalValue": {
+          "type": ["number", "string", "boolean", "null"]
+        },
+        "originalUnit": {
+          "type": ["string", "null"]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": ["missing", "conflict", "not_applicable"]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": ["extracted", "derived"]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "not": {
+                  "type": "null"
+                }
+              },
+              "sourceRefs": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "derived"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "conversion": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
