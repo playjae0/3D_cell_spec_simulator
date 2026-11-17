@@ -2344,5 +2344,6 @@
     ],
     "rotationZ": 0
   },
-  "anchors": []
+  "anchors": [],
+  "inspectionViews": []
 }

@@ -1,3 +1,5 @@
+import { basicMeasurements } from "./annotations/sets.js";
+import { mountInspection } from "./annotations/panel.js";
 import { mountModels } from "./models/panel.js";
 import { reconcileProject, productFromIntake } from "./intake/adapter.js";
 import { stableId } from "./intake/contract.js";
@@ -87,6 +89,11 @@ const viewer = new Viewer($("viewport"), {
   },
   onEdit: openDirect,
 });
+const inspectionTools=mountInspection({getProject:()=>state,getModel:()=>model,viewer,notify:status,
+  onSelect:()=>{activePath=null;tab("measure");},
+  onView:(p,part)=>{state=p;selected=part;syncUI();refreshView();viewer.restore(state.view.camera);},
+});
+let focusRestore=null;
 $("renderer-mode").textContent = viewer.mode;
 function status(message, type = "", details) {
   $("diagnostics").className = type;
@@ -248,6 +255,7 @@ function syncUI() {
   renderRefs();
   renderMeasurements();
   renderDatums();
+  inspectionTools.render();
 }
 function clearErrors(path) {
   for (const el of document.querySelectorAll(".field-error"))
@@ -326,6 +334,7 @@ function selectPart(id, feature) {
   ).filter((path) => bindingFor(draft, targetStage, path)?.available);
   const path = candidates[0];
   if (path) focusField(path, false);
+  inspectionTools.related(id);
   const p = model.parts.find((x) => x.id === id);
   $("selection-info").textContent =
     (p?.name || id) +
@@ -718,11 +727,12 @@ function picked(id) {
     pickRefs.length === 1
       ? "A: " + id + " · 끝 기준을 선택하세요."
       : "A/B 선택 완료 · 관리 치수 추가";
-  if (pickRefs.length === 2 || $("mode").value === "radius") {
+  if (pickRefs.length === 2 || ["radius","signed_coordinate"].includes($("mode").value)) {
     picking = false;
     viewer.setPicking(false);
     $("pick").textContent = "모델에서 기준 선택 시작";
   }
+  previewInspection();
 }
 function addAnchor(a) {
   if (!a) {
@@ -755,7 +765,7 @@ function addAnchor(a) {
   a.name = $("anchor-name").value || "표면점";
   state.anchors ??= [];
   state.anchors.push(a);
-  model = withAnchors(model, [a]);
+  model = withAnchors(model, state.anchors);
   viewer.data = model;
   renderRefs();
   picked(a.id);
@@ -771,10 +781,10 @@ function renderRefs() {
         $(id).append(new Option(f.name + " · " + key, key));
     if (model.features[old]?.available !== false) $(id).value = old;
   }
-  $("ref-b").disabled = $("mode").value === "radius";
+  $("ref-b").disabled = ["radius","signed_coordinate"].includes($("mode").value);
 }
 function renderDatums() {
-  const prev = $("datum-select").value || "legacy";
+  const prev = state.view.selectedDatumId || $("datum-select").value || "legacy";
   $("datum-select").replaceChildren(
     new Option("기본 검사 프레임", "legacy"),
     ...(state.inspectionDatums || []).map((d) => new Option(d.name, d.id)),
@@ -817,7 +827,7 @@ function renderDatums() {
     $("datum-fields").append(l);
   }
 }
-$("datum-select").onchange = renderDatums;
+$("datum-select").onchange = () => {state.view.selectedDatumId=$("datum-select").value;renderDatums();};
 $("datum-add").onclick = () => {
   state.schemaVersion = 4;
   state.inspectionDatums ??= [];
@@ -958,11 +968,12 @@ function renderMeasurements() {
           "number",
         );
     addInput(
-      "설명 / 측정 조건",
+      "설명",
       m.spec.note,
       (v) => (m.spec.note = v),
       "textarea",
     );
+    addInput("측정 조건 · 검사 의미에 포함",m.conditions||"",v=>m.conditions=v,"textarea");
     const verdict = document.createElement("p");
     verdict.className = "small";
     verdict.textContent = inspection(m);
@@ -1010,6 +1021,8 @@ function renderMeasurements() {
       actions.append(b);
     }
     card.append(actions);
+    const show=document.createElement("button");show.textContent="대상·기준·방향 보기";show.onclick=()=>inspectionTools.highlight(m);card.append(show);
+    card.querySelector("summary").addEventListener("click",()=>inspectionTools.highlight(m));
     $("measurements").append(card);
   }
   const visible = state.measurements.filter(
@@ -1072,10 +1085,6 @@ $("auto-rebuild").onchange = () => {
 $("stage").onchange = () => {
   targetStage = $("stage").value;
   const next = nextProject();
-  if (!next.measurements.some((m) => m.stage === targetStage)) {
-    next.measurements.push(...demoMeasurements(targetStage, draft));
-    if (!replacement) state.measurements = clone(next.measurements);
-  }
   editGroup = null;
   request(next, { replace: false });
 };
@@ -1109,6 +1118,7 @@ document
   .forEach((b) => (b.onclick = () => viewer.view(b.dataset.view)));
 $("fit").onclick = () => viewer.fit(selected);
 $("clear-focus").onclick = () => {
+  if(focusRestore){state.view=focusRestore.view;selected=focusRestore.selected;selectedFeature=focusRestore.feature;focusRestore=null;syncUI();refreshView();viewer.restore(state.view.camera);return;}
   selected = null;
   selectedFeature = null;
   viewer.select(null);
@@ -1159,6 +1169,7 @@ $("tape-toggle").onclick = () => {
 };
 $("joint-view").onclick = () => {
   if (!model) return;
+  focusRestore??={view:{...clone(state.view),camera:viewer.getCamera()},selected,feature:selectedFeature};
   state.view.hidden = [...new Set([...state.view.hidden, ...model.parts
     .filter(
       (p) =>
@@ -1176,6 +1187,7 @@ $("joint-view").onclick = () => {
 $("mode").onchange = () => {
   renderRefs();
   if ($("mode").value === "radius") $("snap-kind").value = "radius";
+  previewInspection();
 };
 $("snap-kind").onchange = () =>
   viewer.setPicking(picking, $("snap-kind").value);
@@ -1207,6 +1219,9 @@ $("add-dim").onclick = () => {
       axis: $("signed-axis").value,
     },
   );
+  const target=$("dim-target").value,tolerance=$("dim-tolerance").value;
+  if((target!==""&&!Number.isFinite(Number(target)))||(tolerance!==""&&(!Number.isFinite(Number(tolerance))||Number(tolerance)<0)))return status("목표/공차 값을 확인하세요", "error");
+  m.spec.target=target===""?null:Number(target);m.spec.minus=m.spec.plus=tolerance===""?null:Number(tolerance);m.conditions=$("dim-conditions").value;
   const value = evaluate(m, model.features, state);
   if (!value.valid) {
     status(value.error, "error");
@@ -1217,8 +1232,9 @@ $("add-dim").onclick = () => {
   status("치수 추가 · " + value.value.toFixed(3) + " mm");
 };
 $("examples").onclick = () => {
-  state.measurements.push(...demoMeasurements(state.stage, state.product));
-  renderMeasurements();
+  if(!model||dirty||busy)return status("CAD 확정 후 검사 세트를 추가하세요", "error");
+  const result=basicMeasurements(state,model,$("measurement-datum").value||"legacy");state.measurements.push(...result.added);
+  renderMeasurements();status(result.added.length+"개 검사 추가 · 기존 항목 중복 제외", "", result.unsupported.length?"현재 CAD 기준이 없어 생성하지 않은 항목:\n"+result.unsupported.map(x=>x.name+": "+x.reason).join("\n"):"공차·목표는 미입력으로 보존했습니다.");
 };
 $("dims-on").onclick = () => {
   state.measurements
@@ -1574,7 +1590,7 @@ const models = mountModels({
     busy = false;
     model = withAnchors(result || model, state.anchors);
     viewer.setModel(model, state);
-    viewer.fit();
+    if (state.view.camera) viewer.restore(state.view.camera); else viewer.fit();
     setDirty(false);
     renderFields();
     syncUI();
@@ -1589,3 +1605,13 @@ const models = mountModels({
 });
 $("models").onclick = () => models.open();
 boot();
+
+function previewInspection(){
+  if(!model)return;
+  const m=measurement($("dim-name").value||"새 관리 치수",$("ref-a").value,$("ref-b").value,$("mode").value,state.stage,{datumId:$("measurement-datum").value||"legacy",axis:$("signed-axis").value});
+  inspectionTools.highlight(m,true);
+}
+for(const id of ["ref-a","ref-b","measurement-datum","signed-axis"]){$(id).addEventListener("change",previewInspection);$(id).addEventListener("focus",previewInspection);}
+$("anchor-mode").onchange=()=>{const relative=$("anchor-mode").value==="relative";$("anchor-u-label").textContent=relative?"U 위치 % (0~100)":"U 거리 mm";$("anchor-v-label").textContent=relative?"V 위치 % (0~100)":"V 거리 mm";$("anchor-reference").disabled=relative;};
+$("anchor-mode").onchange();
+$("anchor-create").onclick=()=>{if(!model||dirty||busy)return status("CAD 확정 후 기준점을 추가하세요", "error");const u=$("anchor-u").value,v=$("anchor-v").value;if(u===""||v===""||![Number(u),Number(v)].every(Number.isFinite))return status("U/V 위치를 입력하세요", "error");const a={baseFeatureId:$("anchor-host").value,u:2*Number(u)/100-1,v:2*Number(v)/100-1};if($("anchor-mode").value==="relative"&&![a.u,a.v].every(x=>Math.abs(x)<=1))return status("비율은 0~100% 범위여야 합니다", "error");addAnchor(a);};

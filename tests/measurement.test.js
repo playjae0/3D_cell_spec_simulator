@@ -80,6 +80,7 @@ test("Dangling semantic references are errors and never reassigned", () => {
   const m = measurement("lost", "missing", "b", "x", "assembly");
   assert.deepEqual(evaluate(m, features), {
     valid: false,
+    code: "reference_lost",
     error: "참조가 없음 · 재선택 필요",
   });
 });
@@ -172,7 +173,8 @@ test("Surface anchors track analytic patch changes and invalidate a removed host
     [12.5, 10, 0.2],
   );
   delete data.features["lead.top"];
-  assert.equal(withAnchors(data, [a]).features[a.id], undefined);
+  assert.equal(withAnchors(data, [a]).features[a.id].available, false);
+  assert.equal(withAnchors(data, [a]).features[a.id].reasonCode, "reference_lost");
 });
 test("Surface points in a removed rounded corner are invalid, never clamped", () => {
   const f = {

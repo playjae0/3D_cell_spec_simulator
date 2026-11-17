@@ -1,3 +1,4 @@
+import { validateInspectionViews } from "../annotations/presets.js";
 import Ajv from "ajv/dist/2020.js";
 import schema from "./schema.json" with { type: "json" };
 import {
@@ -34,6 +35,7 @@ export function validateIntake(input, stage = "stacked") {
     issue("/", "파일은 12 MB 이하");
     return { valid: false, ready: false, issues, rows, normalized };
   }
+  try { validateInspectionViews(input.inspectionViews); } catch (e) { issue("/inspectionViews",e.message); }
   const d = input,
     fields = dictionaryFor(d.componentInstances),
     byId = new Map(fields.map((f) => [f.parameterId, f])),

@@ -27,6 +27,8 @@ export function evaluate(
   features,
   datum = { origin: [0, 0, 0], rotationZ: 0 },
 ) {
+  if (datum?.stage && m.stage && m.stage !== datum.stage)
+    return {valid:false,code:"stage_absent",error:"검사 항목의 공정과 현재 공정이 다릅니다 · 기준 ID 보존"};
   datum = datumFor(m, datum);
   if (!datum)
     return { valid: false, error: "검사 datumId가 없음 · 재선택 필요" };
@@ -36,10 +38,11 @@ export function evaluate(
   if (a?.available === false || (!single && b?.available === false))
     return {
       valid: false,
-      error: "해당 상태에서 사용 불가 · 원래 부품/기준 ID 보존",
+      code: (a?.available === false ? a : b).reasonCode || "stage_absent",
+      error: (a?.available === false ? a : b).reason || "해당 상태에서 사용 불가 · 원래 부품/기준 ID 보존",
     };
   if (!a || (!single && !b))
-    return { valid: false, error: "참조가 없음 · 재선택 필요" };
+    return { valid: false, code:"reference_lost", error: "참조가 없음 · 재선택 필요" };
   if (m.mode === "radius")
     return a.kind === "radius"
       ? { valid: true, value: a.value, a: a.center, b: a.point }
