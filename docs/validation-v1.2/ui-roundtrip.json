@@ -1,0 +1,413 @@
+{
+  "schemaVersion": 3,
+  "modelVersion": "pouch-process-cad-2",
+  "unit": "mm",
+  "demo": true,
+  "stage": "assembly",
+  "product": {
+    "id": "demo-stacked-bipolar-001",
+    "stack": {
+      "length": 240,
+      "width": 68,
+      "thickness": 7,
+      "cornerR": 1.2
+    },
+    "positive": {
+      "end": -1,
+      "material": "미지정 · 양극 예시",
+      "tab": {
+        "rootSpread": 6.4,
+        "rootY": -1,
+        "rootZ": 0,
+        "gatherDistance": 10,
+        "gatherY": -1,
+        "gatherZ": 0,
+        "thickness": 0.6,
+        "edgeR": 0.1,
+        "foilWidth": 32,
+        "rootLength": 21,
+        "axialShortening": 0
+      },
+      "lead": {
+        "start": 2,
+        "length": 38,
+        "width": 36,
+        "thickness": 0.35,
+        "offsetY": 0.5,
+        "contactSide": "below"
+      },
+      "joints": [
+        {
+          "id": "main",
+          "enabled": true,
+          "kind": "tab_to_lead",
+          "process": "unspecified",
+          "start": 4,
+          "length": 4.5,
+          "width": 26,
+          "offsetY": 0,
+          "postThicknessMeasured": null
+        }
+      ],
+      "tapes": [
+        {
+          "id": "yellow",
+          "enabled": true,
+          "host": "tab",
+          "path": "top",
+          "start": 3.5,
+          "length": 5,
+          "width": 31,
+          "offsetY": 0,
+          "thickness": 0.08,
+          "edgeDrop": 0.2,
+          "backside": "unconfirmed",
+          "face": "top"
+        }
+      ],
+      "leadFilm": {
+        "enabled": true,
+        "start": 20,
+        "length": 5,
+        "overhang": 2,
+        "thickness": 0.12
+      },
+      "specs": [],
+      "prewelds": [],
+      "preweldLead": {
+        "included": false,
+        "start": 2,
+        "length": 38,
+        "width": 36,
+        "thickness": 0.35,
+        "offsetY": 0.5,
+        "contactSide": "below"
+      }
+    },
+    "negative": {
+      "end": 1,
+      "material": "미지정 · 음극 예시",
+      "tab": {
+        "rootSpread": 6,
+        "rootY": 1.5,
+        "rootZ": 0,
+        "gatherDistance": 9,
+        "gatherY": 1.5,
+        "gatherZ": 0,
+        "thickness": 0.5,
+        "edgeR": 0.08,
+        "foilWidth": 36,
+        "rootLength": 21,
+        "axialShortening": 0
+      },
+      "lead": {
+        "start": 2.5,
+        "length": 40,
+        "width": 34,
+        "thickness": 0.25,
+        "offsetY": -0.5,
+        "contactSide": "below"
+      },
+      "joints": [
+        {
+          "id": "main",
+          "enabled": true,
+          "kind": "tab_to_lead",
+          "process": "unspecified",
+          "start": 5,
+          "length": 4,
+          "width": 24,
+          "offsetY": 0,
+          "postThicknessMeasured": null
+        }
+      ],
+      "tapes": [
+        {
+          "id": "yellow",
+          "enabled": true,
+          "host": "tab",
+          "path": "top",
+          "start": 4,
+          "length": 5,
+          "width": 28,
+          "offsetY": 0,
+          "thickness": 0.07,
+          "edgeDrop": 0.18,
+          "backside": "unconfirmed",
+          "face": "top"
+        }
+      ],
+      "leadFilm": {
+        "enabled": true,
+        "start": 21,
+        "length": 5,
+        "overhang": 1.5,
+        "thickness": 0.1
+      },
+      "specs": [],
+      "prewelds": [],
+      "preweldLead": {
+        "included": false,
+        "start": 2.5,
+        "length": 40,
+        "width": 34,
+        "thickness": 0.25,
+        "offsetY": -0.5,
+        "contactSide": "below"
+      }
+    },
+    "pouch": {
+      "openingLength": 298,
+      "openingWidth": 79,
+      "planR": 7,
+      "filmThickness": 0.15,
+      "upperDepth": 4.3,
+      "lowerDepth": 4.2,
+      "upperFloorR": 1.2,
+      "upperRimR": 0.85,
+      "lowerFloorR": 1.1,
+      "lowerRimR": 0.8,
+      "sealGap": 1.2,
+      "sealWidth": 3.5,
+      "trimMargin": 2.5,
+      "foldAngle": 90,
+      "foldR": 0.8,
+      "packagingExtraYMinus": 14,
+      "packagingExtraYPlus": 0
+    }
+  },
+  "datumSet": {
+    "id": "model",
+    "origin": [
+      0,
+      0,
+      0
+    ],
+    "rotationZ": 0
+  },
+  "measurements": [
+    {
+      "id": "a25d756e-5eea-4d00-a951-577a8570b6d6",
+      "name": "포일 폭 · 뿌리부터 일정",
+      "group": "양극 설계 입력",
+      "stage": "assembly",
+      "mode": "y",
+      "a": {
+        "featureId": "positive.tab.rootWidthMinus"
+      },
+      "b": {
+        "featureId": "positive.tab.rootWidthPlus"
+      },
+      "visible": true,
+      "offset": 18,
+      "offsetAxis": "x",
+      "spec": {
+        "target": 32,
+        "minus": 0.5,
+        "plus": 0.5,
+        "measured": 32.2,
+        "note": "v1.2 UI 왕복 검증 · 가상 예시"
+      },
+      "driverPath": "positive.tab.foilWidth"
+    }
+  ],
+  "view": {
+    "hidden": [],
+    "transparent": false,
+    "datums": true,
+    "section": {
+      "axis": "none",
+      "position": 0
+    },
+    "camera": {
+      "position": [
+        -130.38857067685038,
+        -0.901392825221284,
+        399.9999999997998
+      ],
+      "target": [
+        -130.38857067685038,
+        -0.9009928252213276,
+        -1.7763568394002505e-15
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ],
+      "zoom": 4.635847008173539
+    },
+    "autoRebuild": true
+  },
+  "notes": "모든 숫자는 가상 예시. 적층형·양끝 배치·노란 테이프 존재/가시 위치는 사용자 확인. 양극=-X 배정, 리드 하면 접촉, 리드 필름, 테이프 뒷면 및 최종 접힘 경로는 구현 가정.",
+  "anchors": [],
+  "migration": {
+    "from": 2,
+    "originalProduct": {
+      "id": "demo-stacked-bipolar-001",
+      "stack": {
+        "length": 240,
+        "width": 68,
+        "thickness": 7,
+        "cornerR": 1.2
+      },
+      "positive": {
+        "end": -1,
+        "material": "미지정 · 양극 예시",
+        "tab": {
+          "rootWidth": 38,
+          "rootSpread": 6.4,
+          "rootY": -1,
+          "rootZ": 0,
+          "gatherDistance": 10,
+          "gatherY": -1,
+          "gatherZ": 0,
+          "width": 32,
+          "thickness": 0.6,
+          "length": 11,
+          "edgeR": 0.1
+        },
+        "lead": {
+          "start": 2,
+          "length": 38,
+          "width": 36,
+          "thickness": 0.35,
+          "offsetY": 0.5,
+          "contactSide": "below"
+        },
+        "joints": [
+          {
+            "id": "main",
+            "enabled": true,
+            "kind": "tab_to_lead",
+            "process": "unspecified",
+            "start": 4,
+            "length": 4.5,
+            "width": 26,
+            "offsetY": 0,
+            "postThicknessMeasured": null
+          }
+        ],
+        "tapes": [
+          {
+            "id": "yellow",
+            "enabled": true,
+            "host": "tab",
+            "path": "top",
+            "start": 3.5,
+            "length": 5,
+            "width": 31,
+            "offsetY": 0,
+            "thickness": 0.08,
+            "edgeDrop": 0.2,
+            "backside": "unconfirmed",
+            "face": "top"
+          }
+        ],
+        "leadFilm": {
+          "enabled": true,
+          "start": 20,
+          "length": 5,
+          "overhang": 2,
+          "thickness": 0.12
+        },
+        "specs": []
+      },
+      "negative": {
+        "end": 1,
+        "material": "미지정 · 음극 예시",
+        "tab": {
+          "rootWidth": 36,
+          "rootSpread": 6,
+          "rootY": 1.5,
+          "rootZ": 0,
+          "gatherDistance": 9,
+          "gatherY": 1.5,
+          "gatherZ": 0,
+          "width": 29,
+          "thickness": 0.5,
+          "length": 12,
+          "edgeR": 0.08
+        },
+        "lead": {
+          "start": 2.5,
+          "length": 40,
+          "width": 34,
+          "thickness": 0.25,
+          "offsetY": -0.5,
+          "contactSide": "below"
+        },
+        "joints": [
+          {
+            "id": "main",
+            "enabled": true,
+            "kind": "tab_to_lead",
+            "process": "unspecified",
+            "start": 5,
+            "length": 4,
+            "width": 24,
+            "offsetY": 0,
+            "postThicknessMeasured": null
+          }
+        ],
+        "tapes": [
+          {
+            "id": "yellow",
+            "enabled": true,
+            "host": "tab",
+            "path": "top",
+            "start": 4,
+            "length": 5,
+            "width": 28,
+            "offsetY": 0,
+            "thickness": 0.07,
+            "edgeDrop": 0.18,
+            "backside": "unconfirmed",
+            "face": "top"
+          }
+        ],
+        "leadFilm": {
+          "enabled": true,
+          "start": 21,
+          "length": 5,
+          "overhang": 1.5,
+          "thickness": 0.1
+        },
+        "specs": []
+      },
+      "pouch": {
+        "openingLength": 298,
+        "openingWidth": 79,
+        "planR": 7,
+        "filmThickness": 0.15,
+        "upperDepth": 4.3,
+        "lowerDepth": 4.2,
+        "upperFloorR": 1.2,
+        "upperRimR": 0.85,
+        "lowerFloorR": 1.1,
+        "lowerRimR": 0.8,
+        "sealGap": 1.2,
+        "sealWidth": 3.5,
+        "trimMargin": 2.5,
+        "foldAngle": 90,
+        "foldR": 0.8,
+        "packagingExtraYMinus": 14,
+        "packagingExtraYPlus": 0
+      }
+    },
+    "widthChoices": {
+      "positive": {
+        "root": 38,
+        "gathered": 32,
+        "selected": 32,
+        "source": "gathered"
+      },
+      "negative": {
+        "root": 36,
+        "gathered": 29,
+        "selected": 36,
+        "source": "root"
+      }
+    }
+  }
+}

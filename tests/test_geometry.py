@@ -10,7 +10,8 @@ class Regression(unittest.TestCase):
     def test_three_states_keep_internal_part_identity(self):
         base=self.models['assembly']['features'];
         for stage in ['packaged','finished']:
-            for k,v in base.items(): self.assertEqual(v,self.models[stage]['features'][k])
+            for k,v in base.items():
+                if v.get('available',True):self.assertEqual(v,self.models[stage]['features'][k])
             self.assertTrue(all(p['shape'].isValid() for p in self.models[stage]['parts']))
     def test_separate_seal_and_trim_dimensions(self):
         f=self.models['packaged']['features'];q=P['pouch']
@@ -20,7 +21,7 @@ class Regression(unittest.TestCase):
     def test_invalid_conditions_rejected_without_mutation(self):
         for change in [lambda p:p['pouch'].update(upperDepth=1),lambda p:p['positive']['joints'][0].update(width=90),lambda p:p['negative']['tapes'][0].update(start=100),lambda p:p['positive']['tab'].update(rootSpread=50),lambda p:p['stack'].update(width=-5),lambda p:p['pouch'].update(upperFloorR=30)]:
             p=copy.deepcopy(P);change(p);snapshot=copy.deepcopy(p)
-            with self.assertRaises(ModelError):validate(p)
+            with self.assertRaises(ModelError):validate(p,'packaged')
             self.assertEqual(p,snapshot)
     def test_deleted_tape_feature_is_absent(self):
         p=copy.deepcopy(P);p['positive']['tapes']=[];m=build(p)
@@ -58,5 +59,5 @@ class Regression(unittest.TestCase):
                 self.assertTrue(loaded.isValid());self.assertEqual(len(loaded.Solids()),len(compound.Solids()));self.assertAlmostEqual(loaded.Volume(),compound.Volume(),places=4)
                 errors=[abs(getattr(loaded.BoundingBox(),k)-getattr(compound.BoundingBox(),k)) for k in ['xlen','ylen','zlen']];self.assertLess(max(errors),1e-5);self.assertIn('.MILLI.',path.read_text())
                 report.append({'stage':stage,'unit':'mm','solids':len(loaded.Solids()),'maxBBoxErrorMm':max(errors),'volumeErrorMm3':abs(loaded.Volume()-compound.Volume())})
-        (ROOT/'docs/validation/step-roundtrip.json').write_text(json.dumps(report,indent=2))
+        (ROOT/'docs/validation-v1.2/step-roundtrip.json').write_text(json.dumps(report,indent=2))
 if __name__=='__main__':unittest.main(verbosity=2)

@@ -1,0 +1,36 @@
+
+> cell-spec-simulator@1.2.0 test
+> node tests/run.js
+
+✔ Euclidean versus datum-axis projection (7.053795ms)
+✔ Z thickness requires opposite corresponding faces; cannot relabel arbitrary distance (0.229654ms)
+✔ Radius line starts at arc center and terminates on arc (0.90611ms)
+✔ Projection drawing agrees with number, also in rotated inspection datum (0.180531ms)
+✔ Dangling semantic references are errors and never reassigned (0.184617ms)
+✔ 10,000 dimensions with specs and visibility survive JSON roundtrip (159.137017ms)
+✔ Reject incompatible version, NaN, bad tolerance, duplicate IDs, malformed camera (1.216165ms)
+✔ Measured values affect inspection only, never product parameters (0.441392ms)
+✔ Undo/redo keeps independent copies (0.613851ms)
+✔ Display section clips triangle and leaves source geometry unchanged (0.804127ms)
+✔ Surface anchors track analytic patch changes and invalidate a removed host (0.539941ms)
+✔ Surface points in a removed rounded corner are invalid, never clamped (0.176414ms)
+✔ Legacy widths need explicit independent decisions; original inputs are preserved (0.887712ms)
+✔ Later gathered-length edit never changes S0 stock; upstream stock propagates (0.29329ms)
+✔ Same width in root and gathered references does not lock Y centers (3.666942ms)
+✔ Stage-scoped fields, preweld lead and independent region IDs (4.935676ms)
+✔ Semantic edge mapping exposes correct input choices, never a mesh index (0.5468ms)
+✔ Every numeric enabled field has a finite analytic guide, including R arcs (21.472647ms)
+✔ Unavailable stage reference differs from broken reference and is never relinked (0.332439ms)
+✔ All stage templates and independent specs survive JSON (7.581968ms)
+✔ Queued obsolete response cannot overwrite newer input, even before debounce (0.605518ms)
+✔ Repeated inputs coalesce into one CAD request and preserve group metadata (0.334853ms)
+✔ Cancel invalidates an in-flight CAD response (0.272509ms)
+✔ Failed latest request reports error; superseded failure does not (0.490205ms)
+ℹ tests 24
+ℹ suites 0
+ℹ pass 24
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 232.181243

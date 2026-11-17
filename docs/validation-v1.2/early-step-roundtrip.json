@@ -1,0 +1,30 @@
+[
+  {
+    "stage": "stacked",
+    "unit": "mm",
+    "solids": 3,
+    "maxBBoxErrorMm": 0.0,
+    "volumeErrorMm3": 5.820766091346741e-11
+  },
+  {
+    "stage": "gathered",
+    "unit": "mm",
+    "solids": 3,
+    "maxBBoxErrorMm": 0.0,
+    "volumeErrorMm3": 9.415089152753353e-09
+  },
+  {
+    "stage": "preweld",
+    "unit": "mm",
+    "solids": 3,
+    "maxBBoxErrorMm": 0.0,
+    "volumeErrorMm3": 9.415089152753353e-09
+  },
+  {
+    "stage": "welded",
+    "unit": "mm",
+    "solids": 5,
+    "maxBBoxErrorMm": 0.0,
+    "volumeErrorMm3": 9.356881491839886e-09
+  }
+]

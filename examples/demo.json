@@ -1,9 +1,9 @@
 {
-  "schemaVersion": 2,
-  "modelVersion": "pouch-datum-cad-1",
+  "schemaVersion": 3,
+  "modelVersion": "pouch-process-cad-2",
   "unit": "mm",
   "demo": true,
-  "stage": "assembly",
+  "stage": "stacked",
   "product": {
     "id": "demo-stacked-bipolar-001",
     "stack": {
@@ -16,17 +16,17 @@
       "end": -1,
       "material": "미지정 · 양극 예시",
       "tab": {
-        "rootWidth": 38,
         "rootSpread": 6.4,
         "rootY": -1,
         "rootZ": 0,
         "gatherDistance": 10,
         "gatherY": -1,
         "gatherZ": 0,
-        "width": 32,
         "thickness": 0.6,
-        "length": 11,
-        "edgeR": 0.1
+        "edgeR": 0.1,
+        "foilWidth": 32,
+        "rootLength": 21,
+        "axialShortening": 0
       },
       "lead": {
         "start": 2,
@@ -72,23 +72,44 @@
         "overhang": 2,
         "thickness": 0.12
       },
-      "specs": []
+      "specs": [],
+      "prewelds": [
+        {
+          "id": "pre-1",
+          "enabled": true,
+          "kind": "tab_to_tab",
+          "process": "unspecified",
+          "start": 0.5,
+          "length": 2,
+          "width": 24,
+          "offsetY": 0
+        }
+      ],
+      "preweldLead": {
+        "included": false,
+        "start": 2,
+        "length": 38,
+        "width": 36,
+        "thickness": 0.35,
+        "offsetY": 0.5,
+        "contactSide": "below"
+      }
     },
     "negative": {
       "end": 1,
       "material": "미지정 · 음극 예시",
       "tab": {
-        "rootWidth": 36,
         "rootSpread": 6,
         "rootY": 1.5,
         "rootZ": 0,
         "gatherDistance": 9,
         "gatherY": 1.5,
         "gatherZ": 0,
-        "width": 29,
         "thickness": 0.5,
-        "length": 12,
-        "edgeR": 0.08
+        "edgeR": 0.08,
+        "foilWidth": 29,
+        "rootLength": 21,
+        "axialShortening": 0
       },
       "lead": {
         "start": 2.5,
@@ -134,7 +155,28 @@
         "overhang": 1.5,
         "thickness": 0.1
       },
-      "specs": []
+      "specs": [],
+      "prewelds": [
+        {
+          "id": "pre-1",
+          "enabled": true,
+          "kind": "tab_to_tab",
+          "process": "unspecified",
+          "start": 0.5,
+          "length": 2,
+          "width": 22,
+          "offsetY": 0
+        }
+      ],
+      "preweldLead": {
+        "included": false,
+        "start": 2.5,
+        "length": 40,
+        "width": 34,
+        "thickness": 0.25,
+        "offsetY": -0.5,
+        "contactSide": "below"
+      }
     },
     "pouch": {
       "openingLength": 298,
@@ -174,8 +216,23 @@
       "axis": "none",
       "position": 0
     },
-    "camera": null
+    "camera": null,
+    "autoRebuild": true
   },
   "notes": "모든 숫자는 가상 예시. 적층형·양끝 배치·노란 테이프 존재/가시 위치는 사용자 확인. 양극=-X 배정, 리드 하면 접촉, 리드 필름, 테이프 뒷면 및 최종 접힘 경로는 구현 가정.",
-  "anchors": []
+  "anchors": [],
+  "migration": {
+    "from": 2,
+    "decision": "새 가상 예시는 종전 집속 폭을 선택. 사용자 파일 변환은 별도 확인.",
+    "originalWidths": {
+      "positive": [
+        38,
+        32
+      ],
+      "negative": [
+        36,
+        29
+      ]
+    }
+  }
 }

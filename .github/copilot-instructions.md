@@ -1,6 +1,6 @@
 # Pouch cell project constraints
 
-Read docs/spec-v1.1.md and docs/evidence-decisions.md before geometry changes.
+Read docs/spec-v1.2.md, docs/field-geometry-map-v1.2.md and docs/evidence-decisions.md before changes. v1.2 user request supersedes v1.1.
 The user's 2026-11-17 central-gathering correction takes precedence over the ZIP.
 Do not introduce V-fold/blade geometry from S1-13/S1-14, W2 guide mechanisms,
 or W3 hybrid weld patterns. Stacked sheet electrodes; finite central gathering.
@@ -18,3 +18,13 @@ and npm run build. Check the affected view in browser and capture front/side/sec
 STEP changes require reimport, unit, bounding dimensions and volume checks.
 Do not claim product accuracy from photo similarity or unit tests. Preserve assumptions
 and unimplemented local sealing/foil-deformation limits in docs and UI diagnostics.
+
+Constant foil width is one stored foilWidth per polarity, independent Y centers.
+Stages resolve in cad/process.py; do not copy whole models per stage or use later
+lead/tape/weld inputs in earlier geometry. Gathered length UI writes axialShortening,
+not S0 rootLength. Do not silently migrate two legacy widths.
+Field geometry links live in src/data/bindings.js; persistent references are semantic.
+New direct editors must distinguish calculated values and their source inputs.
+Preserve single-flight latest-wins queue semantics and invalidate on input, not send.
+Verify real live-cad API capabilities, save gating, grouped undo and JSON migration.
+Pouch geometry is reused; do not replace it with boxes or claim sealing-bar support.
