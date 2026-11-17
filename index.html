@@ -1,10 +1,273 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pouch Cell · 치수 & 스펙 스튜디오</title></head>
-<body>
-<header><div class="brand"><span class="brandmark">▱</span><div><b>POUCH CELL</b><small>치수 & 스펙 스튜디오 / 1.1</small></div><span class="demo">DEMO · 예시값</span></div><div class="header-actions"><button id="undo" title="이전 설계">↶</button><button id="redo" title="다음 설계">↷</button><button id="save">JSON 저장</button><button id="open">불러오기</button><input id="file" type="file" accept=".json" hidden><button id="step">STEP 내보내기</button></div></header>
-<main>
-<aside class="navigator"><div class="eyebrow">PROCESS / 공정 상태</div><label class="sr-only" for="stage">공정 상태</label><select id="stage"><option value="assembly">01 탭 용접 · 테이프 후</option><option value="packaged">02 패키징 후</option><option value="finished">03 완성 셀 · 접힘 예시</option></select><div class="model-caption">낱장 적층형 · 양끝 리드<br>양극/음극 독립 설계 · mm</div><div class="section-title">부품과 연결 <button id="show-all">모두 보기</button></div><div id="parts"></div><div class="divider"></div><div class="eyebrow">INSPECT / 구조 확인</div><div class="quick"><button id="joint-view">양극 집속부 집중</button><button id="tape-toggle">테이프 숨기기</button><button id="clear-focus">전체 셀 보기</button></div><p class="small muted">양극 −X / 음극 +X는 예시 배정입니다. 사진의 극성을 추정한 결과가 아닙니다.</p><details><summary>확인사항과 한계</summary><p class="small">중앙 집속, 유한 접합 구간. V자 굽힘·블레이드·특수 가이드 미적용.<br>리드 접촉 면·리드 필름·감쌈·접힘은 변경 가능한 가정입니다.<br>실링 압축·국부 리드 통과부 성형 및 실제 포일 변형 해석은 미지원.</p></details></aside>
-<section class="workspace"><div class="workspace-title"><div><div class="eyebrow">DATUM-DRIVEN MODEL</div><h1 id="scene-title">탭 용접 · 테이프 부착 후</h1></div><button id="fullscreen">작업영역 확대</button></div><div class="viewbar"><div class="button-group"><button data-view="iso">입체</button><button data-view="front">정면 XY</button><button data-view="side">측면 XZ</button><button data-view="end">끝면 YZ</button><button data-view="back">뒷면</button></div><button id="fit">맞춤</button></div><div id="viewport"></div><div class="view-settings"><label><input id="transparent" type="checkbox"> 외장 투명</label><label><input id="through" type="checkbox"> 내부만 선택</label><label><input id="datums" type="checkbox" checked> 데이텀</label><label>단면 <select id="section"><option value="none">끄기</option><option value="x">X 법선 · YZ</option><option value="y">Y 법선 · XZ</option><option value="z">Z 법선 · XY</option></select></label><label>위치 <input id="section-position" type="number" value="0" step="0.1" aria-label="단면 위치"> mm</label></div><div class="viewport-footer"><span id="renderer-mode"></span><span>드래그 회전 · 휠 확대 · 오른쪽 드래그 이동</span></div><div id="selection-info">부품을 선택하면 연결 기준과 치수를 편집할 수 있습니다.</div></section>
-<aside class="inspector"><div class="tabs"><button id="design-tab" class="active">설계 치수</button><button id="measure-tab">치수 · 스펙 <span id="measure-count">0</span></button></div><section id="design-pane"><label>편집 대상<select id="editor"><option value="positive">양극 · −X 예시</option><option value="negative">음극 · +X 예시</option><option value="stack">적층 조립체</option><option value="pouch">파우치 · 실링 · 접힘</option></select></label><div class="editor-notice">독립 입력 → CAD 재생성<br><span>실측값은 형상을 변경하지 않습니다.</span></div><div id="fields"></div><div class="sticky-apply"><button id="apply" class="primary">치수 적용 · CAD 재생성</button><button id="discard">입력 되돌리기</button><small id="dirty-state">현재 형상과 입력이 일치합니다.</small></div><details><summary>검사 좌표계</summary><p class="small muted">모델 A: Z=0, B: Y=0, C: X=0. 아래 값은 측정 방향만 바꿉니다.</p><div id="datum-fields"></div></details><label>프로젝트 설명<textarea id="notes" rows="4"></textarea></label></section>
-<section id="measure-pane" hidden><div class="measure-intro">CAD 기준을 선택해 치수를 만듭니다.<br>표시 메시 해상도는 계산값에 영향을 주지 않습니다.</div><label>치수 이름<input id="dim-name" value="새 관리 치수"></label><div class="two-col"><label>그룹<input id="dim-group" value="기본"></label><label>종류<select id="mode"><option value="distance">두 점 직선</option><option value="x">X 방향 투영</option><option value="y">Y 방향 투영</option><option value="z">Z 방향 투영</option><option value="thickness">Z 대응 면 두께</option><option value="radius">반경 R</option></select></label></div><label>스냅 종류<select id="snap-kind"><option value="point">기준점</option><option value="edge">모서리 중점</option><option value="face">기준 면 중심</option><option value="radius">원호 반경</option><option value="surface">평면 자유점 (리드/조립체 상하면)</option></select></label><label>새 표면점 이름<input id="anchor-name" value="표면점"></label><button id="pick" class="outline">모델에서 기준 선택 시작</button><p id="pick-hint" class="small muted">기준 마커 또는 부품을 누르면 가장 가까운 등록 기준에 스냅합니다.</p><label>시작 기준 A<select id="ref-a"></select></label><label>끝 기준 B<select id="ref-b"></select></label><button id="add-dim" class="primary">관리 치수 추가</button><button id="examples">이 공정의 예시 치수 추가</button><div class="divider"></div><div class="two-col"><button id="dims-on">전체 표시</button><button id="dims-off">전체 숨김</button></div><label>검색<input id="filter" placeholder="이름 / 그룹 / 부품 ID"></label><div id="measurements"></div><button id="more" hidden>다음 50개 보기</button></section></aside>
-</main><footer id="diagnostics"><div class="status-line"><span class="status-dot"></span><b id="status" role="status">로컬 CAD 엔진 연결 중…</b><span id="revision">REV 0</span></div><div id="messages"></div></footer><script type="module" src="/src/main.js"></script></body></html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Pouch Cell · 치수 & 스펙 스튜디오</title>
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <span class="brandmark">▱</span>
+        <div><b>POUCH CELL</b><small>치수 & 스펙 스튜디오 / 1.2</small></div>
+        <span class="demo">DEMO · 예시값</span>
+      </div>
+      <div class="header-actions">
+        <button id="undo" title="이전 설계">↶</button
+        ><button id="redo" title="다음 설계">↷</button
+        ><button id="save">JSON 저장</button><button id="open">불러오기</button
+        ><input id="file" type="file" accept=".json" hidden /><button id="step">
+          STEP 내보내기
+        </button>
+      </div>
+    </header>
+    <main>
+      <aside class="navigator">
+        <div class="eyebrow">PROCESS / 공정 상태</div>
+        <label class="sr-only" for="stage">공정 상태</label
+        ><select id="stage">
+          <option value="stacked">S0 적층체 / Jellyroll</option>
+          <option value="gathered">S1 정렬·집속 / 용접 전</option>
+          <option value="preweld">S2 가용접 후</option>
+          <option value="welded">S3 메인 용접 후</option>
+          <option value="assembly">S4 테이프 부착 후</option>
+          <option value="packaged">S5 패키징 후</option>
+          <option value="finished">S6 완성 셀 · 접힘 예시</option>
+        </select>
+        <div class="model-caption">
+          낱장 적층형 · 양끝 리드<br />양극/음극 독립 설계 · mm
+        </div>
+        <div class="section-title">
+          부품과 연결 <button id="show-all">모두 보기</button>
+        </div>
+        <div id="parts"></div>
+        <div class="divider"></div>
+        <div class="eyebrow">INSPECT / 구조 확인</div>
+        <div class="quick">
+          <button id="joint-view">양극 집속부 집중</button
+          ><button id="tape-toggle">테이프 숨기기</button
+          ><button id="clear-focus">전체 셀 보기</button>
+        </div>
+        <p class="small muted">
+          양극 −X / 음극 +X는 예시 배정입니다. 사진의 극성을 추정한 결과가
+          아닙니다.
+        </p>
+        <details>
+          <summary>확인사항과 한계</summary>
+          <p class="small">
+            중앙 집속, 유한 접합 구간. V자 굽힘·블레이드·특수 가이드 미적용.<br />리드
+            접촉 면·리드 필름·감쌈·접힘은 변경 가능한 가정입니다.<br />실링
+            압축·국부 리드 통과부 성형 및 실제 포일 변형 해석은 미지원.
+          </p>
+        </details>
+      </aside>
+      <section class="workspace">
+        <div class="workspace-title">
+          <div>
+            <div class="eyebrow">DATUM-DRIVEN MODEL</div>
+            <h1 id="scene-title">탭 용접 · 테이프 부착 후</h1>
+          </div>
+          <button id="fullscreen">작업영역 확대</button>
+        </div>
+        <div class="viewbar">
+          <div class="button-group">
+            <button data-view="iso">입체</button
+            ><button data-view="front">정면 XY</button
+            ><button data-view="side">측면 XZ</button
+            ><button data-view="end">끝면 YZ</button
+            ><button data-view="back">뒷면</button>
+          </div>
+          <button id="fit">맞춤</button>
+        </div>
+        <div id="viewport"></div>
+        <div id="hover-tip" hidden></div>
+        <div class="direct-tools">
+          <label
+            >선택
+            <select id="selection-mode">
+              <option value="part">부품</option>
+              <option value="edge">등록 모서리·R</option>
+              <option value="face">기준면</option>
+              <option value="point">기준점</option>
+            </select></label
+          ><button id="edit-selection">선택 치수 편집</button
+          ><button id="add-selected-dim">선택 기준 → 관리 치수</button>
+        </div>
+        <div class="view-settings">
+          <label><input id="transparent" type="checkbox" /> 외장 투명</label
+          ><label><input id="through" type="checkbox" /> 내부만 선택</label
+          ><label><input id="datums" type="checkbox" checked /> 데이텀</label
+          ><label
+            >단면
+            <select id="section">
+              <option value="none">끄기</option>
+              <option value="x">X 법선 · YZ</option>
+              <option value="y">Y 법선 · XZ</option>
+              <option value="z">Z 법선 · XY</option>
+            </select></label
+          ><label
+            >위치
+            <input
+              id="section-position"
+              type="number"
+              value="0"
+              step="0.1"
+              aria-label="단면 위치"
+            />
+            mm</label
+          >
+        </div>
+        <div class="viewport-footer">
+          <span id="renderer-mode"></span
+          ><span>드래그 회전 · 휠 확대 · 오른쪽 드래그 이동</span>
+        </div>
+        <div id="selection-info">
+          부품을 선택하면 연결 기준과 치수를 편집할 수 있습니다.
+        </div>
+      </section>
+      <aside class="inspector">
+        <div class="tabs">
+          <button id="design-tab" class="active">설계 치수</button
+          ><button id="measure-tab">
+            치수 · 스펙 <span id="measure-count">0</span>
+          </button>
+        </div>
+        <section id="design-pane">
+          <label
+            >편집 대상<select id="editor">
+              <option value="positive">양극 · −X 예시</option>
+              <option value="negative">음극 · +X 예시</option>
+              <option value="stack">적층 조립체</option>
+              <option value="pouch">파우치 · 실링 · 접힘</option>
+            </select></label
+          >
+          <div class="editor-notice">
+            독립 입력 → CAD 재생성<br /><span
+              >실측값은 형상을 변경하지 않습니다.</span
+            >
+          </div>
+          <label class="auto-mode"
+            ><input id="auto-rebuild" type="checkbox" checked /> 자동 CAD 갱신 ·
+            입력 후 0.55초</label
+          >
+          <div id="engine-state" class="small">계산 서버 확인 중…</div>
+          <div id="field-guide" aria-live="polite">
+            입력 항목에 포커스하면 기준과 변경 방향을 표시합니다.
+          </div>
+          <button id="field-to-dim">이 입력 → 관리 치수</button>
+          <div id="fields"></div>
+          <div class="sticky-apply">
+            <button id="apply" class="primary">치수 적용 · CAD 재생성</button
+            ><button id="discard">입력 되돌리기</button
+            ><small id="dirty-state">현재 형상과 입력이 일치합니다.</small>
+          </div>
+          <details>
+            <summary>검사 좌표계</summary>
+            <p class="small muted">
+              모델 A: Z=0, B: Y=0, C: X=0. 아래 값은 측정 방향만 바꿉니다.
+            </p>
+            <div id="datum-fields"></div>
+          </details>
+          <label>프로젝트 설명<textarea id="notes" rows="4"></textarea></label>
+        </section>
+        <section id="measure-pane" hidden>
+          <div class="measure-intro">
+            CAD 기준을 선택해 치수를 만듭니다.<br />표시 메시 해상도는 계산값에
+            영향을 주지 않습니다.
+          </div>
+          <label>치수 이름<input id="dim-name" value="새 관리 치수" /></label>
+          <div class="two-col">
+            <label>그룹<input id="dim-group" value="기본" /></label
+            ><label
+              >종류<select id="mode">
+                <option value="distance">두 점 직선</option>
+                <option value="x">X 방향 투영</option>
+                <option value="y">Y 방향 투영</option>
+                <option value="z">Z 방향 투영</option>
+                <option value="thickness">Z 대응 면 두께</option>
+                <option value="radius">반경 R</option>
+              </select></label
+            >
+          </div>
+          <label
+            >스냅 종류<select id="snap-kind">
+              <option value="point">기준점</option>
+              <option value="edge">모서리 중점</option>
+              <option value="face">기준 면 중심</option>
+              <option value="radius">원호 반경</option>
+              <option value="surface">평면 자유점 (리드/조립체 상하면)</option>
+            </select></label
+          ><label>새 표면점 이름<input id="anchor-name" value="표면점" /></label
+          ><button id="pick" class="outline">모델에서 기준 선택 시작</button>
+          <p id="pick-hint" class="small muted">
+            기준 마커 또는 부품을 누르면 가장 가까운 등록 기준에 스냅합니다.
+          </p>
+          <label>시작 기준 A<select id="ref-a"></select></label
+          ><label>끝 기준 B<select id="ref-b"></select></label
+          ><button id="add-dim" class="primary">관리 치수 추가</button
+          ><button id="examples">이 공정의 예시 치수 추가</button>
+          <div class="divider"></div>
+          <div class="two-col">
+            <button id="dims-on">전체 표시</button
+            ><button id="dims-off">전체 숨김</button>
+          </div>
+          <label
+            >검색<input
+              id="filter"
+              placeholder="이름 / 그룹 / 부품 ID" /></label
+          ><label
+            >그룹
+            <select id="group-filter">
+              <option value="">모든 그룹</option>
+            </select></label
+          ><button id="group-toggle">선택 그룹 표시 전환</button
+          ><label
+            ><input id="other-stage-dims" type="checkbox" /> 다른 공정의 관리
+            치수도 보기</label
+          >
+          <div id="measurements"></div>
+          <button id="more" hidden>다음 50개 보기</button>
+        </section>
+      </aside>
+    </main>
+    <footer id="diagnostics">
+      <div class="status-line">
+        <span class="status-dot"></span
+        ><b id="status" role="status">로컬 CAD 엔진 연결 중…</b
+        ><span id="revision">REV 0</span>
+      </div>
+      <div id="messages"></div>
+    </footer>
+    <dialog id="direct-editor">
+      <form id="direct-form">
+        <h2 id="direct-title">치수 편집</h2>
+        <p id="direct-kind"></p>
+        <label>연결된 입력<select id="direct-field"></select></label>
+        <div id="direct-controls">
+          <label>값<input id="direct-value" type="number" step="0.1" /></label>
+        </div>
+        <p id="direct-basis"></p>
+        <p id="direct-error" role="alert"></p>
+        <div class="dialog-actions">
+          <button type="button" id="direct-cancel">취소 · Esc</button
+          ><button type="submit" id="direct-apply">적용 · Enter</button>
+        </div>
+        <small>바깥 클릭은 취소. 계산값은 원인 입력을 선택해 편집합니다.</small>
+      </form>
+    </dialog>
+    <dialog id="migration">
+      <h2>기존 포일 폭 변환</h2>
+      <p>
+        뿌리와 집속부의 폭을 하나로 통일합니다. 각 극의 선택을 확인하세요. 원본
+        값은 JSON migration에 보존합니다.
+      </p>
+      <div id="migration-fields"></div>
+      <p id="migration-error"></p>
+      <div class="dialog-actions">
+        <button id="migration-cancel">취소 · 원본 유지</button
+        ><button id="migration-apply">선택한 폭으로 변환·열기</button>
+      </div>
+    </dialog>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

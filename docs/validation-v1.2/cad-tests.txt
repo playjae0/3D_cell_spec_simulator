@@ -1,0 +1,27 @@
+test_7_states_parts_and_region_ids (process_geometry.ProcessGeometry.test_7_states_parts_and_region_ids) ... ok
+test_absent_stage_reference_and_deleted_reference_are_distinct (process_geometry.ProcessGeometry.test_absent_stage_reference_and_deleted_reference_are_distinct) ... ok
+test_constant_foil_width_in_actual_cad_sections_with_y_eccentricity (process_geometry.ProcessGeometry.test_constant_foil_width_in_actual_cad_sections_with_y_eccentricity) ... ok
+test_downstream_edits_do_not_change_upstream_geometry (process_geometry.ProcessGeometry.test_downstream_edits_do_not_change_upstream_geometry) ... ok
+test_invalid_future_geometry_does_not_block_s0 (process_geometry.ProcessGeometry.test_invalid_future_geometry_does_not_block_s0) ... ok
+test_invalid_preweld_geometry_rejected_without_clamping (process_geometry.ProcessGeometry.test_invalid_preweld_geometry_rejected_without_clamping) ... ok
+test_positive_changes_leave_all_negative_parts_and_features (process_geometry.ProcessGeometry.test_positive_changes_leave_all_negative_parts_and_features) ... ok
+test_preweld_is_management_face_and_optional_lead_is_explicit (process_geometry.ProcessGeometry.test_preweld_is_management_face_and_optional_lead_is_explicit) ... ok
+test_region_display_uses_same_global_xy_as_reference_on_both_poles (process_geometry.ProcessGeometry.test_region_display_uses_same_global_xy_as_reference_on_both_poles) ... ok
+test_upstream_stock_length_feeds_later_tip_without_changing_root (process_geometry.ProcessGeometry.test_upstream_stock_length_feeds_later_tip_without_changing_root) ... ok
+test_A_asymmetric_central_gathering (proof_geometry.ProofTests.test_A_asymmetric_central_gathering) ... ok
+test_B_tape_top_and_wrapped_contact (proof_geometry.ProofTests.test_B_tape_top_and_wrapped_contact) ... ok
+test_C_independent_pocket_radii_and_step_roundtrip (proof_geometry.ProofTests.test_C_independent_pocket_radii_and_step_roundtrip) ... ok
+test_deleted_tape_feature_is_absent (test_geometry.Regression.test_deleted_tape_feature_is_absent) ... ok
+test_full_step_roundtrip_each_state (test_geometry.Regression.test_full_step_roundtrip_each_state) ... ok
+test_invalid_conditions_rejected_without_mutation (test_geometry.Regression.test_invalid_conditions_rejected_without_mutation) ... ok
+test_lead_contact_side_and_tape_host_face_are_explicit (test_geometry.Regression.test_lead_contact_side_and_tape_host_face_are_explicit) ... ok
+test_mesh_resolution_does_not_change_measurements (test_geometry.Regression.test_mesh_resolution_does_not_change_measurements) ... ok
+test_named_planar_face_centers_are_on_cad_faces (test_geometry.Regression.test_named_planar_face_centers_are_on_cad_faces) ... ok
+test_pouch_film_and_wrapped_tape_refs_are_on_surfaces (test_geometry.Regression.test_pouch_film_and_wrapped_tape_refs_are_on_surfaces) ... ok
+test_separate_seal_and_trim_dimensions (test_geometry.Regression.test_separate_seal_and_trim_dimensions) ... ok
+test_three_states_keep_internal_part_identity (test_geometry.Regression.test_three_states_keep_internal_part_identity) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 71.079s
+
+OK

@@ -1,0 +1,18 @@
+
+> cell-spec-simulator@1.2.0 build
+> vite build
+
+vite v7.2.2 building client environment for production...
+transforming...
+✓ 19 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                  12.01 kB │ gzip:   4.04 kB
+dist/assets/index-xcBqsXIH.css   11.27 kB │ gzip:   3.38 kB
+dist/assets/index-DWlXdb3w.js   570.77 kB │ gzip: 151.26 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 1.93s

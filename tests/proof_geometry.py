@@ -21,7 +21,7 @@ class ProofTests(unittest.TestCase):
     def test_B_tape_top_and_wrapped_contact(self):
         for path in ['top','top_edges']:
             for dz,width in [(0,32),(.7,36)]:
-                p=copy.deepcopy(P);pole=p['positive'];pole['tab']['width']=width;pole['tab']['gatherZ']=dz;pole['tab']['gatherDistance']+=3;pole['tapes'][0]['path']=path
+                p=copy.deepcopy(P);pole=p['positive'];pole['tab']['foilWidth']=width;pole['tab']['gatherZ']=dz;pole['tab']['gatherDistance']+=3;pole['tapes'][0]['path']=path
                 parts,_,_=build_pole('positive',pole,p['stack']);tab=parts[0]['shape'];tape=next(x['shape'] for x in parts if x['id']=='positive.tape.yellow')
                 self.assertTrue(tape.isValid());self.assertLess(tab.distance(tape),1e-7)
                 self.assertLess(tab.intersect(tape).Volume(),1e-6)

@@ -9,12 +9,12 @@ import matplotlib.pyplot as plt
 from matplotlib.collections import PolyCollection
 from model import build_pole,tape_shape
 from proof_pocket import pocket
-P=json.loads((ROOT/'examples/demo.json').read_text())['product'];OUT=ROOT/'docs/validation';OUT.mkdir(exist_ok=True)
+P=json.loads((ROOT/'examples/demo.json').read_text())['product'];OUT=ROOT/'docs/validation-v1.2';OUT.mkdir(exist_ok=True)
 
 def project(ax,parts,axes):
     triangles=[];colors=[];depthAxis=next(i for i in [0,1,2] if i not in axes); ordered=[]
     for part in parts:
-        v,f=part['shape'].tessellate(.06,.2);v=np.array([x.toTuple() for x in v]);faces=v[np.array(f)]
+        v,f=part.get('displayShape',part['shape']).tessellate(.06,.2);v=np.array([x.toTuple() for x in v]);faces=v[np.array(f)]
         for face in faces: ordered.append((face[:,depthAxis].mean(),face[:,axes],part['color']))
     for _,tri,color in sorted(ordered,key=lambda x:x[0]): triangles.append(tri);colors.append(color)
     ax.add_collection(PolyCollection(triangles,facecolors=colors,edgecolors='none'));ax.autoscale();ax.set_aspect('equal');ax.grid(alpha=.15)
@@ -41,7 +41,7 @@ fig.suptitle('USER CORRECTION: central gathering, no V-fold, no blade / special 
 
 fig,axs=plt.subplots(2,1,figsize=(12,6),layout='constrained')
 for ax,dz,w in zip(axs,[0,.7],[32,36]):
-    p=copy.deepcopy(P['positive']);p['tab']['gatherZ']=dz;p['tab']['width']=w;p['tapes'][0]['path']='top_edges';ps,_,_=build_pole('positive',p,P['stack'])
+    p=copy.deepcopy(P['positive']);p['tab']['gatherZ']=dz;p['tab']['foilWidth']=w;p['tapes'][0]['path']='top_edges';ps,_,_=build_pole('positive',p,P['stack'])
     section(ax,[x for x in ps if 'Film' not in x['id']],0,-135,(1,2));ax.set_ylim(-1.3,2.1);ax.set_title(f'B / Wrapped path option · gather Z={dz} · tab width={w} mm · tape touches top + side arcs');ax.set_xlabel('Y / mm');ax.set_ylabel('Z / mm')
 fig.savefig(OUT/'tape-contact-before-after.png',dpi=150);plt.close(fig)
 

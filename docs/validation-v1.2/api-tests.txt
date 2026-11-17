@@ -1,0 +1,8 @@
+stacked parts 3 geometryId e6d07e7c2d0e
+gathered parts 3 geometryId 26f41ddff5f2
+preweld parts 5 geometryId 73b86049e37f
+welded parts 9 geometryId d33fa889b690
+assembly parts 13 geometryId 0a5d353196b8
+packaged parts 23 geometryId c4eebd47a23a
+finished parts 21 geometryId c3e26472bf7c
+Live shape change, independent pole, 7 stages, request token/revision, invalid input: PASS

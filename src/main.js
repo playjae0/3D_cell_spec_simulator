@@ -1,86 +1,1459 @@
-import './style.css';
-import {initial,clone,stages,parseProject,validateProject,measurement,demoMeasurements,History} from './data/project.js';
-import {dictionaries} from './data/fields.js';
-import {evaluate,inspection} from './annotations/measure.js';
-import {rebuild,exportStep} from './geometry/client.js';
-import {Viewer} from './viewer/viewer.js';
-import {withAnchors} from './annotations/anchors.js';
-
-const $=id=>document.getElementById(id),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let state=initial(),draft=clone(state.product),model=null,revision=0,appliedRevision=0,busy=false,dirty=false,selected=null,pickRefs=[],picking=false,pageSize=50;
-const history=new History();state.measurements=demoMeasurements('assembly');
-function picked(id){pickRefs.push(id);$('ref-a').value=pickRefs[0];if(pickRefs[1])$('ref-b').value=pickRefs[1];$('pick-hint').textContent=pickRefs.length===1?'A: '+id+' · 끝 기준을 선택하세요.':'A/B 선택 완료 · 종류를 확인하고 관리 치수 추가';if(pickRefs.length===2||$('mode').value==='radius'){picking=false;viewer.setPicking(false);$('pick').textContent='모델에서 기준 선택 시작';}}
-const viewer=new Viewer($('viewport'),{onSelect:id=>{selected=id;renderParts();$('editor').value=id.startsWith('pouch.')?'pouch':id==='stack'?'stack':id.split('.')[0];renderFields();$('selection-info').textContent=id+' · '+(model.parts.find(p=>p.id===id)?.name||'');},onPick:picked,onAnchor:a=>{if(!a){status('이 면의 자유점은 미지원','error','리드 상·하면 또는 조립체 상·하면을 선택하세요. 곡면/모서리는 등록 기준 스냅을 사용합니다.');return;}a.id='anchor.'+crypto.randomUUID();a.name=$('anchor-name').value||'표면점';state.anchors??=[];state.anchors.push(a);model=withAnchors(model,[a]);viewer.data=model;renderRefs();picked(a.id);viewer.draw();},onCamera:c=>{state.view.camera=c;}});
-$('renderer-mode').textContent=viewer.mode;
-function status(message,type='',details){$('diagnostics').className=type;$('status').textContent=message;$('revision').textContent='REV '+appliedRevision;if(details!==undefined)$('messages').textContent=details;}
-function setDirty(value){dirty=value;$('dirty-state').textContent=value?'미적용 입력이 있습니다. CAD 재생성으로 확인하세요.':'현재 형상과 입력이 일치합니다.';for(const id of ['save','step'])$(id).disabled=value||busy;}
-async function applyProject(next,{record=true,fit=false}={}){
-  const request=++revision;busy=true;$('apply').disabled=true;setDirty(dirty);status('CAD 형상 생성 중…','busy','현재 화면은 마지막 정상 형상입니다.');
-  try{validateProject(next);const result=await rebuild(next,request);if(result.revision!==revision)return false;if(record)history.push(state);state=next;model=withAnchors(result,state.anchors);draft=clone(state.product);appliedRevision=request;setDirty(false);viewer.setModel(model,state);syncUI();if(fit)viewer.fit();status('CAD 형상과 치수 기준 갱신 완료','',model.diagnostics.map(x=>x.message).join('\n'));return true;}
-  catch(e){if(request!==revision)return false;status('입력 미적용 · 마지막 정상 형상 유지','error',e.message);$('dirty-state').textContent='생성 실패. 입력값을 수정하세요. 자동 보정하지 않았습니다.';return false;}
-  finally{if(request===revision){busy=false;$('apply').disabled=false;setDirty(dirty);}}
+import "./style.css";
+import {
+  initial,
+  clone,
+  stages,
+  parseProject,
+  validateProject,
+  measurement,
+  demoMeasurements,
+  History,
+} from "./data/project.js";
+import {
+  fieldsFor,
+  bindingFor,
+  readField,
+  writeField,
+  references,
+  forecast,
+  driversForFeature,
+  stageOrder,
+} from "./data/bindings.js";
+import { inspectLegacy, migrateV2 } from "./data/migration.js";
+import { evaluate, inspection } from "./annotations/measure.js";
+import { rebuild, exportStep, engineHealth } from "./geometry/client.js";
+import { RebuildQueue } from "./geometry/queue.js";
+import { Viewer } from "./viewer/viewer.js";
+import { withAnchors } from "./annotations/anchors.js";
+const $ = (id) => document.getElementById(id),
+  esc = (x) =>
+    String(x ?? "").replace(
+      /[&<>"']/g,
+      (c) =>
+        ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;",
+        })[c],
+    );
+let state = initial(),
+  draft = clone(state.product),
+  targetStage = state.stage,
+  model = null,
+  dirty = false,
+  busy = false,
+  live = false,
+  selected = null,
+  selectedFeature = null,
+  activePath = null,
+  pickRefs = [],
+  picking = false,
+  pageSize = 50,
+  appliedRevision = 0,
+  editCounter = 0,
+  editGroup = null,
+  lastHistoryGroup = null,
+  replacement = null;
+state.measurements = demoMeasurements(state.stage);
+const history = new History();
+const viewer = new Viewer($("viewport"), {
+  onSelect: selectPart,
+  onPick: picked,
+  onAnchor: addAnchor,
+  onCamera: (c) => {
+    state.view.camera = c;
+  },
+  onHover: (hit) => {
+    const el = $("hover-tip");
+    el.hidden = !hit;
+    if (hit) {
+      el.textContent =
+        hit.name.replaceAll(" · ", " > ") +
+        (hit.featureName ? " > " + hit.featureName : "") +
+        " · " +
+        ({
+          part: "부품",
+          edge: "등록 모서리",
+          face: "기준면",
+          point: "기준점",
+          radius: "원호 R",
+        }[hit.kind] || hit.kind);
+    }
+  },
+  onEdit: openDirect,
+});
+$("renderer-mode").textContent = viewer.mode;
+function status(message, type = "", details) {
+  $("diagnostics").className = type;
+  $("status").textContent = message;
+  $("revision").textContent = "REV " + appliedRevision;
+  if (details !== undefined) $("messages").textContent = details;
 }
-function syncUI(){
-  $('stage').value=state.stage;$('scene-title').textContent=stages[state.stage];$('transparent').checked=state.view.transparent;$('datums').checked=state.view.datums;$('section').value=state.view.section.axis;$('section-position').value=state.view.section.position;$('notes').value=state.notes;renderFields();renderParts();renderRefs();renderMeasurements();renderDatums();
+function setDirty(value) {
+  dirty = value;
+  const pending = dirty || busy || queue.pending;
+  $("dirty-state").textContent = busy
+    ? "CAD 계산 중 · 화면은 마지막 확정 형상"
+    : dirty
+      ? "예상 변경 · 아직 CAD에 확정되지 않았습니다."
+      : "입력과 확정 CAD 형상이 일치합니다.";
+  for (const id of ["save", "step"]) $(id).disabled = !live || !!pending;
+  $("apply").disabled = !live;
+  $("undo").disabled = !history.undoList.length && !dirty;
+  $("redo").disabled = !history.redoList.length;
 }
-function renderParts(){if(!model)return;$('parts').replaceChildren();for(const group of ['stack','positive','negative','pouch']){const ps=model.parts.filter(p=>p.id.split('.')[0]===group);if(!ps.length)continue;const head=document.createElement('div');head.className='part-group';head.textContent={stack:'ASSEMBLY / 적층체',positive:'POSITIVE / 양극 독립 변수',negative:'NEGATIVE / 음극 독립 변수',pouch:'POUCH / 외장과 경계'}[group];$('parts').append(head);for(const p of ps){const row=document.createElement('div');row.className='part-row'+(p.id===selected?' selected':'');const check=document.createElement('input');check.type='checkbox';check.checked=!state.view.hidden.includes(p.id);check.setAttribute('aria-label',p.name+' 표시');check.onchange=()=>{state.view.hidden=state.view.hidden.filter(x=>x!==p.id);if(!check.checked)state.view.hidden.push(p.id);refreshView();};const swatch=document.createElement('span');swatch.className='swatch';swatch.style.background=p.color;const button=document.createElement('button');button.textContent=p.name.replace(/^(양극|음극) · /,'');button.onclick=()=>{selected=p.id;viewer.select(p.id);renderParts();$('editor').value=group;renderFields();$('selection-info').textContent=p.id+' · '+p.name+' · '+[p.meta.definition,p.meta.assumption,p.meta.display].filter(Boolean).join(' · ');};row.append(check,swatch,button);$('parts').append(row);}}}
-function refreshView(){viewer.setModel(model,state);renderParts();renderMeasurements();}
-const at=(obj,path)=>path.split('.').reduce((x,k)=>x[k],obj);
-function renderFields(){
-  const group=$('editor').value,root=draft[group];$('fields').replaceChildren();
-  const section=(title,fields,value,path,open=false)=>{const details=document.createElement('details');details.open=open;const summary=document.createElement('summary');summary.textContent=title;details.append(summary);
-    for(const f of fields){const label=document.createElement('label');label.className='field';const text=document.createElement('span');text.textContent=f.label;const input=document.createElement(f.options?'select':'input');input.setAttribute('aria-label',group+' '+f.label);input.dataset.path=path+'.'+f.key;
-      if(f.options)for(const [v,l] of Object.entries(f.options)){const option=new Option(l,v);input.append(option);}
-      else {input.type=f.type||'number';input.step=f.step||'.1';}
-      if(f.type==='checkbox')input.checked=value[f.key];else input.value=value[f.key];
-      const disabled=path.includes('.tapes.')&&((value.path==='top_edges'&&['width','offsetY'].includes(f.key))||(value.path==='top'&&f.key==='edgeDrop'));
-      input.disabled=disabled;
-      const update=()=>{value[f.key]=f.type==='checkbox'?input.checked:f.options?input.value:input.value.trim()===''?NaN:Number(input.value);setDirty(true);};
-      input.oninput=update;input.onchange=()=>{update();if(f.key==='path')renderFields();};
-      input.onkeydown=e=>{if(e.key==='Enter'){input.blur();$('apply').click();}};
-      const basis=document.createElement('small');basis.textContent=f.basis+(disabled?' · 이 경로에서는 입력 미사용 (비활성)':'');label.append(text,input,basis);details.append(label);
-    }$('fields').append(details);return details;};
-  if(group==='stack'||group==='pouch')section(group==='stack'?'조립체 외곽 · A/B/C':'내부 포켓 → 실링 → 절단/접힘',dictionaries[group],root,group,true);
-  else{
-    const meta=document.createElement('label');meta.textContent='재질 / 설명 (형상과 별도)';const inp=document.createElement('input');inp.value=root.material;inp.onchange=()=>{root.material=inp.value;setDirty(true);};meta.append(inp);$('fields').append(meta);
-    for(const [key,title] of [['tab','포일 뿌리 → 중앙 집속'],['lead','리드 · 접촉 관계'],['joints','접합 영역 · 실제 겹침 내부'],['tapes','노란 테이프 · 부착 경로'],['leadFilm','리드 실링 필름 (가정)']]){
-      if(Array.isArray(root[key])){root[key].forEach((item,i)=>{const d=section(title+' / '+item.id,dictionaries[key],item,group+'.'+key+'.'+i,selected?.includes(key==='joints'?'.joint.':'.tape.'));const remove=document.createElement('button');remove.textContent='이 '+(key==='tapes'?'테이프':'접합 영역')+' 삭제';remove.onclick=()=>{root[key].splice(i,1);setDirty(true);renderFields();};d.append(remove);});const add=document.createElement('button');add.textContent=(key==='tapes'?'테이프':'접합 영역')+' 추가';add.onclick=()=>{const item=clone(initial().product[group][key][0]);item.id=(key==='tapes'?'tape-':'joint-')+Date.now();root[key].push(item);setDirty(true);renderFields();};$('fields').append(add);}
-      else section(title,dictionaries[key],root[key],group+'.'+key,key==='tab');
+function startEdit(path) {
+  if (!editGroup || editGroup.path !== path)
+    editGroup = { id: "edit-" + ++editCounter, path, before: clone(state) };
+  return editGroup;
+}
+function nextProject() {
+  return {
+    ...clone(replacement || state),
+    product: clone(draft),
+    stage: targetStage,
+  };
+}
+const queue = new RebuildQueue({
+  compute: async (p, revision) => {
+    validateProject(p);
+    return rebuild(p, revision);
+  },
+  onStart: () => {
+    busy = true;
+    setDirty(true);
+    status(
+      "실시간 CAD 계산 중…",
+      "busy",
+      "화면은 마지막 확정 형상입니다. 주황 치수는 예상 변경입니다.",
+    );
+  },
+  onAccept: (result, job) => {
+    const meta = job.meta,
+      changedStage = state.stage !== job.payload.stage;
+    if (meta.record !== false && meta.group !== lastHistoryGroup) {
+      history.push(meta.before || state);
+      lastHistoryGroup = meta.group;
+    }
+    if (meta.replace) state = clone(job.payload);
+    else
+      state = {
+        ...state,
+        product: clone(job.payload.product),
+        stage: job.payload.stage,
+      };
+    replacement = null;
+    targetStage = state.stage;
+    draft = clone(state.product);
+    model = withAnchors(result, state.anchors);
+    appliedRevision = job.revision;
+    busy = false;
+    setDirty(false);
+    viewer.setModel(model, state);
+    if (meta.replace && state.view.camera) viewer.restore(state.view.camera);
+    if (meta.fit) viewer.fit();
+    if (changedStage || meta.replace) renderFields();
+    else syncFieldValues();
+    syncUI();
+    renderCalculated();
+    clearErrors();
+    updateHighlight();
+    status(
+      "CAD 확정 · " + stages[state.stage],
+      "",
+      model.diagnostics.map((x) => x.message).join("\n"),
+    );
+  },
+  onError: (error, job) => {
+    busy = false;
+    setDirty(true);
+    showFieldError(job.meta.path, error.message);
+    status("입력 미적용 · 마지막 확정 형상 유지", "error", error.message);
+    updateHighlight();
+  },
+  onIdle: () => {
+    busy = false;
+    setDirty(dirty);
+  },
+});
+function request(next, meta = {}, immediate = true) {
+  if (!live) {
+    status("읽기 전용 · 실시간 CAD 서버 연결 필요", "error");
+    return;
+  }
+  if (meta.replace) replacement = clone(next);
+  draft = clone(next.product);
+  targetStage = next.stage;
+  if (meta.replace) renderFields();
+  setDirty(true);
+  const group = meta.group || "action-" + ++editCounter;
+  queue.schedule(
+    next,
+    {
+      before: clone(state),
+      group,
+      automatic: immediate,
+      ...meta,
+      replace: !!replacement,
+    },
+    immediate,
+  );
+  if (immediate) queue.flush();
+}
+function changeField(path, value) {
+  startEdit(path);
+  writeField(draft, path, value);
+  activePath = path;
+  const automatic = $("auto-rebuild").checked;
+  setDirty(true);
+  clearErrors(path);
+  updateHighlight();
+  queue.schedule(
+    nextProject(),
+    {
+      ...editGroup,
+      group: editGroup.id,
+      path,
+      automatic,
+      replace: !!replacement,
+    },
+    automatic,
+  );
+}
+function syncUI() {
+  $("stage").value = state.stage;
+  $("scene-title").textContent = stages[state.stage];
+  $("transparent").checked = state.view.transparent;
+  $("datums").checked = state.view.datums;
+  $("section").value = state.view.section.axis;
+  $("section-position").value = state.view.section.position;
+  $("notes").value = state.notes;
+  $("auto-rebuild").checked = state.view.autoRebuild !== false;
+  renderParts();
+  renderRefs();
+  renderMeasurements();
+  renderDatums();
+}
+function clearErrors(path) {
+  for (const el of document.querySelectorAll(".field-error"))
+    if (!path || el.dataset.path === path) el.textContent = "";
+}
+function showFieldError(path, message) {
+  const error = [...document.querySelectorAll(".field-error")].find(
+    (x) => x.dataset.path === path,
+  );
+  if (error) error.textContent = message;
+  else $("field-guide").textContent = message;
+}
+function syncFieldValues() {
+  for (const input of document.querySelectorAll("[data-field]")) {
+    if (document.activeElement === input) continue;
+    const v = readField(draft, input.dataset.field);
+    if (input.type === "checkbox") input.checked = v;
+    else input.value = v;
+  }
+}
+function renderParts() {
+  if (!model) return;
+  $("parts").replaceChildren();
+  for (const group of ["stack", "positive", "negative", "pouch"]) {
+    const ps = model.parts.filter((p) => p.id.split(".")[0] === group);
+    if (!ps.length) continue;
+    const head = document.createElement("div");
+    head.className = "part-group";
+    head.textContent = {
+      stack: "ASSEMBLY / 적층체",
+      positive: "POSITIVE / 양극 독립 변수",
+      negative: "NEGATIVE / 음극 독립 변수",
+      pouch: "POUCH / 외장과 경계",
+    }[group];
+    $("parts").append(head);
+    for (const p of ps) {
+      const row = document.createElement("div");
+      row.className = "part-row" + (p.id === selected ? " selected" : "");
+      const check = document.createElement("input");
+      check.type = "checkbox";
+      check.checked = !state.view.hidden.includes(p.id);
+      check.setAttribute("aria-label", p.name + " 표시");
+      check.onchange = () => {
+        state.view.hidden = state.view.hidden.filter((x) => x !== p.id);
+        if (!check.checked) state.view.hidden.push(p.id);
+        refreshView();
+      };
+      const swatch = document.createElement("span");
+      swatch.className = "swatch";
+      swatch.style.background = p.color;
+      const button = document.createElement("button");
+      button.textContent = p.name.replace(/^(양극|음극) · /, "");
+      button.onclick = () => selectPart(p.id);
+      row.append(check, swatch, button);
+      $("parts").append(row);
     }
   }
 }
-function renderDatums(){$('datum-fields').replaceChildren();for(const [key,label] of [['0','원점 X'],['1','원점 Y'],['2','원점 Z'],['rotationZ','검사 축 회전 Z (°)']]){const l=document.createElement('label');l.textContent=label;const i=document.createElement('input');i.type='number';i.step='.1';i.value=key==='rotationZ'?state.datumSet.rotationZ:state.datumSet.origin[Number(key)];i.onchange=()=>{if(!Number.isFinite(Number(i.value)))return;if(key==='rotationZ')state.datumSet.rotationZ=Number(i.value);else state.datumSet.origin[Number(key)]=Number(i.value);renderMeasurements();};l.append(i);$('datum-fields').append(l);}}
-function renderRefs(){if(!model)return;for(const id of ['ref-a','ref-b']){const old=$(id).value;$(id).replaceChildren();for(const [key,f] of Object.entries(model.features))$(id).append(new Option(f.name+' · '+key,key));if(model.features[old])$(id).value=old;}$('ref-b').disabled=$('mode').value==='radius';}
-function renderMeasurements(){if(!model)return;viewer.state=state;viewer.draw();$('measure-count').textContent=state.measurements.length;$('measurements').replaceChildren();const query=$('filter').value.toLowerCase(),all=state.measurements.filter(m=>m.stage===state.stage&&[m.name,m.group,m.a.featureId,m.b?.featureId].join(' ').toLowerCase().includes(query));$('more').hidden=all.length<=pageSize;
-  for(const m of all.slice(0,pageSize)){const result=evaluate(m,model.features,state.datumSet),card=document.createElement('details');card.className='dim-card'+(!result.valid?' invalid':'');
-    card.innerHTML=`<summary><span>${esc(m.name)}</span><strong>${result.valid?(m.mode==='radius'?'R ':'')+result.value.toFixed(3)+' mm':'참조 오류'}</strong></summary><p class="ref-text">${esc(m.a.featureId)} → ${esc(m.b?.featureId||'')}<br>${result.valid?'계산값 · '+esc(m.mode):esc(result.error)}</p>`;
-    const addInput=(label,value,handler,type='text')=>{const l=document.createElement('label');l.textContent=label;const input=document.createElement(type==='textarea'?'textarea':'input');if(type!=='textarea')input.type=type;if(type==='number')input.step='any';if(type==='checkbox')input.checked=value;else input.value=value??'';const update=()=>handler(type==='checkbox'?input.checked:type==='number'?input.value===''?null:Number(input.value):input.value);input.oninput=update;input.onchange=update;l.append(input);card.append(l);return input;};
-    addInput('치수 표시',m.visible,v=>{m.visible=v;viewer.draw();},'checkbox');addInput('이름',m.name,v=>{m.name=v;card.querySelector('summary span').textContent=v;viewer.draw();});addInput('그룹',m.group,v=>m.group=v);
-    const pos=document.createElement('label');pos.textContent='치수선 이동 방향';const sel=document.createElement('select');for(const axis of ['x','y','z'])sel.append(new Option(axis.toUpperCase(),axis));sel.value=m.offsetAxis;sel.onchange=()=>{m.offsetAxis=sel.value;viewer.draw();};pos.append(sel);card.append(pos);
-    addInput('치수선 이격 (mm)',m.offset,v=>{if(Number.isFinite(v)){m.offset=v;viewer.draw();}},'number');
-    for(const [key,label] of [['target','목표값'],['minus','하한 공차 크기 (−)'],['plus','상한 공차 크기 (+)'],['measured','실측값 · 형상 변경 없음']])addInput(label,m.spec[key],v=>{if(v!==null&&(!Number.isFinite(v)||(['minus','plus'].includes(key)&&v<0))){status('공차 크기는 0 이상','error');return;}m.spec[key]=v;verdict.textContent=inspection(m);},'number');
-    addInput('설명 / 측정 조건',m.spec.note,v=>m.spec.note=v,'textarea');const verdict=document.createElement('p');verdict.className='small';verdict.textContent=inspection(m);card.append(verdict);
-    const actions=document.createElement('div');actions.className='card-actions';for(const [text,fn] of [['이 치수만',()=>{state.measurements.forEach(x=>x.visible=x.id===m.id);renderMeasurements();}],['그룹 토글',()=>{const next=!m.visible;state.measurements.filter(x=>x.group===m.group&&x.stage===m.stage).forEach(x=>x.visible=next);renderMeasurements();}],['재연결',()=>{m.a={featureId:$('ref-a').value};m.b={featureId:$('ref-b').value};renderMeasurements();}],['삭제',()=>{state.measurements=state.measurements.filter(x=>x.id!==m.id);renderMeasurements();}]]){const b=document.createElement('button');b.textContent=text;b.onclick=fn;actions.append(b);}card.append(actions);$('measurements').append(card);
-  }
-  const visible=state.measurements.filter(m=>m.stage===state.stage&&m.visible).length;if(visible>200)status('표시 치수 '+visible+'개 · 화면에는 앞 200개 표시','', '모든 항목은 저장됩니다. 그룹/검색으로 표시를 줄이세요.');
+function selectPart(id, feature) {
+  selected = id;
+  selectedFeature = feature || null;
+  viewer.select(id);
+  viewer.selectedFeature = selectedFeature;
+  renderParts();
+  $("editor").value = id.startsWith("pouch.")
+    ? "pouch"
+    : id === "stack"
+      ? "stack"
+      : id.split(".")[0];
+  tab("design");
+  renderFields();
+  const candidates = driversForFeature(
+    feature || id,
+    state.product,
+    state.stage,
+  ).filter((path) => bindingFor(draft, targetStage, path)?.available);
+  const path = candidates[0];
+  if (path) focusField(path, false);
+  const p = model.parts.find((x) => x.id === id);
+  $("selection-info").textContent =
+    (p?.name || id) +
+    (feature ? " > " + (model.features[feature]?.name || feature) : "") +
+    " · " +
+    [p?.meta.definition, p?.meta.assumption, p?.meta.display]
+      .filter(Boolean)
+      .join(" · ");
 }
-function tab(which){$('design-pane').hidden=which!=='design';$('measure-pane').hidden=which!=='measure';$('design-tab').classList.toggle('active',which==='design');$('measure-tab').classList.toggle('active',which==='measure');}
-$('design-tab').onclick=()=>tab('design');$('measure-tab').onclick=()=>tab('measure');$('editor').onchange=renderFields;
-function collectInputs(){for(const input of document.querySelectorAll('[data-path]')){if(input.disabled)continue;const segments=input.dataset.path.split('.'),key=segments.pop(),obj=segments.reduce((o,k)=>o[k],draft);obj[key]=input.type==='checkbox'?input.checked:input.type==='number'?(input.value.trim()===''?NaN:Number(input.value)):input.value;}}
-$('apply').onclick=()=>{collectInputs();setDirty(true);const next=clone(state);next.product=clone(draft);applyProject(next);};$('discard').onclick=()=>{draft=clone(state.product);setDirty(false);renderFields();status('미적용 입력을 마지막 정상값으로 되돌렸습니다.');};
-$('stage').onchange=async()=>{const next=clone(state);next.stage=$('stage').value;next.product=clone(draft);await applyProject(next);};
-for(const [id,key] of [['transparent','transparent'],['datums','datums']])$(id).onchange=()=>{state.view[key]=$(id).checked;refreshView();};$('through').onchange=()=>{viewer.through=$('through').checked;viewer.draw();};
-function section(){const raw=$('section-position').value,position=Number(raw);if(raw.trim()===''||!Number.isFinite(position)){status('단면 위치는 유한한 숫자로 입력하세요.','error');return;}state.view.section={axis:$('section').value,position};refreshView();}
-$('section').onchange=section;$('section-position').onchange=section;$('section-position').oninput=section;
-document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>viewer.view(b.dataset.view));$('fit').onclick=()=>viewer.fit(selected);$('clear-focus').onclick=()=>{selected=null;viewer.fit();};$('fullscreen').onclick=()=>{document.body.classList.toggle('expanded');$('fullscreen').textContent=document.body.classList.contains('expanded')?'패널 복원':'작업영역 확대';};
-$('show-all').onclick=()=>{state.view.hidden=[];refreshView();};$('tape-toggle').onclick=()=>{const ids=model.parts.filter(p=>p.id.includes('.tape.')).map(p=>p.id),hide=!ids.every(id=>state.view.hidden.includes(id));state.view.hidden=state.view.hidden.filter(id=>!ids.includes(id));if(hide)state.view.hidden.push(...ids);$('tape-toggle').textContent=hide?'테이프 다시 표시':'테이프 숨기기';refreshView();};
-$('joint-view').onclick=async()=>{if(state.stage!=='assembly'){const next=clone(state);next.stage='assembly';await applyProject(next);}state.view.hidden=model.parts.filter(p=>!p.id.startsWith('positive.')||p.id.includes('.tape.')||p.id.endsWith('leadFilm')).map(p=>p.id);selected='positive.tab';refreshView();viewer.fit('positive.tab');viewer.view('side');$('selection-info').textContent='중심 집속 구조 · 테이프 숨김 · 리드 접촉면은 예시 설정';};
-$('mode').onchange=()=>{renderRefs();if($('mode').value==='radius')$('snap-kind').value='radius';};$('snap-kind').onchange=()=>viewer.setPicking(picking,$('snap-kind').value);$('pick').onclick=()=>{picking=!picking;pickRefs=[];viewer.setPicking(picking,$('snap-kind').value);$('pick').textContent=picking?'기준 선택 취소':'모델에서 기준 선택 시작';$('pick-hint').textContent=picking?'주황 마커: '+$('snap-kind').selectedOptions[0].text+' · 시작 기준을 선택하세요.':'선택 취소';};
-$('add-dim').onclick=()=>{const m=measurement($('dim-name').value||'관리 치수',$('ref-a').value,$('ref-b').value,$('mode').value,state.stage,{group:$('dim-group').value||'기본'});const value=evaluate(m,model.features,state.datumSet);if(!value.valid){status(value.error,'error');return;}state.measurements.push(m);renderMeasurements();status('치수 추가 · '+value.value.toFixed(3)+' mm');};
-$('examples').onclick=()=>{state.measurements.push(...demoMeasurements(state.stage));renderMeasurements();};$('dims-on').onclick=()=>{state.measurements.forEach(m=>m.visible=true);renderMeasurements();};$('dims-off').onclick=()=>{state.measurements.forEach(m=>m.visible=false);renderMeasurements();};$('filter').oninput=()=>{pageSize=50;renderMeasurements();};$('more').onclick=()=>{pageSize+=50;renderMeasurements();};$('notes').oninput=()=>state.notes=$('notes').value;
-function download(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);}
-$('save').onclick=()=>{try{state.view.camera=viewer.getCamera();validateProject(state);download(new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),'pouch-cell-v1.1-demo.json');status('JSON 저장 · 형상 설정/주석/스펙/표시/카메라 포함');}catch(e){status('저장 실패','error',e.message);}};
-$('open').onclick=()=>$('file').click();$('file').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const next=parseProject(await file.text());const camera=clone(next.view.camera);if(await applyProject(next)){viewer.restore(camera);status('JSON 불러오기 완료 · 설정과 주석 복원');}}catch(err){status('파일을 열 수 없습니다','error',err.message);}e.target.value='';};
-$('step').onclick=async()=>{if(busy||dirty)return;try{$('step').disabled=true;status('CAD 솔리드 STEP 내보내기…','busy');download(await exportStep(state),'pouch-demo-mm.step');status('STEP 저장 · mm · 주석/스펙은 JSON을 함께 보관하세요.');}catch(e){status('STEP 내보내기 실패','error',e.message);}finally{$('step').disabled=false;}};
-$('undo').onclick=async()=>{const next=history.undo(state);if(next)await applyProject(next,{record:false});};$('redo').onclick=async()=>{const next=history.redo(state);if(next)await applyProject(next,{record:false});};
-applyProject(state,{record:false,fit:true});
+function refreshView() {
+  if (!model) return;
+  viewer.setModel(model, state);
+  renderParts();
+  renderMeasurements();
+  updateHighlight();
+}
+const sectionNames = {
+  tab: "포일 · S0 뿌리 → S1 집속",
+  prewelds: "S2 가용접 관리 영역",
+  preweldLead: "S2 외부 리드 · 데모 가정",
+  lead: "S3 외부 리드 · 접촉 관계",
+  joints: "S3 메인 용접 관리 영역",
+  tapes: "S4 테이프 · 부착 경로",
+  leadFilm: "S4 리드 필름 (가정)",
+  stack: "적층체 / Jellyroll · A/B/C",
+  pouch: "포켓 → 실링 → 외곽 → 예시 접힘",
+};
+function renderFields() {
+  const side = $("editor").value,
+    all = fieldsFor(draft, targetStage).filter(
+      (b) => b.side === side && b.available,
+    ),
+    container = $("fields");
+  container.replaceChildren();
+  if (!all.length) {
+    const p = document.createElement("p");
+    p.textContent =
+      "이 부품은 현재 상태에 없습니다. 패키징 상태부터 편집할 수 있습니다.";
+    container.append(p);
+    return;
+  }
+  const groups = new Map();
+  for (const b of all) {
+    const key = b.section + (b.itemId ? "." + b.itemId : "");
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(b);
+  }
+  for (const [key, bs] of groups) {
+    const first = bs[0],
+      details = document.createElement("details");
+    details.dataset.section = key;
+    details.open =
+      side === "stack" ||
+      side === "pouch" ||
+      first.section === "tab" ||
+      first.partId === selected;
+    const summary = document.createElement("summary");
+    summary.textContent = sectionNames[first.section] || sectionNames[side];
+    if (first.itemId) summary.textContent += " / " + first.itemId;
+    details.append(summary);
+    for (const b of bs) {
+      const row = document.createElement("div");
+      row.className = "field";
+      row.dataset.path = b.path;
+      const label = document.createElement("label");
+      label.textContent = b.label;
+      const input = document.createElement(b.options ? "select" : "input");
+      input.dataset.field = b.path;
+      input.id = "field-" + b.path;
+      input.setAttribute(
+        "aria-label",
+        side + " " + b.label + (b.itemId ? " " + b.itemId : ""),
+      );
+      label.htmlFor = input.id;
+      if (b.options)
+        for (const [v, n] of Object.entries(b.options))
+          input.append(new Option(n, v));
+      else {
+        input.type = b.type || "number";
+        if (input.type === "number") input.step = b.step || 0.1;
+      }
+      if (input.type === "checkbox") input.checked = b.value;
+      else input.value = b.value;
+      const item = b.itemId
+        ? draft[side][b.section].find((x) => x.id === b.itemId)
+        : null;
+      const disabled =
+        (b.section === "tapes" &&
+          ((item.path === "top_edges" &&
+            ["width", "offsetY"].includes(b.key)) ||
+            (item.path === "top" && b.key === "edgeDrop"))) ||
+        (b.section === "preweldLead" &&
+          b.key !== "included" &&
+          !draft[side].preweldLead.included);
+      input.disabled = disabled || !live || !model;
+      const controls = document.createElement("div");
+      controls.className = "number-control";
+      if (input.type === "number")
+        for (const sign of [-1, 1]) {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.textContent = sign === -1 ? "−" : "+";
+          button.setAttribute(
+            "aria-label",
+            side + " " + b.label + (sign === -1 ? " 감소" : " 증가"),
+          );
+          button.disabled = input.disabled;
+          button.onpointerdown = (e) => e.preventDefault();
+          button.onclick = () => {
+            input.focus();
+            const current = Number(input.value);
+            const value = Number(
+              (current + sign * Number(input.step)).toFixed(6),
+            );
+            input.value = value;
+            changeField(b.path, value);
+          };
+          if (sign === -1) controls.append(button);
+          else {
+            controls.append(input);
+            controls.append(button);
+          }
+        }
+      else controls.append(input);
+      input.onfocus = () => {
+        startEdit(b.path);
+        activePath = b.path;
+        updateHighlight();
+      };
+      input.onblur = () => {
+        editGroup = null;
+      };
+      const update = () => {
+        const value =
+          input.type === "checkbox"
+            ? input.checked
+            : b.options
+              ? input.value
+              : input.value.trim() === ""
+                ? NaN
+                : Number(input.value);
+        changeField(b.path, value);
+      };
+      input.oninput = update;
+      input.onchange = () => {
+        if (input.type === "checkbox" || b.options) {
+          update();
+          if (["path", "included"].includes(b.key)) renderFields();
+        }
+      };
+      input.onkeydown = (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          queue.flush();
+        }
+        if (e.key === "Escape") {
+          e.preventDefault();
+          discard();
+        }
+      };
+      row.onpointerenter = () => {
+        if (!disabled && !document.querySelector("[data-field]:focus")) {
+          activePath = b.path;
+          updateHighlight();
+        }
+      };
+      const basis = document.createElement("small");
+      basis.textContent =
+        b.basis + (disabled ? " · 현재 경로/포함 설정에서 미사용" : "");
+      const error = document.createElement("small");
+      error.className = "field-error";
+      error.dataset.path = b.path;
+      error.setAttribute("role", "alert");
+      row.append(label, controls, basis, error);
+      details.append(row);
+    }
+    if (["prewelds", "joints", "tapes"].includes(first.section)) {
+      const remove = document.createElement("button");
+      remove.textContent = "이 영역 삭제";
+      remove.onclick = () => {
+        draft[side][first.section] = draft[side][first.section].filter(
+          (x) => x.id !== first.itemId,
+        );
+        setDirty(true);
+        renderFields();
+        request(nextProject());
+      };
+      details.append(remove);
+    }
+    container.append(details);
+  }
+  if (["positive", "negative"].includes(side)) {
+    for (const [key, min, title] of [
+      ["prewelds", 2, "가용접 영역"],
+      ["joints", 3, "메인 용접 영역"],
+      ["tapes", 4, "테이프"],
+    ])
+      if (stageOrder.indexOf(targetStage) >= min) {
+        const add = document.createElement("button");
+        add.textContent = title + " 추가";
+        add.onclick = () => {
+          const item = clone(initial().product[side][key][0]);
+          item.id =
+            (key === "tapes"
+              ? "tape-"
+              : key === "prewelds"
+                ? "pre-"
+                : "joint-") + Date.now();
+          draft[side][key].push(item);
+          setDirty(true);
+          renderFields();
+          request(nextProject());
+        };
+        container.append(add);
+      }
+    if (model && stageOrder.indexOf(targetStage) >= 2) {
+      const derived = document.createElement("details");
+      derived.id = "derived-values";
+      derived.open = true;
+      container.append(derived);
+      renderCalculated();
+    }
+  }
+}
+function renderCalculated() {
+  const box = $("derived-values");
+  if (!box || !model) return;
+  const side = $("editor").value;
+  if (!["positive", "negative"].includes(side)) return;
+  box.replaceChildren();
+  const title = document.createElement("summary");
+  title.textContent = "계산값 · 직접 덮어쓰기 불가";
+  box.append(title);
+  for (const [label, a, b, mode] of [
+    ["탭–리드 겹침 길이", "lead.overlapStart", "lead.overlapEnd", "x"],
+    ["탭–리드 겹침 폭", "lead.overlapWidthMinus", "lead.overlapWidthPlus", "y"],
+  ]) {
+    const m = measurement(
+        label,
+        side + "." + a,
+        side + "." + b,
+        mode,
+        state.stage,
+      ),
+      v = evaluate(m, model.features, state.datumSet);
+    const button = document.createElement("button");
+    button.textContent =
+      label +
+      " · " +
+      (v.valid ? v.value.toFixed(3) + " mm" : "현재 상태 없음") +
+      " ↗";
+    button.disabled = !v.valid;
+    button.onclick = () => openDirect({ measurement: m });
+    box.append(button);
+  }
+}
+function focusField(path, focus = true) {
+  const b = bindingFor(draft, targetStage, path);
+  if (!b) return;
+  $("editor").value = b.side;
+  tab("design");
+  if (
+    ![...document.querySelectorAll("[data-field]")].some(
+      (x) => x.dataset.field === path,
+    )
+  )
+    renderFields();
+  const input = [...document.querySelectorAll("[data-field]")].find(
+    (x) => x.dataset.field === path,
+  );
+  if (input) {
+    input.closest("details").open = true;
+    input.closest(".field").scrollIntoView({ block: "nearest" });
+    if (focus) input.focus();
+  }
+  activePath = path;
+  updateHighlight();
+}
+function updateHighlight() {
+  const b = activePath && bindingFor(draft, targetStage, activePath);
+  for (const row of document.querySelectorAll(".field"))
+    row.classList.toggle("active-field", row.dataset.path === activePath);
+  if (!b || !b.available) {
+    viewer.setHighlight(null);
+    return;
+  }
+  let guide = forecast(b, draft, targetStage);
+  const refs = references(b, draft, targetStage);
+  if (
+    guide &&
+    !dirty &&
+    !busy &&
+    refs &&
+    model?.features[refs.a.featureId]?.available !== false
+  ) {
+    const a = model?.features[refs.a.featureId],
+      other = model?.features[refs.b.featureId];
+    if (
+      a &&
+      (refs.mode === "radius" || (other?.available !== false && other))
+    ) {
+      guide = {
+        ...guide,
+        features: { "@a": a, "@b": other },
+        measurement: { ...guide.measurement, mode: refs.mode },
+        arc: a.arc || guide.arc,
+      };
+    }
+  }
+  viewer.setHighlight({
+    partId: b.partId,
+    guide,
+    pending: dirty || busy,
+    label: b.label,
+    path: b.path,
+  });
+  $("field-guide").textContent =
+    b.label +
+    "\n기준: " +
+    b.upstream +
+    "\n고정/방향: " +
+    b.fixed +
+    "\n영향: " +
+    b.effect +
+    (b.key === "gatheredLength"
+      ? "\n집속 후 길이 = S0 돌출 − 집속 거리 − 투영 수축. 이 입력은 투영 수축만 변경합니다."
+      : "");
+  $("field-to-dim").disabled =
+    !references(b, draft, targetStage) || dirty || busy;
+}
+function addFieldDimension(path) {
+  if (dirty || busy) {
+    status("CAD 확정 후 관리 치수를 추가하세요.", "error");
+    return;
+  }
+  const b = bindingFor(state.product, state.stage, path),
+    refs = b && references(b, state.product, state.stage);
+  if (!refs) {
+    status(
+      "이 입력은 직접 측정 기준이 없습니다. 등록 기준을 선택하세요.",
+      "error",
+    );
+    return;
+  }
+  const stage = b.key === "rootLength" ? "stacked" : state.stage;
+  const m = measurement(
+    b.label,
+    refs.a.featureId,
+    refs.b.featureId,
+    refs.mode,
+    stage,
+    {
+      group:
+        (b.side === "positive"
+          ? "양극"
+          : b.side === "negative"
+            ? "음극"
+            : b.side) + " 설계 입력",
+      driverPath: path,
+    },
+  );
+  state.measurements.push(m);
+  renderMeasurements();
+  status("관리 치수 추가 · " + b.label + " · " + stages[stage]);
+}
+function picked(id) {
+  pickRefs.push(id);
+  $("ref-a").value = pickRefs[0];
+  if (pickRefs[1]) $("ref-b").value = pickRefs[1];
+  $("pick-hint").textContent =
+    pickRefs.length === 1
+      ? "A: " + id + " · 끝 기준을 선택하세요."
+      : "A/B 선택 완료 · 관리 치수 추가";
+  if (pickRefs.length === 2 || $("mode").value === "radius") {
+    picking = false;
+    viewer.setPicking(false);
+    $("pick").textContent = "모델에서 기준 선택 시작";
+  }
+}
+function addAnchor(a) {
+  if (!a) {
+    status(
+      "이 면의 자유점은 미지원",
+      "error",
+      "리드/적층체 상·하면 평탄부에서 선택하세요.",
+    );
+    return;
+  }
+  a.id = "anchor." + crypto.randomUUID();
+  a.name = $("anchor-name").value || "표면점";
+  state.anchors ??= [];
+  state.anchors.push(a);
+  model = withAnchors(model, [a]);
+  viewer.data = model;
+  renderRefs();
+  picked(a.id);
+  viewer.draw();
+}
+function renderRefs() {
+  if (!model) return;
+  for (const id of ["ref-a", "ref-b"]) {
+    const old = $(id).value;
+    $(id).replaceChildren();
+    for (const [key, f] of Object.entries(model.features))
+      if (f.available !== false)
+        $(id).append(new Option(f.name + " · " + key, key));
+    if (model.features[old]?.available !== false) $(id).value = old;
+  }
+  $("ref-b").disabled = $("mode").value === "radius";
+}
+function renderDatums() {
+  $("datum-fields").replaceChildren();
+  for (const [key, label] of [
+    ["0", "원점 X"],
+    ["1", "원점 Y"],
+    ["2", "원점 Z"],
+    ["rotationZ", "검사 축 회전 Z (°)"],
+  ]) {
+    const l = document.createElement("label");
+    l.textContent = label;
+    const i = document.createElement("input");
+    i.type = "number";
+    i.step = ".1";
+    i.value =
+      key === "rotationZ"
+        ? state.datumSet.rotationZ
+        : state.datumSet.origin[Number(key)];
+    i.onchange = () => {
+      if (i.value === "" || !Number.isFinite(Number(i.value))) return;
+      if (key === "rotationZ") state.datumSet.rotationZ = Number(i.value);
+      else state.datumSet.origin[Number(key)] = Number(i.value);
+      renderMeasurements();
+    };
+    l.append(i);
+    $("datum-fields").append(l);
+  }
+}
+function renderMeasurements() {
+  if (!model) return;
+  viewer.state = state;
+  viewer.draw();
+  $("measure-count").textContent = state.measurements.length;
+  $("measurements").replaceChildren();
+  const oldGroup = $("group-filter").value;
+  $("group-filter").replaceChildren(new Option("모든 그룹", ""));
+  for (const group of [
+    ...new Set(
+      state.measurements
+        .filter((m) => $("other-stage-dims").checked || m.stage === state.stage)
+        .map((m) => m.group),
+    ),
+  ])
+    $("group-filter").append(new Option(group, group));
+  $("group-filter").value = oldGroup;
+  const query = $("filter").value.toLowerCase(),
+    all = state.measurements.filter(
+      (m) =>
+        ($("other-stage-dims").checked || m.stage === state.stage) &&
+        (!$("group-filter").value || m.group === $("group-filter").value) &&
+        [m.name, m.group, m.a.featureId, m.b?.featureId]
+          .join(" ")
+          .toLowerCase()
+          .includes(query),
+    );
+  $("more").hidden = all.length <= pageSize;
+  for (const m of all.slice(0, pageSize)) {
+    const result = evaluate(m, model.features, state.datumSet),
+      card = document.createElement("details");
+    card.className = "dim-card" + (!result.valid ? " invalid" : "");
+    card.innerHTML = `<summary><span>${esc(m.name)}</span><strong>${result.valid ? (m.mode === "radius" ? "R " : "") + result.value.toFixed(3) + " mm" : "참조 오류"}</strong></summary><p class="ref-text">${esc(m.a.featureId)} → ${esc(m.b?.featureId || "")}<br>${result.valid ? "계산값 · " + esc(m.mode) : esc(result.error)}</p>`;
+    const addInput = (label, value, handler, type = "text") => {
+      const l = document.createElement("label");
+      l.textContent = label;
+      const input = document.createElement(
+        type === "textarea" ? "textarea" : "input",
+      );
+      if (type !== "textarea") input.type = type;
+      if (type === "number") input.step = "any";
+      if (type === "checkbox") input.checked = value;
+      else input.value = value ?? "";
+      const update = () =>
+        handler(
+          type === "checkbox"
+            ? input.checked
+            : type === "number"
+              ? input.value === ""
+                ? null
+                : Number(input.value)
+              : input.value,
+        );
+      input.oninput = update;
+      input.onchange = update;
+      l.append(input);
+      card.append(l);
+      return input;
+    };
+    addInput(
+      "치수 표시",
+      m.visible,
+      (v) => {
+        m.visible = v;
+        viewer.draw();
+      },
+      "checkbox",
+    );
+    addInput("이름", m.name, (v) => {
+      m.name = v;
+      card.querySelector("summary span").textContent = v;
+      viewer.draw();
+    });
+    addInput("그룹", m.group, (v) => (m.group = v));
+    const pos = document.createElement("label");
+    pos.textContent = "치수선 이동 방향";
+    const sel = document.createElement("select");
+    for (const axis of ["x", "y", "z"])
+      sel.append(new Option(axis.toUpperCase(), axis));
+    sel.value = m.offsetAxis;
+    sel.onchange = () => {
+      m.offsetAxis = sel.value;
+      viewer.draw();
+    };
+    pos.append(sel);
+    card.append(pos);
+    addInput(
+      "치수선 이격 (mm)",
+      m.offset,
+      (v) => {
+        if (Number.isFinite(v)) {
+          m.offset = v;
+          viewer.draw();
+        }
+      },
+      "number",
+    );
+    for (const [key, label] of [
+      ["target", "목표값"],
+      ["minus", "하한 공차 크기 (−)"],
+      ["plus", "상한 공차 크기 (+)"],
+      ["measured", "실측값 · 형상 변경 없음"],
+    ])
+      addInput(
+        label,
+        m.spec[key],
+        (v) => {
+          if (
+            v !== null &&
+            (!Number.isFinite(v) || (["minus", "plus"].includes(key) && v < 0))
+          ) {
+            status("공차 크기는 0 이상", "error");
+            return;
+          }
+          m.spec[key] = v;
+          verdict.textContent = inspection(m);
+        },
+        "number",
+      );
+    addInput(
+      "설명 / 측정 조건",
+      m.spec.note,
+      (v) => (m.spec.note = v),
+      "textarea",
+    );
+    const verdict = document.createElement("p");
+    verdict.className = "small";
+    verdict.textContent = inspection(m);
+    card.append(verdict);
+    const actions = document.createElement("div");
+    actions.className = "card-actions";
+    for (const [text, fn] of [
+      ["원인 입력 편집", () => openDirect({ measurement: m })],
+      [
+        "이 치수만",
+        () => {
+          state.measurements.forEach((x) => (x.visible = x.id === m.id));
+          renderMeasurements();
+        },
+      ],
+      [
+        "그룹 토글",
+        () => {
+          const next = !m.visible;
+          state.measurements
+            .filter((x) => x.group === m.group && x.stage === m.stage)
+            .forEach((x) => (x.visible = next));
+          renderMeasurements();
+        },
+      ],
+      [
+        "재연결",
+        () => {
+          m.a = { featureId: $("ref-a").value };
+          m.b = { featureId: $("ref-b").value };
+          renderMeasurements();
+        },
+      ],
+      [
+        "삭제",
+        () => {
+          state.measurements = state.measurements.filter((x) => x.id !== m.id);
+          renderMeasurements();
+        },
+      ],
+    ]) {
+      const b = document.createElement("button");
+      b.textContent = text;
+      b.onclick = fn;
+      actions.append(b);
+    }
+    card.append(actions);
+    $("measurements").append(card);
+  }
+  const visible = state.measurements.filter(
+    (m) =>
+      ($("other-stage-dims").checked || m.stage === state.stage) &&
+      (!$("group-filter").value || m.group === $("group-filter").value) &&
+      m.visible,
+  ).length;
+  if (visible > 200)
+    status(
+      "표시 치수 " + visible + "개 · 화면에는 앞 200개 표시",
+      "",
+      "모든 항목은 저장됩니다. 그룹/검색으로 표시를 줄이세요.",
+    );
+}
+function tab(which) {
+  $("design-pane").hidden = which !== "design";
+  $("measure-pane").hidden = which !== "measure";
+  $("design-tab").classList.toggle("active", which === "design");
+  $("measure-tab").classList.toggle("active", which === "measure");
+}
+function discard() {
+  queue.invalidate();
+  replacement = null;
+  draft = clone(state.product);
+  targetStage = state.stage;
+  editGroup = null;
+  setDirty(false);
+  renderFields();
+  syncUI();
+  updateHighlight();
+  status("미적용 입력 취소 · 마지막 확정값 유지");
+}
+$("design-tab").onclick = () => tab("design");
+$("measure-tab").onclick = () => tab("measure");
+$("editor").onchange = () => {
+  activePath = null;
+  renderFields();
+  updateHighlight();
+};
+$("apply").onclick = () => {
+  if (queue.pending) {
+    queue.pending.meta.automatic = true;
+    queue.flush();
+  } else
+    request(nextProject(), {
+      path: activePath,
+      ...(editGroup ? { group: editGroup.id, before: editGroup.before } : {}),
+    });
+};
+$("discard").onclick = discard;
+$("auto-rebuild").onchange = () => {
+  state.view.autoRebuild = $("auto-rebuild").checked;
+  if (queue.pending) {
+    queue.pending.meta.automatic = state.view.autoRebuild;
+    if (state.view.autoRebuild) queue.flush();
+    else clearTimeout(queue.timer);
+  }
+};
+$("stage").onchange = () => {
+  targetStage = $("stage").value;
+  const next = nextProject();
+  if (!next.measurements.some((m) => m.stage === targetStage)) {
+    next.measurements.push(...demoMeasurements(targetStage, draft));
+    if (!replacement) state.measurements = clone(next.measurements);
+  }
+  editGroup = null;
+  request(next, { replace: false });
+};
+for (const [id, key] of [
+  ["transparent", "transparent"],
+  ["datums", "datums"],
+])
+  $(id).onchange = () => {
+    state.view[key] = $(id).checked;
+    refreshView();
+  };
+$("through").onchange = () => {
+  viewer.through = $("through").checked;
+  viewer.draw();
+};
+function section() {
+  const raw = $("section-position").value,
+    position = Number(raw);
+  if (raw.trim() === "" || !Number.isFinite(position)) {
+    status("단면 위치는 유한한 숫자로 입력하세요.", "error");
+    return;
+  }
+  state.view.section = { axis: $("section").value, position };
+  refreshView();
+}
+$("section").onchange = section;
+$("section-position").onchange = section;
+$("section-position").oninput = section;
+document
+  .querySelectorAll("[data-view]")
+  .forEach((b) => (b.onclick = () => viewer.view(b.dataset.view)));
+$("fit").onclick = () => viewer.fit(selected);
+$("clear-focus").onclick = () => {
+  selected = null;
+  selectedFeature = null;
+  viewer.select(null);
+  viewer.fit();
+};
+$("fullscreen").onclick = () => {
+  document.body.classList.toggle("expanded");
+  $("fullscreen").textContent = document.body.classList.contains("expanded")
+    ? "패널 복원"
+    : "작업영역 확대";
+};
+$("selection-mode").onchange = () => {
+  viewer.selectionMode = $("selection-mode").value;
+  viewer.draw();
+};
+$("edit-selection").onclick = () => {
+  if (!selected) {
+    status("먼저 부품 또는 등록 모서리를 선택하세요.");
+    return;
+  }
+  openDirect({ partId: selected, featureId: selectedFeature || selected });
+};
+$("add-selected-dim").onclick = () => {
+  if (selectedFeature) {
+    tab("measure");
+    $("ref-a").value = selectedFeature;
+    pickRefs = [selectedFeature];
+    $("pick-hint").textContent =
+      "선택한 기준을 A로 설정했습니다. 끝 기준과 방향을 확인하세요.";
+  } else if (activePath) addFieldDimension(activePath);
+  else status("기준점·모서리·면을 먼저 선택하세요.");
+};
+$("field-to-dim").onclick = () => activePath && addFieldDimension(activePath);
+$("show-all").onclick = () => {
+  state.view.hidden = [];
+  refreshView();
+};
+$("tape-toggle").onclick = () => {
+  if (!model) return;
+  const ids = model.parts
+      .filter((p) => p.id.includes(".tape."))
+      .map((p) => p.id),
+    hide = !ids.every((id) => state.view.hidden.includes(id));
+  state.view.hidden = state.view.hidden.filter((id) => !ids.includes(id));
+  if (hide) state.view.hidden.push(...ids);
+  $("tape-toggle").textContent = hide ? "테이프 다시 표시" : "테이프 숨기기";
+  refreshView();
+};
+$("joint-view").onclick = () => {
+  if (!model) return;
+  state.view.hidden = model.parts
+    .filter(
+      (p) =>
+        !p.id.startsWith("positive.") ||
+        p.id.includes(".tape.") ||
+        p.id.endsWith("leadFilm"),
+    )
+    .map((p) => p.id);
+  selected = "positive.tab";
+  refreshView();
+  viewer.fit("positive.tab");
+  viewer.view("side");
+  $("selection-info").textContent =
+    "양극 포일 집중 · 현재 공정 유지 · 테이프 숨김";
+};
+$("mode").onchange = () => {
+  renderRefs();
+  if ($("mode").value === "radius") $("snap-kind").value = "radius";
+};
+$("snap-kind").onchange = () =>
+  viewer.setPicking(picking, $("snap-kind").value);
+$("pick").onclick = () => {
+  picking = !picking;
+  pickRefs = [];
+  viewer.setPicking(picking, $("snap-kind").value);
+  $("pick").textContent = picking
+    ? "기준 선택 취소"
+    : "모델에서 기준 선택 시작";
+  $("pick-hint").textContent = picking
+    ? "선택 부품의 주황 마커에서 시작/끝 기준을 선택하세요."
+    : "선택 취소";
+};
+$("add-dim").onclick = () => {
+  if (dirty || busy) {
+    status("CAD 확정 후 추가하세요.", "error");
+    return;
+  }
+  const m = measurement(
+    $("dim-name").value || "관리 치수",
+    $("ref-a").value,
+    $("ref-b").value,
+    $("mode").value,
+    state.stage,
+    { group: $("dim-group").value || "기본" },
+  );
+  const value = evaluate(m, model.features, state.datumSet);
+  if (!value.valid) {
+    status(value.error, "error");
+    return;
+  }
+  state.measurements.push(m);
+  renderMeasurements();
+  status("치수 추가 · " + value.value.toFixed(3) + " mm");
+};
+$("examples").onclick = () => {
+  state.measurements.push(...demoMeasurements(state.stage, state.product));
+  renderMeasurements();
+};
+$("dims-on").onclick = () => {
+  state.measurements
+    .filter((m) => m.stage === state.stage)
+    .forEach((m) => (m.visible = true));
+  renderMeasurements();
+};
+$("dims-off").onclick = () => {
+  state.measurements
+    .filter((m) => m.stage === state.stage)
+    .forEach((m) => (m.visible = false));
+  renderMeasurements();
+};
+$("filter").oninput = () => {
+  pageSize = 50;
+  renderMeasurements();
+};
+$("group-filter").onchange = renderMeasurements;
+$("other-stage-dims").onchange = renderMeasurements;
+$("group-toggle").onclick = () => {
+  const group = $("group-filter").value,
+    items = state.measurements.filter(
+      (m) => m.stage === state.stage && (!group || m.group === group),
+    ),
+    next = !items.every((m) => m.visible);
+  items.forEach((m) => (m.visible = next));
+  renderMeasurements();
+};
+$("more").onclick = () => {
+  pageSize += 50;
+  renderMeasurements();
+};
+$("notes").oninput = () => (state.notes = $("notes").value);
+function download(blob, name) {
+  const url = URL.createObjectURL(blob),
+    a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+$("save").onclick = () => {
+  if (dirty || busy) return;
+  try {
+    state.view.camera = viewer.getCamera();
+    validateProject(state);
+    download(
+      new Blob([JSON.stringify(state, null, 2)], { type: "application/json" }),
+      "pouch-cell-v1.2-demo.json",
+    );
+    status("JSON 저장 · 입력/공정/기준/스펙/카메라 포함");
+  } catch (e) {
+    status("저장 실패", "error", e.message);
+  }
+};
+$("open").onclick = () => $("file").click();
+$("file").onchange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    const text = await file.text();
+    if (text.length > 12 * 1024 * 1024)
+      throw Error("12 MB 이하 파일만 지원합니다");
+    const raw = JSON.parse(text);
+    if (inspectLegacy(raw)) showMigration(raw);
+    else {
+      const next = parseProject(text);
+      request(next, { replace: true });
+    }
+  } catch (err) {
+    status("파일을 열 수 없습니다", "error", err.message);
+  }
+  e.target.value = "";
+};
+$("step").onclick = async () => {
+  if (busy || dirty || !live) return;
+  try {
+    $("step").disabled = true;
+    status("CAD 솔리드 STEP 내보내기…", "busy");
+    download(await exportStep(state), "pouch-demo-mm.step");
+    status("STEP 저장 · mm · 주석/스펙은 JSON에 보관");
+  } catch (e) {
+    status("STEP 실패", "error", e.message);
+  } finally {
+    setDirty(dirty);
+  }
+};
+$("undo").onclick = () => {
+  queue.invalidate();
+  const next = history.undo(state);
+  if (next) {
+    editGroup = null;
+    request(next, { record: false, replace: true });
+  } else discard();
+};
+$("redo").onclick = () => {
+  queue.invalidate();
+  const next = history.redo(state);
+  if (next) {
+    editGroup = null;
+    request(next, { record: false, replace: true });
+  }
+};
+let directContext = null;
+function openDirect(context) {
+  if (!model || !live) return;
+  const m = context.measurement,
+    fromDriver = m?.driverPath;
+  let paths = fromDriver
+    ? [fromDriver]
+    : m
+      ? [
+          ...driversForFeature(m.a.featureId, state.product, state.stage),
+          ...driversForFeature(
+            m.b?.featureId || "",
+            state.product,
+            state.stage,
+          ),
+        ]
+      : driversForFeature(
+          context.featureId || context.partId,
+          state.product,
+          state.stage,
+        );
+  paths = [...new Set(paths)].filter((path) => {
+    const b = bindingFor(draft, targetStage, path);
+    return b?.available && typeof b.value === "number";
+  });
+  directContext = { ...context, paths };
+  const val = m && evaluate(m, model.features, state.datumSet);
+  $("direct-title").textContent = fromDriver
+    ? "설계 치수 편집"
+    : m
+      ? "계산 치수 · 원인 입력"
+      : context.featureId
+        ? "등록 모서리 / 기준 편집"
+        : "부품 치수 편집";
+  $("direct-kind").textContent =
+    (m && !fromDriver
+      ? "계산값 " +
+        (val.valid ? val.value.toFixed(3) + " mm" : val.error) +
+        " · 직접 덮어쓰기 불가. "
+      : "") + (paths.length > 1 ? "연결된 독립 입력을 선택하세요." : "");
+  $("direct-field").replaceChildren();
+  if (paths.length !== 1)
+    $("direct-field").append(new Option("입력 선택…", ""));
+  for (const path of paths) {
+    const b = bindingFor(draft, targetStage, path);
+    $("direct-field").append(new Option(b.label, path));
+  }
+  if (!paths.length)
+    $("direct-kind").textContent +=
+      "이 기준의 직접 편집 연결은 없습니다. 오른쪽 설계 입력을 사용하세요.";
+  $("direct-error").textContent = "";
+  setDirectField();
+  const dialog = $("direct-editor");
+  dialog.style.left =
+    context.x !== undefined
+      ? Math.max(
+          8,
+          Math.min(
+            innerWidth - 365,
+            $("viewport").getBoundingClientRect().left + context.x,
+          ),
+        ) + "px"
+      : "calc(50% - 175px)";
+  dialog.style.top =
+    context.y !== undefined
+      ? Math.max(
+          8,
+          Math.min(
+            innerHeight - 420,
+            $("viewport").getBoundingClientRect().top + context.y,
+          ),
+        ) + "px"
+      : "15vh";
+  dialog.showModal();
+  if (paths.length === 1) {
+    $("direct-value").focus();
+    $("direct-value").select();
+  }
+}
+function setDirectField() {
+  const path = $("direct-field").value,
+    b = path && bindingFor(draft, targetStage, path);
+  $("direct-controls").hidden = !b;
+  $("direct-apply").disabled = !b;
+  $("direct-basis").textContent = b
+    ? "고정/방향: " + b.fixed + "\n기준: " + b.upstream + "\n영향: " + b.effect
+    : "";
+  if (b) {
+    $("direct-value").value = b.value;
+    $("direct-value").step = b.step || 0.1;
+    activePath = path;
+    updateHighlight();
+  }
+}
+$("direct-field").onchange = setDirectField;
+$("direct-value").oninput = () => {
+  const path = $("direct-field").value,
+    b = bindingFor(draft, targetStage, path),
+    value =
+      $("direct-value").value.trim() === ""
+        ? NaN
+        : Number($("direct-value").value);
+  if (!b || !Number.isFinite(value)) return;
+  const preview = clone(draft);
+  writeField(preview, path, value);
+  viewer.setHighlight({
+    partId: b.partId,
+    guide: forecast(b, preview, targetStage),
+    pending: true,
+    label: b.label,
+    path,
+  });
+};
+function closeDirect() {
+  if ($("direct-editor").open) $("direct-editor").close();
+  directContext = null;
+  updateHighlight();
+}
+$("direct-cancel").onclick = closeDirect;
+$("direct-editor").addEventListener("cancel", () => {
+  directContext = null;
+  updateHighlight();
+});
+$("direct-editor").addEventListener("click", (e) => {
+  const r = $("direct-editor").getBoundingClientRect();
+  if (
+    e.target === $("direct-editor") &&
+    (e.clientX < r.left ||
+      e.clientX > r.right ||
+      e.clientY < r.top ||
+      e.clientY > r.bottom)
+  )
+    closeDirect();
+});
+$("direct-form").onsubmit = (e) => {
+  e.preventDefault();
+  const path = $("direct-field").value,
+    raw = $("direct-value").value,
+    value = Number(raw);
+  if (!path || raw.trim() === "" || !Number.isFinite(value)) {
+    $("direct-error").textContent = "유한한 숫자를 입력하세요.";
+    return;
+  }
+  startEdit(path);
+  changeField(path, value);
+  $("direct-editor").close();
+  directContext = null;
+  syncFieldValues();
+  if (queue.pending) queue.pending.meta.automatic = true;
+  queue.flush();
+  editGroup = null;
+};
+let migrationSource = null;
+function showMigration(raw) {
+  migrationSource = raw;
+  $("migration-fields").replaceChildren();
+  $("migration-error").textContent = "";
+  for (const { side, root, gathered } of inspectLegacy(raw)) {
+    const block = document.createElement("section");
+    const title = document.createElement("h3");
+    title.textContent =
+      (side === "positive" ? "양극" : "음극") +
+      " · 기존 뿌리 " +
+      root +
+      " / 집속 " +
+      gathered +
+      " mm" +
+      (root !== gathered ? " — 불일치" : "");
+    const sel = document.createElement("select");
+    sel.id = "migration-" + side;
+    sel.append(
+      new Option("폭 선택 (필수)", ""),
+      new Option("뿌리 폭 " + root + " mm", "root"),
+      new Option("집속 폭 " + gathered + " mm", "gathered"),
+      new Option("새 폭 직접 입력", "custom"),
+    );
+    const value = document.createElement("input");
+    value.id = "migration-value-" + side;
+    value.type = "number";
+    value.step = ".1";
+    value.placeholder = "직접 입력할 폭";
+    block.append(title, sel, value);
+    $("migration-fields").append(block);
+  }
+  $("migration").showModal();
+}
+$("migration-cancel").onclick = () => {
+  $("migration").close();
+  migrationSource = null;
+};
+$("migration-apply").onclick = () => {
+  try {
+    const choices = Object.fromEntries(
+      ["positive", "negative"].map((side) => [
+        side,
+        {
+          source: $("migration-" + side).value,
+          value: Number($("migration-value-" + side).value),
+        },
+      ]),
+    );
+    const next = validateProject(migrateV2(migrationSource, choices));
+    $("migration").close();
+    migrationSource = null;
+    request(next, { replace: true });
+  } catch (error) {
+    $("migration-error").textContent = error.message;
+  }
+};
+async function boot() {
+  try {
+    const engine = await engineHealth();
+    live = true;
+    $("engine-state").textContent =
+      "실시간 CadQuery " + engine.version + " · /api/rebuild 연결 확인";
+    renderFields();
+    request(state, { record: false, replace: true, fit: true });
+  } catch (error) {
+    live = false;
+    $("engine-state").textContent = "읽기 전용 · CAD 서버 없음";
+    status("계산 서버 연결 필요", "error", error.message);
+    renderFields();
+    setDirty(false);
+  }
+}
+boot();
