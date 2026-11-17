@@ -53,30 +53,30 @@ def _validate_resolved(p,stage):
             check(abs(j['offsetY'])+j['width']/2<=t['width']/2-t['edgeR'],f'{name}.prewelds.{j["id"]}.width: 가용접 영역 Y가 평탄부 밖입니다')
         for j in pole['joints']:
             if not j['enabled']: continue
-            check(j['kind']=='tab_to_lead',f'{name}: 현재 접합 형상은 tab_to_lead만 지원합니다')
-            check(j['length']>0 and j['width']>0,f'{name}: 접합 영역 길이·폭은 양수')
-            check(j['start']>=l['start'] and j['start']+j['length']<=t['length'],f'{name}: 접합 영역 X 경계가 실제 겹침 밖입니다')
-            check(abs(j['offsetY'])+j['width']/2<=t['width']/2 and abs(j['offsetY']-l['offsetY'])+j['width']/2<=l['width']/2,f'{name}: 접합 영역 Y 경계가 실제 겹침 밖입니다')
+            check(j['kind']=='tab_to_lead',f'{name}.joints.{j["id"]}.enabled: 현재 접합 형상은 tab_to_lead만 지원합니다')
+            check(j['length']>0 and j['width']>0,f'{name}.joints.{j["id"]}.length: 접합 영역 길이·폭은 양수')
+            check(j['start']>=l['start'] and j['start']+j['length']<=t['length'],f'{name}.joints.{j["id"]}.start: 접합 영역 X 경계가 실제 겹침 밖입니다')
+            check(abs(j['offsetY'])+j['width']/2<=t['width']/2 and abs(j['offsetY']-l['offsetY'])+j['width']/2<=l['width']/2,f'{name}.joints.{j["id"]}.width: 접합 영역 Y 경계가 실제 겹침 밖입니다')
         for a in pole['tapes']:
             if not a['enabled']: continue
-            check(a['host']=='tab' and a['path'] in ['top','top_edges'],f'{name}: 지원 테이프 경로는 tab/top, tab/top_edges')
-            check(a.get('face','top') in ['top','bottom'],f'{name}: 테이프 부착면은 top/bottom')
+            check(a['host']=='tab' and a['path'] in ['top','top_edges'],f'{name}.tapes.{a["id"]}.path: 지원 테이프 경로는 tab/top, tab/top_edges')
+            check(a.get('face','top') in ['top','bottom'],f'{name}.tapes.{a["id"]}.face: 테이프 부착면은 top/bottom')
             if a.get('face','top')==('bottom' if l['contactSide']=='below' else 'top'):
-                check(a['start']+a['length']<=l['start'],f'{name}: 테이프가 리드 접촉면과 중첩됩니다. 노출된 반대 부착면을 선택하세요')
-            check(a['length']>0 and a['thickness']>0 and a['width']>0,f'{name}: 테이프 치수는 양수')
-            check(a['start']>=0 and a['start']+a['length']<=t['length'],f'{name}: 테이프가 집속부 부착 범위를 벗어납니다')
-            if a['path']=='top': check(abs(a['offsetY'])+a['width']/2<=t['width']/2-t['edgeR'],f'{name}: 평면 테이프는 상면 평탄부 안에 있어야 합니다. 모서리 경로를 선택하세요')
-            else: check(0<=a['edgeDrop']<=t['thickness']-2*t['edgeR'],f'{name}: 감쌈 깊이가 탭 측면 높이를 벗어납니다')
+                check(a['start']+a['length']<=l['start'],f'{name}.tapes.{a["id"]}.face: 테이프가 리드 접촉면과 중첩됩니다. 노출된 반대 부착면을 선택하세요')
+            check(a['length']>0 and a['thickness']>0 and (a['path']!='top' or a['width']>0),f'{name}.tapes.{a["id"]}.length: 테이프 치수는 양수')
+            check(a['start']>=0 and a['start']+a['length']<=t['length'],f'{name}.tapes.{a["id"]}.start: 테이프가 집속부 부착 범위를 벗어납니다')
+            if a['path']=='top': check(abs(a['offsetY'])+a['width']/2<=t['width']/2-t['edgeR'],f'{name}.tapes.{a["id"]}.width: 평면 테이프는 상면 평탄부 안에 있어야 합니다. 모서리 경로를 선택하세요')
+            else: check(0<=a['edgeDrop']<=t['thickness']-2*t['edgeR'],f'{name}.tapes.{a["id"]}.edgeDrop: 감쌈 깊이가 탭 측면 높이를 벗어납니다')
         if f['enabled']:
             check(f['length']>0 and f['thickness']>0 and f['overhang']>=0,f'{name}: 리드 필름 치수 오류')
             check(f['start']>=t['length'] and f['start']+f['length']<=l['start']+l['length'],f'{name}: 리드 필름은 집속부 밖의 노출 리드에 놓여야 합니다')
     if stage not in ['packaged','finished']:
         if errors:raise ModelError(errors)
         return
-    for k in ['openingLength','openingWidth','planR','filmThickness','sealWidth','trimMargin','foldR']: check(q[k]>0,'pouch.'+k+': 양수 필요')
+    for k in ['openingLength','openingWidth','planR','filmThickness','sealWidth','trimMargin']: check(q[k]>0,'pouch.'+k+': 양수 필요')
     check(q['sealGap']>0,'현재 형상은 성형–실링 간격 > 0 필요')
-    check(q['foldR']>q['filmThickness'],'접힘 R은 외장 필름 두께보다 커야 합니다')
-    check(q['packagingExtraYMinus']>=0 and q['packagingExtraYPlus']>=0,'패키징 외장 추가 여유는 음수 불가')
+    if stage=='finished':check(q['foldR']>q['filmThickness'],'접힘 R은 외장 필름 두께보다 커야 합니다')
+    if stage=='packaged':check(q['packagingExtraYMinus']>=0 and q['packagingExtraYPlus']>=0,'패키징 외장 추가 여유는 음수 불가')
     for side in ['upper','lower']:
         d,rf,rt=q[side+'Depth'],q[side+'FloorR'],q[side+'RimR']
         check(rf>0 and rt>q['filmThickness'],f'{side}: 바닥 R>0, 상단 R>필름 두께 필요')
@@ -89,8 +89,8 @@ def _validate_resolved(p,stage):
         pole=p[name];t=pole['tab'];tapeT=max([a['thickness'] for a in pole['tapes'] if a['enabled']]+[0])
         check(t['gatherZ']+t['thickness']/2+tapeT<q['upperDepth'] and t['gatherZ']-t['thickness']/2> -q['lowerDepth'],f'{name}: 집속부/테이프가 포켓 깊이를 벗어납니다')
         check(s['length']/2+t['gatherDistance']+t['length']<q['openingLength']/2-max(q['upperFloorR']+q['upperRimR'],q['lowerFloorR']+q['lowerRimR']),f'{name}: 집속부가 포켓 바닥의 X 범위를 벗어납니다')
-    check(0<=q['foldAngle']<=120,'접힘 각도 지원 범위: 0–120°')
-    check(q['foldR']*math.radians(q['foldAngle'])<q['trimMargin'],'접힘 호 길이가 절단 여유보다 큽니다')
+    if stage=='finished':check(0<=q['foldAngle']<=120,'접힘 각도 지원 범위: 0–120°')
+    if stage=='finished':check(q['foldR']*math.radians(q['foldAngle'])<q['trimMargin'],'접힘 호 길이가 절단 여유보다 큽니다')
     if errors: raise ModelError(errors)
 
 def box(l,w,h,x=0,y=0,z=0):
@@ -127,7 +127,7 @@ def tape_shape(t,a):
 def build_pole(name,pole,s,stage='assembly'):
     if '_stage' not in pole:pole=resolve_pole(pole,stage)
     stage=pole['_stage']
-    t=pole['tab']; l=pole['lead']; g=t['gatherDistance']; e=pole['end']; L=s['length']; parts=[]; features={}; paths=[]
+    t=pole['tab']; l=pole['lead']; g=t.get('gatherDistance'); e=pole['end']; L=s['length']; parts=[]; features={}; paths=[]
     def xyz(x,y,z): return [e*(L/2+x),y,z]
     def point(key,title,v,kind='point'): features[f'{name}.{key}']={'partId':f'{name}.'+key.split('.')[0],'kind':kind,'name':title,'point':xyz(*v)}
     def add(key,label,shape,color,role='solid',meta=None):
@@ -150,15 +150,16 @@ def build_pole(name,pole,s,stage='assembly'):
             y=t['rootY']+(t['gatherY']-t['rootY'])*v-(t['width'])/2
             line.append(xyz(g*u,y-.01,z))
         paths.append({'partId':name+'.tab','color':'#526770','points':line})
-    sign=-1 if l['contactSide']=='below' else 1
-    leadZ=t['gatherZ']+sign*(t['thickness']+l['thickness'])/2
-    leadY=t['gatherY']+l['offsetY']; leadX=g+l['start']
-    if pole['_hasLead']:add('lead','외부 리드',box(l['length'],l['width'],l['thickness'],leadX+l['length']/2,leadY,leadZ),'#b8b5a7' if name=='positive' else '#c4b199',meta={'contactSide':l['contactSide'],'assumption':'접촉면은 편집 가능한 예시 설정'})
-    overlapMinY=max(t['gatherY']-t['width']/2,leadY-l['width']/2)
-    overlapMaxY=min(t['gatherY']+t['width']/2,leadY+l['width']/2)
-    interfaceZ=t['gatherZ']+sign*t['thickness']/2
-    # Overlap is metadata/outline, not a second material solid.
-    if pole['_hasLead']:paths.append({'partId':name+'.lead','color':'#5da69e','dashed':True,'points':[xyz(x,y,interfaceZ) for x,y in [(leadX,overlapMinY),(g+t['length'],overlapMinY),(g+t['length'],overlapMaxY),(leadX,overlapMaxY),(leadX,overlapMinY)]]})
+    if pole['_hasLead']:
+        sign=-1 if l['contactSide']=='below' else 1
+        leadZ=t['gatherZ']+sign*(t['thickness']+l['thickness'])/2
+        leadY=t['gatherY']+l['offsetY']; leadX=g+l['start']
+        if pole['_hasLead']:add('lead','외부 리드',box(l['length'],l['width'],l['thickness'],leadX+l['length']/2,leadY,leadZ),'#b8b5a7' if name=='positive' else '#c4b199',meta={'contactSide':l['contactSide'],'assumption':'접촉면은 편집 가능한 예시 설정'})
+        overlapMinY=max(t['gatherY']-t['width']/2,leadY-l['width']/2)
+        overlapMaxY=min(t['gatherY']+t['width']/2,leadY+l['width']/2)
+        interfaceZ=t['gatherZ']+sign*t['thickness']/2
+        # Overlap is metadata/outline, not a second material solid.
+        if pole['_hasLead']:paths.append({'partId':name+'.lead','color':'#5da69e','dashed':True,'points':[xyz(x,y,interfaceZ) for x,y in [(leadX,overlapMinY),(g+t['length'],overlapMinY),(g+t['length'],overlapMaxY),(leadX,overlapMaxY),(leadX,overlapMinY)]]})
     for j in pole['joints']:
         if not j['enabled']: continue
         key='joint.'+j['id']; x=g+j['start']; y=t['gatherY']+j['offsetY']
@@ -208,10 +209,11 @@ def build_pole(name,pole,s,stage='assembly'):
         ('tab.end','탭 끝 상단 모서리',(g+t['length'],t['gatherY'],t['gatherZ']+t['thickness']/2),'edge'),
         ('tab.top','집속 상면',(g+t['length']/2,t['gatherY'],t['gatherZ']+t['thickness']/2),'face'),
         ('tab.bottom','집속 하면',(g+t['length']/2,t['gatherY'],t['gatherZ']-t['thickness']/2),'face'),
+    ] + ([
         ('lead.start','리드 시작 상단 모서리',(leadX,leadY,leadZ+l['thickness']/2),'edge'),('lead.end','리드 끝 상단 모서리',(leadX+l['length'],leadY,leadZ+l['thickness']/2),'edge'),
         ('lead.widthMinus','리드 폭 − 상단 모서리',(leadX+l['length']/2,leadY-l['width']/2,leadZ+l['thickness']/2),'edge'),('lead.widthPlus','리드 폭 + 상단 모서리',(leadX+l['length']/2,leadY+l['width']/2,leadZ+l['thickness']/2),'edge'),
         ('lead.top','리드 상면',(leadX+l['length']/2,leadY,leadZ+l['thickness']/2),'face'),('lead.bottom','리드 하면',(leadX+l['length']/2,leadY,leadZ-l['thickness']/2),'face'),
-        ('lead.overlapStart','겹침 시작',(leadX,(overlapMinY+overlapMaxY)/2,interfaceZ),'edge'),('lead.overlapEnd','겹침 끝',(g+t['length'],(overlapMinY+overlapMaxY)/2,interfaceZ),'edge')]:
+        ('lead.overlapStart','겹침 시작',(leadX,(overlapMinY+overlapMaxY)/2,interfaceZ),'edge'),('lead.overlapEnd','겹침 끝',(g+t['length'],(overlapMinY+overlapMaxY)/2,interfaceZ),'edge')] if pole['_hasLead'] else []):
         if key.startswith('lead.') and not pole['_hasLead']:continue
         point(key,title,v,kind)
     add_tab_features(name,pole,s,features)
@@ -238,7 +240,7 @@ def ring(l,w,r,start,width,z,t):
     return outer.cut(inner).clean()
 
 def add_tab_features(name,pole,s,features):
-    t=pole['tab'];e=pole['end'];raw=pole['_stage']=='stacked';g=t['gatherDistance']
+    t=pole['tab'];e=pole['end'];raw=pole['_stage']=='stacked';g=t.get('gatherDistance')
     def point(key,v,kind='point',**extra):
         features[name+'.tab.'+key]={'partId':name+'.tab','kind':kind,'name':{'root':'포일 뿌리 중심','rootWidthMinus':'포일 뿌리 폭 −','rootWidthPlus':'포일 뿌리 폭 +','rootTop':'뿌리 분포 위','rootBottom':'뿌리 분포 아래','gatherWidthMinus':'집속 폭 −','gatherWidthPlus':'집속 폭 +','gatherZBase':'집속 높이 기준 A','gatherYBase':'집속 Y 기준 B','gatherRootY':'뿌리 Y 투영 기준','stockEnd':'집속 전 포일 끝','tipCenter':'집속 후 포일 끝 중심','edgeR':'집속 단면 모서리 R'}.get(key,key),'point':[e*(s['length']/2+v[0]),v[1],v[2]],**extra}
     y,z=t['rootY'],t['rootZ'];w=t['width']
@@ -366,7 +368,7 @@ def build(p,stage='assembly'):
                         point=[0,sign*(q['openingWidth']/2+q['sealGap']+q['sealWidth']+R*math.sin(a)+rem*math.cos(a)),R*(1-math.cos(a))+rem*math.sin(a)]
                     features[f'pouch.{key}.{axis}.{label}']={'partId':'pouch.upper.'+part,'kind':'edge','name':key+' '+axis+' '+label,'point':point}
         # Explicit contact diagnostics. Not a silently claimed interference-free seal.
-    warnings=['모든 치수는 예시값입니다. 양극/음극의 사진상 끝 배정은 미확정입니다.', '탭 경로는 부드러운 포락 형상이며 실제 포일 변형/용접 강도 해석이 아닙니다.', '리드 접촉면·리드 필름·테이프 모서리 감쌈과 완제품 접힘은 편집 가능한 구현 가정입니다.']
+    warnings=['기본 데이터는 예시값입니다. 입력 모델의 치수·극성은 해당 출처와 검토 기록을 확인하세요.', '탭 경로는 부드러운 포락 형상이며 실제 포일 변형/용접 강도 해석이 아닙니다.', '리드 접촉면·리드 필름·테이프 모서리 감쌈과 완제품 접힘은 편집 가능한 구현 가정입니다.']
     if stage in ['packaged','finished']: warnings.append('리드 통과부 실링 압축/국부 필름 성형은 미지원: 공칭 외장과 리드의 간섭 가능성을 단면에서 확인하세요.')
     for part in parts:
         if not part['shape'].isValid(): raise ModelError([part['id']+': CAD 형상이 유효하지 않습니다'])

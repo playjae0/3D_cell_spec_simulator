@@ -29,12 +29,32 @@ export function locateOnPatch(feature, point) {
     return null;
   return { u, v };
 }
+export function anchorPoint(host, a) {
+  if (a.mode !== "fixed_mm") return pointOnPatch(host, a.u, a.v);
+  if (!host?.patch) return null;
+  const hu = Math.hypot(...host.patch.u),
+    hv = Math.hypot(...host.patch.v);
+  const bases = {
+      origin: [0, 0, 1, 1],
+      u_minus: [-1, 0, 1, 1],
+      u_plus: [1, 0, -1, 1],
+      v_minus: [0, -1, 1, 1],
+      v_plus: [0, 1, 1, -1],
+    },
+    base = bases[a.reference];
+  if (!base || ![a.distanceU, a.distanceV].every(Number.isFinite)) return null;
+  return pointOnPatch(
+    host,
+    base[0] + (base[2] * a.distanceU) / hu,
+    base[1] + (base[3] * a.distanceV) / hv,
+  );
+}
 export function withAnchors(data, anchors = []) {
   const features = { ...data.features },
     diagnostics = [...data.diagnostics];
   for (const a of anchors) {
     const host = features[a.baseFeatureId],
-      point = pointOnPatch(host, a.u, a.v);
+      point = anchorPoint(host, a);
     if (point)
       features[a.id] = {
         partId: host.partId,

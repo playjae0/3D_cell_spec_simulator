@@ -4,11 +4,11 @@ export async function engineHealth() {
   const data = await response.json();
   if (
     data.mode !== "live-cad" ||
-    data.schemaVersion !== 3 ||
+    ![3, 4].includes(data.schemaVersion) ||
     !data.capabilities?.includes("rebuild")
   )
     throw Error(
-      "실시간 v1.2 CAD 계산 서버가 아닙니다. 고정 메시 프리뷰에서는 치수 편집을 사용할 수 없습니다.",
+      "실시간 v1.3 CAD 계산 서버가 아닙니다. 고정 메시 프리뷰에서는 치수 편집을 사용할 수 없습니다.",
     );
   return data;
 }

@@ -14,7 +14,11 @@ export const get = (o, path) => path.split(".").reduce((a, k) => a?.[k], o);
 export function readField(p, path) {
   if (path.endsWith(".tab.gatheredLength")) {
     const t = p[path.split(".")[0]].tab;
-    return t.rootLength - t.gatherDistance - t.axialShortening;
+    return [t.rootLength, t.gatherDistance, t.axialShortening].every(
+      Number.isFinite,
+    )
+      ? t.rootLength - t.gatherDistance - t.axialShortening
+      : null;
   }
   return get(p, path);
 }

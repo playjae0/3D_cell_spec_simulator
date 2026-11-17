@@ -1,3 +1,6 @@
+import { mountModels } from "./models/panel.js";
+import { reconcileProject, productFromIntake } from "./intake/adapter.js";
+import { stableId } from "./intake/contract.js";
 import "./style.css";
 import {
   initial,
@@ -24,7 +27,7 @@ import { evaluate, inspection } from "./annotations/measure.js";
 import { rebuild, exportStep, engineHealth } from "./geometry/client.js";
 import { RebuildQueue } from "./geometry/queue.js";
 import { Viewer } from "./viewer/viewer.js";
-import { withAnchors } from "./annotations/anchors.js";
+import { withAnchors, anchorPoint } from "./annotations/anchors.js";
 const $ = (id) => document.getElementById(id),
   esc = (x) =>
     String(x ?? "").replace(
@@ -110,11 +113,11 @@ function startEdit(path) {
   return editGroup;
 }
 function nextProject() {
-  return {
+  return reconcileProject({
     ...clone(replacement || state),
     product: clone(draft),
     stage: targetStage,
-  };
+  });
 }
 const queue = new RebuildQueue({
   compute: async (p, revision) => {
@@ -141,6 +144,7 @@ const queue = new RebuildQueue({
     else
       state = {
         ...state,
+        ...(job.payload.intake ? { intake: clone(job.payload.intake) } : {}),
         product: clone(job.payload.product),
         stage: job.payload.stage,
       };
@@ -179,6 +183,7 @@ const queue = new RebuildQueue({
   },
 });
 function request(next, meta = {}, immediate = true) {
+  next = reconcileProject(next);
   if (!live) {
     status("읽기 전용 · 실시간 CAD 서버 연결 필요", "error");
     return;
@@ -223,8 +228,16 @@ function changeField(path, value) {
   );
 }
 function syncUI() {
+  $("data-origin").textContent = state.demo ? "DEMO · 예시값" : "입력 모델 · 출처 확인";
   $("stage").value = state.stage;
-  $("scene-title").textContent = stages[state.stage];
+  $("scene-title").textContent =
+    stages[state.stage] +
+    (state.modelIdentity
+      ? " · " +
+        state.modelIdentity.modelId +
+        " / " +
+        state.modelIdentity.revision
+      : "");
   $("transparent").checked = state.view.transparent;
   $("datums").checked = state.view.datums;
   $("section").value = state.view.section.axis;
@@ -387,6 +400,7 @@ function renderFields() {
         side + " " + b.label + (b.itemId ? " " + b.itemId : ""),
       );
       label.htmlFor = input.id;
+      if (b.options && b.value == null) input.append(new Option("미입력", ""));
       if (b.options)
         for (const [v, n] of Object.entries(b.options))
           input.append(new Option(n, v));
@@ -395,7 +409,7 @@ function renderFields() {
         if (input.type === "number") input.step = b.step || 0.1;
       }
       if (input.type === "checkbox") input.checked = b.value;
-      else input.value = b.value;
+      else input.value = b.value ?? "";
       const item = b.itemId
         ? draft[side][b.section].find((x) => x.id === b.itemId)
         : null;
@@ -491,11 +505,18 @@ function renderFields() {
     }
     if (["prewelds", "joints", "tapes"].includes(first.section)) {
       const remove = document.createElement("button");
-      remove.textContent = "이 영역 삭제";
+      remove.textContent = state.intake
+        ? "이 영역 제외 · 부재로 기록"
+        : "이 영역 삭제";
       remove.onclick = () => {
-        draft[side][first.section] = draft[side][first.section].filter(
-          (x) => x.id !== first.itemId,
-        );
+        if (state.intake)
+          draft[side][first.section].find(
+            (x) => x.id === first.itemId,
+          ).enabled = false;
+        else
+          draft[side][first.section] = draft[side][first.section].filter(
+            (x) => x.id !== first.itemId,
+          );
         setDirty(true);
         renderFields();
         request(nextProject());
@@ -514,6 +535,12 @@ function renderFields() {
         const add = document.createElement("button");
         add.textContent = title + " 추가";
         add.onclick = () => {
+          if (state.intake) {
+            status(
+              "입력 양식 모델의 새 부품은 모델 / 입력 양식에서 instanceId와 값을 지정하세요. 기존 항목은 여기서 편집할 수 있습니다.",
+            );
+            return;
+          }
           const item = clone(initial().product[side][key][0]);
           item.id =
             (key === "tapes"
@@ -557,7 +584,7 @@ function renderCalculated() {
         mode,
         state.stage,
       ),
-      v = evaluate(m, model.features, state.datumSet);
+      v = evaluate(m, model.features, state);
     const button = document.createElement("button");
     button.textContent =
       label +
@@ -672,6 +699,11 @@ function addFieldDimension(path) {
             ? "음극"
             : b.side) + " 설계 입력",
       driverPath: path,
+      parameterId: stableId(state.product, path),
+      datumId: "legacy",
+      ...(/(rootY|gatherY|rootZ|gatherZ|offsetY)$/.test(b.key)
+        ? { mode: "signed_offset", axis: /Z$/.test(b.key) ? "z" : "y" }
+        : {}),
     },
   );
   state.measurements.push(m);
@@ -701,6 +733,24 @@ function addAnchor(a) {
     );
     return;
   }
+  a.mode = $("anchor-mode").value;
+  if (a.mode === "fixed_mm") {
+    a.reference = $("anchor-reference").value;
+    a.distanceU = Number($("anchor-u").value);
+    a.distanceV = Number($("anchor-v").value);
+    if (
+      !$("anchor-u").value ||
+      !$("anchor-v").value ||
+      !anchorPoint(model.features[a.baseFeatureId], a)
+    )
+      return status(
+        "고정 mm 기준점이 면 범위를 벗어납니다. 보정하지 않았습니다.",
+        "error",
+      );
+    delete a.u;
+    delete a.v;
+  }
+  state.schemaVersion = 4;
   a.id = "anchor." + crypto.randomUUID();
   a.name = $("anchor-name").value || "표면점";
   state.anchors ??= [];
@@ -724,6 +774,26 @@ function renderRefs() {
   $("ref-b").disabled = $("mode").value === "radius";
 }
 function renderDatums() {
+  const prev = $("datum-select").value || "legacy";
+  $("datum-select").replaceChildren(
+    new Option("기본 검사 프레임", "legacy"),
+    ...(state.inspectionDatums || []).map((d) => new Option(d.name, d.id)),
+  );
+  $("datum-select").value = [...$("datum-select").options].some(
+    (o) => o.value === prev,
+  )
+    ? prev
+    : "legacy";
+  const chosen = $("datum-select").value,
+    d =
+      chosen === "legacy"
+        ? state.datumSet
+        : state.inspectionDatums.find((d) => d.id === chosen);
+  $("measurement-datum").replaceChildren(
+    new Option("기본 검사 프레임", "legacy"),
+    ...(state.inspectionDatums || []).map((d) => new Option(d.name, d.id)),
+  );
+  $("measurement-datum").value = chosen;
   $("datum-fields").replaceChildren();
   for (const [key, label] of [
     ["0", "원점 X"],
@@ -736,20 +806,36 @@ function renderDatums() {
     const i = document.createElement("input");
     i.type = "number";
     i.step = ".1";
-    i.value =
-      key === "rotationZ"
-        ? state.datumSet.rotationZ
-        : state.datumSet.origin[Number(key)];
+    i.value = key === "rotationZ" ? d.rotationZ : d.origin[Number(key)];
     i.onchange = () => {
       if (i.value === "" || !Number.isFinite(Number(i.value))) return;
-      if (key === "rotationZ") state.datumSet.rotationZ = Number(i.value);
-      else state.datumSet.origin[Number(key)] = Number(i.value);
+      if (key === "rotationZ") d.rotationZ = Number(i.value);
+      else d.origin[Number(key)] = Number(i.value);
       renderMeasurements();
     };
     l.append(i);
     $("datum-fields").append(l);
   }
 }
+$("datum-select").onchange = renderDatums;
+$("datum-add").onclick = () => {
+  state.schemaVersion = 4;
+  state.inspectionDatums ??= [];
+  if (state.inspectionDatums.length >= 50)
+    return status("검사 프레임은 최대 50개", "error");
+  const id = "inspection-" + crypto.randomUUID();
+  state.inspectionDatums.push({
+    id,
+    name: $("datum-name").value || "검사 프레임",
+    origin: [0, 0, 0],
+    rotationZ: 0,
+    visible: true,
+  });
+  renderDatums();
+  $("datum-select").value = id;
+  renderDatums();
+  viewer.draw();
+};
 function renderMeasurements() {
   if (!model) return;
   viewer.state = state;
@@ -779,7 +865,7 @@ function renderMeasurements() {
     );
   $("more").hidden = all.length <= pageSize;
   for (const m of all.slice(0, pageSize)) {
-    const result = evaluate(m, model.features, state.datumSet),
+    const result = evaluate(m, model.features, state),
       card = document.createElement("details");
     card.className = "dim-card" + (!result.valid ? " invalid" : "");
     card.innerHTML = `<summary><span>${esc(m.name)}</span><strong>${result.valid ? (m.mode === "radius" ? "R " : "") + result.value.toFixed(3) + " mm" : "참조 오류"}</strong></summary><p class="ref-text">${esc(m.a.featureId)} → ${esc(m.b?.featureId || "")}<br>${result.valid ? "계산값 · " + esc(m.mode) : esc(result.error)}</p>`;
@@ -853,22 +939,24 @@ function renderMeasurements() {
       ["plus", "상한 공차 크기 (+)"],
       ["measured", "실측값 · 형상 변경 없음"],
     ])
-      addInput(
-        label,
-        m.spec[key],
-        (v) => {
-          if (
-            v !== null &&
-            (!Number.isFinite(v) || (["minus", "plus"].includes(key) && v < 0))
-          ) {
-            status("공차 크기는 0 이상", "error");
-            return;
-          }
-          m.spec[key] = v;
-          verdict.textContent = inspection(m);
-        },
-        "number",
-      );
+      if (key !== "measured" || !state.modelIdentity)
+        addInput(
+          label,
+          m.spec[key],
+          (v) => {
+            if (
+              v !== null &&
+              (!Number.isFinite(v) ||
+                (["minus", "plus"].includes(key) && v < 0))
+            ) {
+              status("공차 크기는 0 이상", "error");
+              return;
+            }
+            m.spec[key] = v;
+            verdict.textContent = inspection(m);
+          },
+          "number",
+        );
     addInput(
       "설명 / 측정 조건",
       m.spec.note,
@@ -1114,9 +1202,13 @@ $("add-dim").onclick = () => {
     $("ref-b").value,
     $("mode").value,
     state.stage,
-    { group: $("dim-group").value || "기본" },
+    {
+      group: $("dim-group").value || "기본",
+      datumId: $("measurement-datum").value,
+      axis: $("signed-axis").value,
+    },
   );
-  const value = evaluate(m, model.features, state.datumSet);
+  const value = evaluate(m, model.features, state);
   if (!value.valid) {
     status(value.error, "error");
     return;
@@ -1172,11 +1264,12 @@ function download(blob, name) {
 $("save").onclick = () => {
   if (dirty || busy) return;
   try {
+    state = reconcileProject(state);
     state.view.camera = viewer.getCamera();
     validateProject(state);
     download(
       new Blob([JSON.stringify(state, null, 2)], { type: "application/json" }),
-      "pouch-cell-v1.2-demo.json",
+      (state.modelIdentity?.modelId || "pouch-cell") + "-v1.3.json",
     );
     status("JSON 저장 · 입력/공정/기준/스펙/카메라 포함");
   } catch (e) {
@@ -1192,7 +1285,8 @@ $("file").onchange = async (e) => {
     if (text.length > 12 * 1024 * 1024)
       throw Error("12 MB 이하 파일만 지원합니다");
     const raw = JSON.parse(text);
-    if (inspectLegacy(raw)) showMigration(raw);
+    if (raw.format === "pouch-cell-intake") models.openIntake(raw);
+    else if (inspectLegacy(raw)) showMigration(raw);
     else {
       const next = parseProject(text);
       request(next, { replace: true });
@@ -1257,7 +1351,7 @@ function openDirect(context) {
     return b?.available && typeof b.value === "number";
   });
   directContext = { ...context, paths };
-  const val = m && evaluate(m, model.features, state.datumSet);
+  const val = m && evaluate(m, model.features, state);
   $("direct-title").textContent = fromDriver
     ? "설계 치수 편집"
     : m
@@ -1456,4 +1550,43 @@ async function boot() {
     setDirty(false);
   }
 }
+const models = mountModels({
+  getProject: () => clone(state),
+  canOpen: () => live && !dirty && !busy && !queue.pending,
+  notify: (message) => status(message),
+  onGuide: (path) => {
+    if (model) {
+      const b = bindingFor(state.product, state.stage, path);
+      if (b?.available) {
+        selectPart(b.partId);
+        focusField(path, false);
+      }
+    }
+  },
+  onApply: (project, result, record) => {
+    queue.invalidate();
+    if (record) history.push(state);
+    state = clone(project);
+    draft = clone(state.product);
+    targetStage = state.stage;
+    replacement = null;
+    editGroup = null;
+    lastHistoryGroup = null;
+    busy = false;
+    model = withAnchors(result || model, state.anchors);
+    viewer.setModel(model, state);
+    viewer.fit();
+    setDirty(false);
+    renderFields();
+    syncUI();
+    renderCalculated();
+    status(
+      "모델 적용 · " +
+        (state.modelIdentity?.modelId || state.product.id) +
+        " / " +
+        (state.modelIdentity?.revision || ""),
+    );
+  },
+});
+$("models").onclick = () => models.open();
 boot();
