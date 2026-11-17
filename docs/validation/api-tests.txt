@@ -1,0 +1,4 @@
+assembly revision 101 parts 11
+packaged revision 102 parts 21
+finished revision 103 parts 19
+production HTML, local CAD API, revision echo and invalid input: PASS
