@@ -3,6 +3,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { SoftwareRenderer } from "./software.js";
 import { clipMesh } from "./clip.js";
 import { locateOnPatch } from "../annotations/anchors.js";
+import { ORTHOGRAPHIC_HEIGHT } from "./framing.js";
 import { dimensionLayout, worldVector } from "../annotations/measure.js";
 const NS = "http://www.w3.org/2000/svg";
 const sv = (tag, attrs = {}, text) => {
@@ -176,7 +177,7 @@ export class Viewer {
         h = host.clientHeight;
       if (w <= 0 || h <= 0) return;
       this.renderer.setSize(w, h);
-      const half = 115;
+      const half = ORTHOGRAPHIC_HEIGHT / 2;
       this.camera.left = (-half * w) / h;
       this.camera.right = (half * w) / h;
       this.camera.top = half;

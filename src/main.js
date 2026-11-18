@@ -794,6 +794,12 @@ function addAnchor(a) {
   renderRefs();
   picked(a.id);
   viewer.draw();
+  status(
+    "기준점 추가 · " +
+      a.name +
+      " · " +
+      (a.mode === "fixed_mm" ? "고정 mm" : "면의 상대 위치"),
+  );
 }
 function renderRefs() {
   if (!model) return;
@@ -908,7 +914,13 @@ function renderMeasurements() {
     const result = evaluate(m, model.features, state),
       card = document.createElement("details");
     card.className = "dim-card" + (!result.valid ? " invalid" : "");
-    card.innerHTML = `<summary><span>${esc(m.name)}</span><strong>${result.valid ? (m.mode === "radius" ? "R " : "") + result.value.toFixed(3) + " mm" : "참조 오류"}</strong></summary><p class="ref-text">${esc(m.a.featureId)} → ${esc(m.b?.featureId || "")}<br>${result.valid ? "계산값 · " + esc(m.mode) : esc(result.error)}</p>`;
+    const referenceText =
+      m.mode === "signed_coordinate"
+        ? `검사 원점 (${m.datumId || "legacy"}) → ${m.a.featureId}`
+        : m.mode === "radius"
+          ? `${m.a.featureId} · 원호 반경`
+          : `${m.a.featureId} → ${m.b?.featureId || ""}`;
+    card.innerHTML = `<summary><span>${esc(m.name)}</span><strong>${result.valid ? (m.mode === "radius" ? "R " : "") + result.value.toFixed(3) + " mm" : "참조 오류"}</strong></summary><p class="ref-text">${esc(referenceText)}<br>${result.valid ? "계산값 · " + esc(m.mode) : esc(result.error)}</p>`;
     const addInput = (label, value, handler, type = "text") => {
       const l = document.createElement("label");
       l.textContent = label;

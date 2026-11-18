@@ -16,7 +16,7 @@
 
 사내 Copilot에는 [작성 지침](docs/intake/internal-copilot-prompt.md)과 [빈 양식 1.1](examples/intake/template-1.1.json)을 전달하세요. [가상 완성 입력](examples/intake/virtual-complete.json), [S0만 입력한 예시](examples/intake/virtual-s0-missing-future.json)를 제공합니다. 미입력 null에 예시 숫자를 섞지 않습니다. 기존 입력 1.0과 프로젝트 JSON은 호환하며, S3 실런트 미입력은 미확정 상태로 명시합니다.
 
-[현재 명세·호환 정책](docs/spec-integrated.md) · [현재 검증 결과](docs/validation-integrated.md) · [진행 기록](docs/plan-integrated.md). 이전 v1.3 기록은 [명세](docs/spec-v1.3.md)와 [검증](docs/validation-v1.3.md)에 보존합니다.
+[현재 명세·호환 정책](docs/spec-integrated.md) · [자동 검증 결과](docs/validation-integrated.md) · [실제 UI 검증·수정](docs/validation-ui-v1.4.md) · [진행 기록](docs/plan-integrated.md). 이전 v1.3 기록은 [명세](docs/spec-v1.3.md)와 [검증](docs/validation-v1.3.md)에 보존합니다.
 
 **실행 요건은 기존과 같습니다:** Node.js 22.12+ / Python 3.12 64-bit / CadQuery 2.7 / Chrome 또는 Edge. Docker는 필요 없습니다. 실행 중 CDN/외부 API는 사용하지 않습니다. Python은 CAD 계산 엔진과 로컬 웹 서버를 실행합니다. 이번 변경에서 EXE·설치 프로그램·배포 업데이트는 만들지 않았습니다.
 

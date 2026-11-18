@@ -591,17 +591,10 @@ export function mountModels({ getProject, canOpen, onApply, onGuide, notify }) {
           project.modelIdentity.revision +
           "으로 보관했습니다. 실측은 별도 기록하세요.",
       );
-      openIntake(
-        {
-          ...x,
-          model: {
-            ...x.model,
-            baseRevision: x.model.revision,
-            revision: x.model.revision + "-next",
-          },
-        },
-        project,
-      );
+      invalidate();
+      $("intake-work").hidden = true;
+      renderLibrary();
+      dialog.close();
     } catch (e) {
       say(e.message);
     }
@@ -648,6 +641,7 @@ export function mountModels({ getProject, canOpen, onApply, onGuide, notify }) {
       const raw = JSON.parse(await f.text());
       if (generation !== session.generation) return;
       if (raw.format === "pouch-model-library") {
+        $("intake-work").hidden = true;
         mergeSource = new ModelLibrary(raw).snapshot();
         mergeChoices = new Map();
         renderMerge();
