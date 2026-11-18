@@ -12,10 +12,13 @@ import {
   productFromIntake,
   reconcileProject,
 } from "../intake/adapter.js";
+import { canReviewStage } from "../data/stages.js";
 import { validateProject } from "../data/project.js";
 const clone = (x) => structuredClone(x);
 export function comparisonSnapshot(source, stage) {
   const p = reconcileProject(clone(source));
+  if (!canReviewStage(p.product, stage))
+    throw Error("이 모델의 파우치 공정은 열린 두 컵부터 이어집니다. 두 장 필름 공정은 기존 파우치 예제를 사용하세요.");
   p.stage = stage;
   if (p.intake) {
     if (!p.intake.requestedStages.includes(stage))

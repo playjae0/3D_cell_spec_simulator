@@ -13,3 +13,10 @@ const ranks = {
   finished: 6,
 };
 export const assemblyRank = (s) => ranks[s] ?? ranks[assemblyStage(s)] ?? -1;
+
+export function canReviewStage(product, stage) {
+  const definition = contract[stage];
+  if (!definition) return false;
+  const hasTabProfile = Object.values(product.processTooling?.sealBars || {}).some(bar => bar.tabProfile);
+  return !hasTabProfile || definition.r4 || !(definition.pouch || definition.legacyPouch);
+}

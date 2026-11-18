@@ -11,7 +11,7 @@ import {
 import { viewAvailability } from "./viewer/presentation.js";
 import { previewExamples } from "./preview/examples.js";
 import { designIdentity } from "./preview/identity.js";
-import { stageContract, assemblyRank } from "./data/stages.js";
+import { stageContract, assemblyRank, canReviewStage } from "./data/stages.js";
 import { rigidPoint } from "./geometry/material.js";
 import { mountComparison } from "./models/compare-panel.js";
 import { basicMeasurements } from "./annotations/sets.js";
@@ -317,13 +317,11 @@ function changeField(path, value) {
   );
 }
 function syncUI() {
-  const tooling = state.product.processTooling;
-  const modern = !!tooling;
-  const agreedProfile = modern && Object.values(tooling.sealBars).some(bar => bar.tabProfile);
+  const modern = !!state.product.processTooling;
   for (const option of $("stage").options) {
     const contract = stageContract[option.value];
     // An already saved R4 project at a compatibility stage remains reopenable.
-    const incompatible = agreedProfile && !contract.r4 && (contract.pouch || contract.legacyPouch);
+    const incompatible = !canReviewStage(state.product, option.value);
     option.hidden = incompatible && option.value !== state.stage;
     option.disabled = option.hidden || (!!contract.r4 && !preview && !modern);
   }

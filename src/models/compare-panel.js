@@ -1,6 +1,7 @@
 import { Viewer } from "../viewer/viewer.js";
 import { frameBounds } from "../viewer/framing.js";
 import { rebuild } from "../geometry/client.js";
+import { canReviewStage } from "../data/stages.js";
 import { stages } from "../data/project.js";
 import {
   ComparisonSession,
@@ -51,13 +52,21 @@ export function mountComparison({
     $("compare-inputs").replaceChildren();
     say(isPreview() ? "비교할 기록 형상을 선택하세요." : "비교 선택 변경 · 독립 CAD 계산이 필요합니다");
   }
-  for (const id of [
-    "compare-a",
-    "compare-b",
-    "compare-stage-a",
-    "compare-stage-b",
-  ])
-    $(id).onchange = invalidate;
+  function availableStages(side) {
+    const source = sources[Number($("compare-" + side).value)]?.project;
+    const select = $("compare-stage-" + side);
+    for (const option of select.options)
+      option.disabled = !!source && !canReviewStage(source.product, option.value);
+    if (select.selectedOptions[0]?.disabled)
+      select.value = source.stage;
+  }
+  for (const side of ["a", "b"]) {
+    $("compare-" + side).onchange = () => {
+      availableStages(side);
+      invalidate();
+    };
+    $("compare-stage-" + side).onchange = invalidate;
+  }
   function selection(i, m, r) {
     if (!m || !r.valid) {
       views[i].setHighlight(null);
@@ -339,6 +348,7 @@ export function mountComparison({
           ...sources.map((s, i) => new Option(s.label, String(i))),
         );
         $("compare-stage-" + side).value = snapshot.stage;
+        availableStages(side);
       }
       $("compare-section").value = snapshot.view.section.axis;
       $("compare-position").value = snapshot.view.section.position;
