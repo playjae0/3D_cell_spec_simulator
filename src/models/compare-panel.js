@@ -1,4 +1,5 @@
 import { Viewer } from "../viewer/viewer.js";
+import { frameBounds } from "../viewer/framing.js";
 import { rebuild } from "../geometry/client.js";
 import { stages } from "../data/project.js";
 import {
@@ -13,7 +14,7 @@ import { bindingFor, forecast } from "../data/bindings.js";
 export function mountComparison({ getProject, getLibrary, canOpen, notify }) {
   const dialog = document.createElement("dialog");
   dialog.id = "comparison-dialog";
-  dialog.innerHTML = `<div class="intake-header"><div><h2>공정 · 개정 비교</h2><p>전역 프레임 그대로 · Δ=B−A · 원본 개정/현재 작업/이력에 적용하지 않습니다.</p></div><button id="compare-close">비교 닫기</button></div><div class="compare-sources">${["a", "b"].map((s) => `<div><label>${s.toUpperCase()} 모델·개정<select id="compare-${s}"></select></label><label>공정<select id="compare-stage-${s}"></select></label></div>`).join("")}</div><div class="intake-toolbar"><button id="compare-run">독립 CAD 두 개 계산</button><label>계산 기준<select id="compare-basis"><option value="revision">각 개정의 검사 기준</option><option value="global">공통 전역 X/Y/Z 프레임</option></select></label><label>공통 단면<select id="compare-section"><option value="none">끄기</option><option value="x">X 법선 · YZ</option><option value="y">Y 법선 · XZ</option><option value="z">Z 법선 · XY</option></select></label><label>단면 위치 mm<input id="compare-position" type="number" step="any" value="0"></label><button id="compare-front">공통 정면</button><button id="compare-side">공통 측면</button></div><p id="compare-status" role="status"></p><div class="compare-views"><section><h3 id="compare-title-a">A</h3><div id="compare-view-a" class="compare-viewport"></div></section><section><h3 id="compare-title-b">B</h3><div id="compare-view-b" class="compare-viewport"></div></section></div><details open><summary>CAD 계산 치수 · Δ=B−A (mm)</summary><p id="compare-measure-basis"></p><div class="compare-table"><table><thead><tr><th>검사 개소</th><th>A 계산 / 목표 ±공차</th><th>B 계산 / 목표 ±공차</th><th>Δ mm / 비교 상태</th></tr></thead><tbody id="compare-dimensions"></tbody></table></div></details><details><summary>부품 존재 및 CAD 외곽·체적 차이</summary><div id="compare-parts"></div></details><details><summary>입력·검사 정의·출처·표시 변화 (CAD 계산값과 별도)</summary><div id="compare-inputs"></div></details>`;
+  dialog.innerHTML = `<div class="intake-header"><div><h2>공정 · 개정 비교</h2><p>전역 프레임 그대로 · Δ=B−A · 원본 개정/현재 작업/이력에 적용하지 않습니다.</p></div><button id="compare-close">비교 닫기</button></div><div class="compare-sources">${["a", "b"].map((s) => `<div><label>${s.toUpperCase()} 모델·개정<select id="compare-${s}"></select></label><label>공정<select id="compare-stage-${s}"></select></label></div>`).join("")}</div><div class="intake-toolbar"><button id="compare-run">독립 CAD 두 개 계산</button><label>계산 기준<select id="compare-basis"><option value="revision">각 개정의 검사 기준</option><option value="global">공통 전역 X/Y/Z 프레임</option></select></label><label>공통 단면<select id="compare-section"><option value="none">끄기</option><option value="x">X 법선 · YZ</option><option value="y">Y 법선 · XZ</option><option value="z">Z 법선 · XY</option></select></label><label>단면 위치 mm<input id="compare-position" type="number" step="any" value="0"></label><button id="compare-front">공통 정면</button><button id="compare-side">공통 측면</button><button id="compare-fit">두 모델 전체 맞춤</button><label><input id="compare-show-all" type="checkbox" checked>비교에서 모든 부품 표시</label></div><p id="compare-status" role="status"></p><div class="compare-views"><section><h3 id="compare-title-a">A</h3><div id="compare-view-a" class="compare-viewport"></div></section><section><h3 id="compare-title-b">B</h3><div id="compare-view-b" class="compare-viewport"></div></section></div><details open><summary>CAD 계산 치수 · Δ=B−A (mm)</summary><p id="compare-measure-basis"></p><div class="compare-table"><table><thead><tr><th>검사 개소</th><th>A 계산 / 목표 ±공차</th><th>B 계산 / 목표 ±공차</th><th>Δ mm / 비교 상태</th></tr></thead><tbody id="compare-dimensions"></tbody></table></div></details><details><summary>부품 존재 및 CAD 외곽·체적 차이</summary><div id="compare-parts"></div></details><details><summary>입력·검사 정의·출처·표시 변화 (CAD 계산값과 별도)</summary><div id="compare-inputs"></div></details>`;
   document.body.append(dialog);
   const $ = (id) => dialog.querySelector("#" + id),
     session = new ComparisonSession(rebuild);
@@ -236,11 +237,9 @@ export function mountComparison({ getProject, getLibrary, canOpen, notify }) {
       });
       const camera = snapshot.view.camera;
       if (camera) views.forEach((v) => v.restore(camera));
-      else {
-        views[0].fit();
-        views[1].restore(views[0].getCamera());
-      }
       syncing = false;
+      applyVisibility();
+      fitComparison();
       $("compare-title-a").textContent =
         "A · " + a.label + " · " + stages[result.projects[0].stage];
       $("compare-title-b").textContent =
@@ -252,6 +251,36 @@ export function mountComparison({ getProject, getLibrary, canOpen, notify }) {
       say("비교 실패 · 원본 유지: " + e.message);
     }
   };
+  function applyVisibility() {
+    if (!result) return;
+    for (let i = 0; i < views.length; i++) {
+      const source =
+        sources[Number($(i === 0 ? "compare-a" : "compare-b").value)].project;
+      result.projects[i].view.hidden = $("compare-show-all").checked
+        ? []
+        : [...source.view.hidden];
+      views[i].setModel(result.models[i], result.projects[i]);
+    }
+  }
+  function fitComparison() {
+    if (!result) return;
+    const camera = frameBounds(
+      result.models.flatMap((m) => m.parts.map((p) => p.bounds)),
+      views[0].getCamera(),
+      views.map((v) => ({
+        width: v.host.clientWidth,
+        height: v.host.clientHeight,
+      })),
+    );
+    syncing = true;
+    views.forEach((v, i) => {
+      result.projects[i].view.camera = structuredClone(camera);
+      v.restore(camera);
+    });
+    syncing = false;
+  }
+  $("compare-fit").onclick = fitComparison;
+  $("compare-show-all").onchange = applyVisibility;
   function section() {
     if (!result) return;
     const value = $("compare-position").value;
@@ -269,8 +298,18 @@ export function mountComparison({ getProject, getLibrary, canOpen, notify }) {
   $("compare-section").onchange = section;
   $("compare-position").onchange = section;
   $("compare-basis").onchange = renderDifferences;
-  $("compare-front").onclick = () => result && views[0].view("front");
-  $("compare-side").onclick = () => result && views[0].view("side");
+  $("compare-front").onclick = () => {
+    if (result) {
+      views[0].view("front");
+      fitComparison();
+    }
+  };
+  $("compare-side").onclick = () => {
+    if (result) {
+      views[0].view("side");
+      fitComparison();
+    }
+  };
   $("compare-close").onclick = () => {
     invalidate();
     dialog.close();
