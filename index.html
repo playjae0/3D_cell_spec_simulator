@@ -14,6 +14,7 @@
         <span class="demo" id="data-origin">DEMO · 예시값</span>
       </div>
       <div class="header-actions">
+        <button id="open-overview" hidden>공정 한눈에 보기</button>
         <button id="undo" title="이전 설계">↶</button
         ><button id="redo" title="다음 설계">↷</button
         ><button id="save">셀 JSON 저장</button
@@ -25,7 +26,18 @@
         </button>
       </div>
     </header>
-    <main>
+    <section id="process-overview" aria-labelledby="overview-title">
+      <div class="overview-heading">
+        <h1 id="overview-title">공정 한눈에 보기</h1>
+        <p id="overview-model"></p>
+        <p id="overview-engine"></p>
+        <p id="overview-message">CAD 엔진 연결을 확인하는 중입니다.</p>
+        <button id="overview-main" hidden>대표 셀 열기</button>
+        <button id="overview-legacy">기존 파우치 예제 열기</button>
+      </div>
+      <div id="overview-groups"></div>
+    </section>
+    <main id="process-detail" hidden>
       <aside class="navigator">
         <div class="eyebrow">PROCESS / 공정 상태</div>
         <label class="sr-only" for="stage">공정 상태</label
@@ -38,7 +50,8 @@
           <option value="packaged">S5 패키징 후</option>
           <option value="finished">S6 완성 셀 · 접힘 예시</option>
         </select>
-        <button id="pouch-example">가상 파우치 공정 예제 열기</button>
+        <button id="phase1-example">대표 셀 열기</button>
+        <button id="pouch-example">기존 파우치 예제 열기</button>
         <div class="model-caption">
           낱장 적층형 · 양끝 리드<br />양극/음극 독립 설계 · mm
         </div>

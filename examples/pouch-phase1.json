@@ -1,0 +1,1077 @@
+{
+  "schemaVersion": 3,
+  "modelVersion": "pouch-process-cad-2",
+  "unit": "mm",
+  "demo": true,
+  "stage": "tab_sealed",
+  "product": {
+    "id": "virtual-pouch-phase1",
+    "stack": {
+      "length": 240,
+      "width": 68,
+      "thickness": 7,
+      "cornerR": 1.2
+    },
+    "positive": {
+      "end": -1,
+      "material": "미지정 · 양극 예시",
+      "tab": {
+        "rootSpread": 6.4,
+        "rootY": -1,
+        "rootZ": 0,
+        "gatherDistance": 10,
+        "gatherY": -1,
+        "gatherZ": 0,
+        "thickness": 0.6,
+        "edgeR": 0.1,
+        "foilWidth": 32,
+        "rootLength": 21,
+        "axialShortening": 0
+      },
+      "lead": {
+        "start": 2,
+        "length": 38,
+        "width": 36,
+        "thickness": 0.35,
+        "offsetY": 0.5,
+        "contactSide": "below"
+      },
+      "joints": [
+        {
+          "id": "main",
+          "enabled": true,
+          "kind": "tab_to_lead",
+          "process": "unspecified",
+          "start": 4,
+          "length": 4.5,
+          "width": 26,
+          "offsetY": 0,
+          "postThicknessMeasured": null
+        }
+      ],
+      "tapes": [
+        {
+          "id": "yellow",
+          "enabled": true,
+          "host": "tab",
+          "path": "top",
+          "start": 3.5,
+          "length": 5,
+          "width": 31,
+          "offsetY": 0,
+          "thickness": 0.08,
+          "edgeDrop": 0.2,
+          "backside": "unconfirmed",
+          "face": "top"
+        }
+      ],
+      "leadFilm": {
+        "enabled": true,
+        "start": 20,
+        "length": 5,
+        "overhang": 2,
+        "thickness": 0.12
+      },
+      "specs": [],
+      "prewelds": [
+        {
+          "id": "pre-1",
+          "enabled": true,
+          "kind": "tab_to_tab",
+          "process": "unspecified",
+          "start": 0.5,
+          "length": 2,
+          "width": 24,
+          "offsetY": 0
+        }
+      ],
+      "preweldLead": {
+        "included": false,
+        "start": 2,
+        "length": 38,
+        "width": 36,
+        "thickness": 0.35,
+        "offsetY": 0.5,
+        "contactSide": "below"
+      }
+    },
+    "negative": {
+      "end": 1,
+      "material": "미지정 · 음극 예시",
+      "tab": {
+        "rootSpread": 6,
+        "rootY": 1.5,
+        "rootZ": 0,
+        "gatherDistance": 9,
+        "gatherY": 1.5,
+        "gatherZ": 0,
+        "thickness": 0.5,
+        "edgeR": 0.08,
+        "foilWidth": 29,
+        "rootLength": 21,
+        "axialShortening": 0
+      },
+      "lead": {
+        "start": 2.5,
+        "length": 40,
+        "width": 34,
+        "thickness": 0.25,
+        "offsetY": -0.5,
+        "contactSide": "below"
+      },
+      "joints": [
+        {
+          "id": "main",
+          "enabled": true,
+          "kind": "tab_to_lead",
+          "process": "unspecified",
+          "start": 5,
+          "length": 4,
+          "width": 24,
+          "offsetY": 0,
+          "postThicknessMeasured": null
+        }
+      ],
+      "tapes": [
+        {
+          "id": "yellow",
+          "enabled": true,
+          "host": "tab",
+          "path": "top",
+          "start": 4,
+          "length": 5,
+          "width": 28,
+          "offsetY": 0,
+          "thickness": 0.07,
+          "edgeDrop": 0.18,
+          "backside": "unconfirmed",
+          "face": "top"
+        }
+      ],
+      "leadFilm": {
+        "enabled": true,
+        "start": 21,
+        "length": 5,
+        "overhang": 1.5,
+        "thickness": 0.1
+      },
+      "specs": [],
+      "prewelds": [
+        {
+          "id": "pre-1",
+          "enabled": true,
+          "kind": "tab_to_tab",
+          "process": "unspecified",
+          "start": 0.5,
+          "length": 2,
+          "width": 22,
+          "offsetY": 0
+        }
+      ],
+      "preweldLead": {
+        "included": false,
+        "start": 2.5,
+        "length": 40,
+        "width": 34,
+        "thickness": 0.25,
+        "offsetY": -0.5,
+        "contactSide": "below"
+      }
+    },
+    "pouch": {
+      "openingLength": 298,
+      "openingWidth": 79,
+      "planR": 7,
+      "filmThickness": 0.15,
+      "upperDepth": 4.3,
+      "lowerDepth": 4.2,
+      "upperFloorR": 1.2,
+      "upperRimR": 0.85,
+      "lowerFloorR": 1.1,
+      "lowerRimR": 0.8,
+      "sealGap": 1.2,
+      "sealWidth": 3.5,
+      "trimMargin": 2.5,
+      "foldAngle": 90,
+      "foldR": 0.8,
+      "packagingExtraYMinus": 14,
+      "packagingExtraYPlus": 0
+    },
+    "pouchProcess": {
+      "version": 1,
+      "type": "double_cup",
+      "construction": "separate_sheets",
+      "sidewall": "vertical",
+      "seamGap": 0.8,
+      "neutralFraction": 0.5,
+      "assemblyPose": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "rx": 0,
+        "ry": 0,
+        "rz": 0
+      },
+      "sheets": {
+        "upper": {
+          "openingLength": 298,
+          "openingWidth": 79,
+          "depth": 4.3,
+          "floorR": 1.2,
+          "rimR": 0.85,
+          "planR": 7,
+          "filmThickness": 0.15,
+          "blank": {
+            "xMinus": -163,
+            "xPlus": 165,
+            "yMinus": -80,
+            "yPlus": 45
+          },
+          "cut": {
+            "xMinus": -160,
+            "xPlus": 161,
+            "yMinus": -50,
+            "yPlus": 45
+          }
+        },
+        "lower": {
+          "openingLength": 298,
+          "openingWidth": 79,
+          "depth": 4.2,
+          "floorR": 1.1,
+          "rimR": 0.8,
+          "planR": 7,
+          "filmThickness": 0.15,
+          "blank": {
+            "xMinus": -163,
+            "xPlus": 165,
+            "yMinus": -45,
+            "yPlus": 80
+          },
+          "cut": {
+            "xMinus": -160,
+            "xPlus": 161,
+            "yMinus": -45,
+            "yPlus": 50
+          }
+        }
+      },
+      "toolFaces": {
+        "upper_xMinus": {
+          "enabled": true,
+          "half": "upper",
+          "edge": "xMinus",
+          "start": 2,
+          "width": 5,
+          "length": 71,
+          "offset": 0,
+          "cornerR": 0.7,
+          "reliefEnabled": false,
+          "reliefLength": 10,
+          "reliefWidth": 1,
+          "reliefOffset": 0
+        },
+        "upper_xPlus": {
+          "enabled": true,
+          "half": "upper",
+          "edge": "xPlus",
+          "start": 2,
+          "width": 5.5,
+          "length": 71,
+          "offset": 0,
+          "cornerR": 0.7,
+          "reliefEnabled": false,
+          "reliefLength": 10,
+          "reliefWidth": 1,
+          "reliefOffset": 0
+        },
+        "upper_yMinus": {
+          "enabled": true,
+          "half": "upper",
+          "edge": "yMinus",
+          "start": 2,
+          "width": 5,
+          "length": 290,
+          "offset": 0,
+          "cornerR": 0,
+          "reliefEnabled": false,
+          "reliefLength": 10,
+          "reliefWidth": 1,
+          "reliefOffset": 0
+        },
+        "upper_yPlus": {
+          "enabled": true,
+          "half": "upper",
+          "edge": "yPlus",
+          "start": 2,
+          "width": 5.5,
+          "length": 290,
+          "offset": 0,
+          "cornerR": 0,
+          "reliefEnabled": false,
+          "reliefLength": 10,
+          "reliefWidth": 1,
+          "reliefOffset": 0
+        },
+        "lower_xMinus": {
+          "enabled": true,
+          "half": "lower",
+          "edge": "xMinus",
+          "start": 2.4,
+          "width": 5,
+          "length": 71,
+          "offset": 0,
+          "cornerR": 0.7,
+          "reliefEnabled": false,
+          "reliefLength": 10,
+          "reliefWidth": 1,
+          "reliefOffset": 0
+        },
+        "lower_xPlus": {
+          "enabled": true,
+          "half": "lower",
+          "edge": "xPlus",
+          "start": 2.4,
+          "width": 5.5,
+          "length": 71,
+          "offset": 0,
+          "cornerR": 0.7,
+          "reliefEnabled": false,
+          "reliefLength": 10,
+          "reliefWidth": 1,
+          "reliefOffset": 0
+        },
+        "lower_yMinus": {
+          "enabled": true,
+          "half": "lower",
+          "edge": "yMinus",
+          "start": 2.4,
+          "width": 5,
+          "length": 290,
+          "offset": 0,
+          "cornerR": 0,
+          "reliefEnabled": false,
+          "reliefLength": 10,
+          "reliefWidth": 1,
+          "reliefOffset": 0
+        },
+        "lower_yPlus": {
+          "enabled": true,
+          "half": "lower",
+          "edge": "yPlus",
+          "start": 2.4,
+          "width": 5.5,
+          "length": 290,
+          "offset": 0,
+          "cornerR": 0,
+          "reliefEnabled": false,
+          "reliefLength": 10,
+          "reliefWidth": 1,
+          "reliefOffset": 0
+        }
+      },
+      "folds": {
+        "yMinus1": {
+          "enabled": true,
+          "edge": "yMinus",
+          "order": 1,
+          "line": 43.5,
+          "angle": 80,
+          "innerR": 0.8
+        },
+        "yMinus2": {
+          "enabled": false,
+          "edge": "yMinus",
+          "order": 2,
+          "line": 48.5,
+          "angle": -20,
+          "innerR": 0.8
+        },
+        "yPlus1": {
+          "enabled": true,
+          "edge": "yPlus",
+          "order": 1,
+          "line": 43.5,
+          "angle": 80,
+          "innerR": 0.8
+        },
+        "yPlus2": {
+          "enabled": false,
+          "edge": "yPlus",
+          "order": 2,
+          "line": 48.5,
+          "angle": -20,
+          "innerR": 0.8
+        }
+      }
+    },
+    "name": "R4 공정·요소기술 · 가상 예시",
+    "processTooling": {
+      "version": 1,
+      "example": true,
+      "revision": "phase1-1",
+      "packaging": {
+        "bridgeInnerR": 0.4,
+        "cutY": 50,
+        "foldLineY": 46,
+        "foldAngle": 80,
+        "foldR": 0.8,
+        "cups": {
+          "upper": {
+            "x": 0,
+            "y": 0
+          },
+          "lower": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      },
+      "poles": {
+        "positive": {
+          "gathering": {
+            "topDatumZ": 3.2,
+            "bottomZ": -0.3,
+            "depth": 2.9000000000000004
+          },
+          "method": "ultrasonic",
+          "tools": {
+            "preweld": {
+              "horn": {
+                "id": "positive-preweld-horn",
+                "revision": "example-1",
+                "x": 1.5,
+                "y": 0,
+                "rotation": 0,
+                "length": 2.5,
+                "width": 26,
+                "cornerR": 0.2,
+                "knurlLength": 2,
+                "knurlWidth": 24,
+                "pitchU": 0.8,
+                "pitchV": 1,
+                "direction": 0,
+                "height": 0.2,
+                "tooth": "pyramid"
+              },
+              "anvil": {
+                "id": "positive-preweld-anvil",
+                "revision": "example-1",
+                "x": 1.5,
+                "y": 0,
+                "rotation": 0,
+                "length": 2.5,
+                "width": 26,
+                "cornerR": 0.2,
+                "knurlLength": 2,
+                "knurlWidth": 24,
+                "pitchU": 1,
+                "pitchV": 1,
+                "direction": 0,
+                "height": 0.15,
+                "tooth": "pyramid"
+              }
+            },
+            "welded": {
+              "horn": {
+                "id": "positive-welded-horn",
+                "revision": "example-1",
+                "x": 6,
+                "y": 0,
+                "rotation": 0,
+                "length": 5,
+                "width": 26,
+                "cornerR": 0.2,
+                "knurlLength": 4,
+                "knurlWidth": 24,
+                "pitchU": 0.8,
+                "pitchV": 1,
+                "direction": 0,
+                "height": 0.2,
+                "tooth": "pyramid"
+              },
+              "anvil": {
+                "id": "positive-welded-anvil",
+                "revision": "example-1",
+                "x": 6,
+                "y": 0,
+                "rotation": 0,
+                "length": 5,
+                "width": 26,
+                "cornerR": 0.2,
+                "knurlLength": 4,
+                "knurlWidth": 24,
+                "pitchU": 1,
+                "pitchV": 1,
+                "direction": 0,
+                "height": 0.15,
+                "tooth": "pyramid"
+              }
+            }
+          },
+          "laser": {
+            "id": "positive-laser",
+            "revision": "example-1",
+            "x": 6,
+            "y": 0,
+            "diameter": 1.2,
+            "rows": 2,
+            "columns": 3,
+            "pitchX": 2,
+            "pitchY": 8,
+            "rotation": 0,
+            "spots": [
+              {
+                "id": "spot-1",
+                "row": 0,
+                "column": 0,
+                "dx": 0,
+                "dy": 0
+              },
+              {
+                "id": "spot-2",
+                "row": 0,
+                "column": 1,
+                "dx": 0,
+                "dy": 0
+              },
+              {
+                "id": "spot-3",
+                "row": 0,
+                "column": 2,
+                "dx": 0,
+                "dy": 0
+              },
+              {
+                "id": "spot-4",
+                "row": 1,
+                "column": 0,
+                "dx": 0,
+                "dy": 0
+              },
+              {
+                "id": "spot-5",
+                "row": 1,
+                "column": 1,
+                "dx": 0,
+                "dy": 0
+              },
+              {
+                "id": "spot-6",
+                "row": 1,
+                "column": 2,
+                "dx": 0,
+                "dy": 0
+              }
+            ]
+          }
+        },
+        "negative": {
+          "gathering": {
+            "topDatumZ": 3.0,
+            "bottomZ": -0.25,
+            "depth": 2.75
+          },
+          "method": "ultrasonic",
+          "tools": {
+            "preweld": {
+              "horn": {
+                "id": "negative-preweld-horn",
+                "revision": "example-1",
+                "x": 1.5,
+                "y": 0,
+                "rotation": 0,
+                "length": 2.5,
+                "width": 24,
+                "cornerR": 0.2,
+                "knurlLength": 2,
+                "knurlWidth": 22,
+                "pitchU": 0.8,
+                "pitchV": 1,
+                "direction": 0,
+                "height": 0.2,
+                "tooth": "pyramid"
+              },
+              "anvil": {
+                "id": "negative-preweld-anvil",
+                "revision": "example-1",
+                "x": 1.5,
+                "y": 0,
+                "rotation": 0,
+                "length": 2.5,
+                "width": 24,
+                "cornerR": 0.2,
+                "knurlLength": 2,
+                "knurlWidth": 22,
+                "pitchU": 1,
+                "pitchV": 1,
+                "direction": 0,
+                "height": 0.15,
+                "tooth": "pyramid"
+              }
+            },
+            "welded": {
+              "horn": {
+                "id": "negative-welded-horn",
+                "revision": "example-1",
+                "x": 6,
+                "y": 0,
+                "rotation": 0,
+                "length": 5,
+                "width": 24,
+                "cornerR": 0.2,
+                "knurlLength": 4,
+                "knurlWidth": 22,
+                "pitchU": 0.8,
+                "pitchV": 1,
+                "direction": 0,
+                "height": 0.2,
+                "tooth": "pyramid"
+              },
+              "anvil": {
+                "id": "negative-welded-anvil",
+                "revision": "example-1",
+                "x": 6,
+                "y": 0,
+                "rotation": 0,
+                "length": 5,
+                "width": 24,
+                "cornerR": 0.2,
+                "knurlLength": 4,
+                "knurlWidth": 22,
+                "pitchU": 1,
+                "pitchV": 1,
+                "direction": 0,
+                "height": 0.15,
+                "tooth": "pyramid"
+              }
+            }
+          },
+          "laser": {
+            "id": "negative-laser",
+            "revision": "example-1",
+            "x": 6,
+            "y": 0,
+            "diameter": 1.2,
+            "rows": 2,
+            "columns": 3,
+            "pitchX": 2,
+            "pitchY": 8,
+            "rotation": 0,
+            "spots": [
+              {
+                "id": "spot-1",
+                "row": 0,
+                "column": 0,
+                "dx": 0,
+                "dy": 0
+              },
+              {
+                "id": "spot-2",
+                "row": 0,
+                "column": 1,
+                "dx": 0,
+                "dy": 0
+              },
+              {
+                "id": "spot-3",
+                "row": 0,
+                "column": 2,
+                "dx": 0,
+                "dy": 0
+              },
+              {
+                "id": "spot-4",
+                "row": 1,
+                "column": 0,
+                "dx": 0,
+                "dy": 0
+              },
+              {
+                "id": "spot-5",
+                "row": 1,
+                "column": 1,
+                "dx": 0,
+                "dy": 0
+              },
+              {
+                "id": "spot-6",
+                "row": 1,
+                "column": 2,
+                "dx": 0,
+                "dy": 0
+              }
+            ]
+          }
+        }
+      },
+      "sealBars": {
+        "positive_upper": {
+          "id": "positive-upper",
+          "revision": "phase1-1",
+          "location": "positive",
+          "half": "upper",
+          "u": 15,
+          "v": 156,
+          "rotation": 0,
+          "extra": {
+            "enabled": false,
+            "u": -20,
+            "v": -1,
+            "length": 8,
+            "width": 2
+          },
+          "relief": {
+            "enabled": false,
+            "u": 0,
+            "length": 12,
+            "depth": 0.2
+          },
+          "tabProfile": {
+            "centerLength": 38,
+            "transitionR": 3,
+            "centerWidth": 3,
+            "outerWidth": 5,
+            "startU": -44.5,
+            "endU": 75.5,
+            "centerOffset": 0
+          }
+        },
+        "positive_lower": {
+          "id": "positive-lower",
+          "revision": "phase1-1",
+          "location": "positive",
+          "half": "lower",
+          "u": 15,
+          "v": 156,
+          "rotation": 0,
+          "extra": {
+            "enabled": false,
+            "u": -20,
+            "v": -1,
+            "length": 8,
+            "width": 2
+          },
+          "relief": {
+            "enabled": false,
+            "u": 0,
+            "length": 12,
+            "depth": 0.2
+          },
+          "tabProfile": {
+            "centerLength": 38,
+            "transitionR": 3,
+            "centerWidth": 3,
+            "outerWidth": 5,
+            "startU": -44.5,
+            "endU": 75.5,
+            "centerOffset": 0
+          }
+        },
+        "negative_upper": {
+          "id": "negative-upper",
+          "revision": "phase1-1",
+          "location": "negative",
+          "half": "upper",
+          "u": 15,
+          "v": 156,
+          "rotation": 0,
+          "extra": {
+            "enabled": false,
+            "u": -20,
+            "v": -1,
+            "length": 8,
+            "width": 2
+          },
+          "relief": {
+            "enabled": false,
+            "u": 0,
+            "length": 12,
+            "depth": 0.2
+          },
+          "tabProfile": {
+            "centerLength": 36,
+            "transitionR": 2.5,
+            "centerWidth": 3,
+            "outerWidth": 4.8,
+            "startU": -46.0,
+            "endU": 74.0,
+            "centerOffset": 0
+          }
+        },
+        "negative_lower": {
+          "id": "negative-lower",
+          "revision": "phase1-1",
+          "location": "negative",
+          "half": "lower",
+          "u": 15,
+          "v": 156,
+          "rotation": 0,
+          "extra": {
+            "enabled": false,
+            "u": -20,
+            "v": -1,
+            "length": 8,
+            "width": 2
+          },
+          "relief": {
+            "enabled": false,
+            "u": 0,
+            "length": 12,
+            "depth": 0.2
+          },
+          "tabProfile": {
+            "centerLength": 36,
+            "transitionR": 2.5,
+            "centerWidth": 3,
+            "outerWidth": 4.8,
+            "startU": -46.0,
+            "endU": 74.0,
+            "centerOffset": 0
+          }
+        },
+        "gas_upper": {
+          "id": "gas-upper",
+          "revision": "example-1",
+          "location": "gas",
+          "half": "upper",
+          "u": 1,
+          "v": 73,
+          "rotation": 0,
+          "vertices": [
+            {
+              "id": "inner-start",
+              "u": -163.0,
+              "v": 0
+            },
+            {
+              "id": "inner-shoulder",
+              "u": 0,
+              "v": 0,
+              "arc": 0
+            },
+            {
+              "id": "inner-end",
+              "u": 163.0,
+              "v": 0
+            },
+            {
+              "id": "outer-end",
+              "u": 163.0,
+              "v": 5
+            },
+            {
+              "id": "outer-start",
+              "u": -163.0,
+              "v": 5
+            }
+          ],
+          "extra": {
+            "enabled": false,
+            "u": -20,
+            "v": -1,
+            "length": 8,
+            "width": 2
+          },
+          "relief": {
+            "enabled": false,
+            "u": 0,
+            "length": 12,
+            "depth": 0.2
+          }
+        },
+        "gas_lower": {
+          "id": "gas-lower",
+          "revision": "example-1",
+          "location": "gas",
+          "half": "lower",
+          "u": 1,
+          "v": 73,
+          "rotation": 0,
+          "vertices": [
+            {
+              "id": "inner-start",
+              "u": -163.0,
+              "v": 0
+            },
+            {
+              "id": "inner-shoulder",
+              "u": 0,
+              "v": 0,
+              "arc": 0
+            },
+            {
+              "id": "inner-end",
+              "u": 163.0,
+              "v": 0
+            },
+            {
+              "id": "outer-end",
+              "u": 163.0,
+              "v": 5
+            },
+            {
+              "id": "outer-start",
+              "u": -163.0,
+              "v": 5
+            }
+          ],
+          "extra": {
+            "enabled": false,
+            "u": -20,
+            "v": -1,
+            "length": 8,
+            "width": 2
+          },
+          "relief": {
+            "enabled": false,
+            "u": 0,
+            "length": 12,
+            "depth": 0.2
+          }
+        },
+        "final_upper": {
+          "id": "final-upper",
+          "revision": "example-1",
+          "location": "final",
+          "half": "upper",
+          "u": 1,
+          "v": 44,
+          "rotation": 0,
+          "vertices": [
+            {
+              "id": "inner-start",
+              "u": -163.0,
+              "v": 0
+            },
+            {
+              "id": "inner-shoulder",
+              "u": 0,
+              "v": 0,
+              "arc": 0
+            },
+            {
+              "id": "inner-end",
+              "u": 163.0,
+              "v": 0
+            },
+            {
+              "id": "outer-end",
+              "u": 163.0,
+              "v": 5
+            },
+            {
+              "id": "outer-start",
+              "u": -163.0,
+              "v": 5
+            }
+          ],
+          "extra": {
+            "enabled": false,
+            "u": -20,
+            "v": -1,
+            "length": 8,
+            "width": 2
+          },
+          "relief": {
+            "enabled": false,
+            "u": 0,
+            "length": 12,
+            "depth": 0.2
+          }
+        },
+        "final_lower": {
+          "id": "final-lower",
+          "revision": "example-1",
+          "location": "final",
+          "half": "lower",
+          "u": 1,
+          "v": 44,
+          "rotation": 0,
+          "vertices": [
+            {
+              "id": "inner-start",
+              "u": -163.0,
+              "v": 0
+            },
+            {
+              "id": "inner-shoulder",
+              "u": 0,
+              "v": 0,
+              "arc": 0
+            },
+            {
+              "id": "inner-end",
+              "u": 163.0,
+              "v": 0
+            },
+            {
+              "id": "outer-end",
+              "u": 163.0,
+              "v": 5
+            },
+            {
+              "id": "outer-start",
+              "u": -163.0,
+              "v": 5
+            }
+          ],
+          "extra": {
+            "enabled": false,
+            "u": -20,
+            "v": -1,
+            "length": 8,
+            "width": 2
+          },
+          "relief": {
+            "enabled": false,
+            "u": 0,
+            "length": 12,
+            "depth": 0.2
+          }
+        }
+      }
+    }
+  },
+  "datumSet": {
+    "id": "model",
+    "origin": [
+      0,
+      0,
+      0
+    ],
+    "rotationZ": 0
+  },
+  "measurements": [],
+  "view": {
+    "hidden": [],
+    "transparent": false,
+    "datums": true,
+    "section": {
+      "axis": "none",
+      "position": 0
+    },
+    "camera": null,
+    "autoRebuild": true
+  },
+  "notes": "R4 가상 예시 mm. 포일/공구/실링은 공칭 형상이며 변형·융착·가스팽창 해석이 아닙니다.",
+  "anchors": [],
+  "migration": {
+    "from": 2,
+    "decision": "새 가상 예시는 종전 집속 폭을 선택. 사용자 파일 변환은 별도 확인.",
+    "originalWidths": {
+      "positive": [
+        38,
+        32
+      ],
+      "negative": [
+        36,
+        29
+      ]
+    }
+  },
+  "modelIdentity": {
+    "modelId": "virtual-pouch-phase1",
+    "revision": "phase1-1"
+  }
+}

@@ -449,6 +449,20 @@ export class Viewer {
         ),
       );
     };
+    if (this.state?.view.datums && this.state.view.section.axis === "none") {
+      const guides = [
+        ["phase1.gas.outer", "#317ca5", "가스방 외곽 실링"],
+        ["phase1.final.inner", "#92643a", "몸체 쪽 최종 실링"],
+        ["phase1.cut.line", "#435b66", "절단선"],
+      ];
+      for (const [id, color, label] of guides) {
+        const feature = this.data?.features[id];
+        if (!feature?.available || this.state.view.hidden.includes(feature.partId)) continue;
+        line(...feature.segment, color, 1.1, true);
+        const [a, b] = feature.segment;
+        text(a.map((value, i) => value * .7 + b[i] * .3), label, color);
+      }
+    }
     if (this.state?.view.datums) {
       const L = this.state.product.stack.length,
         W = this.state.product.stack.width;

@@ -1,3 +1,4 @@
+import { mountOverview } from "./overview/panel.js";
 import { mountTooling } from "./tooling/panel.js";
 import {
   editorGroup,
@@ -20,7 +21,6 @@ import { reconcileProject, productFromIntake } from "./intake/adapter.js";
 import { stableId } from "./intake/contract.js";
 import "./style.css";
 import {
-  initial,
   clone,
   stages,
   parseProject,
@@ -61,7 +61,7 @@ const $ = (id) => document.getElementById(id),
         })[c],
     );
 let toolingPreview = false;
-let state = initial(),
+let state = previewExamples["pouch-phase1"](),
   draft = clone(state.product),
   targetStage = state.stage,
   model = null,
@@ -81,7 +81,7 @@ let state = initial(),
   editGroup = null,
   lastHistoryGroup = null,
   replacement = null;
-state.measurements = demoMeasurements(state.stage);
+state.measurements = demoMeasurements(state.stage, state.product);
 const history = new History();
 const viewer = new Viewer($("viewport"), {
   onSelect: (...hit) => { if (!toolingPreview) selectPart(...hit); },
@@ -165,6 +165,8 @@ function setDirty(value) {
   $("compare").disabled = !(live || preview);
   $("stage").disabled = !ready;
   $("pouch-example").disabled = !ready;
+  for (const id of ["overview-legacy", "overview-main", "phase1-example"])
+    $(id).disabled = !(live || preview);
   $("discard").disabled = !!preview;
 
   $("undo").disabled = (!!preview && busy) || (!history.undoList.length && !dirty);
@@ -228,7 +230,7 @@ const queue = new RebuildQueue({
     setDirty(false);
     viewer.setModel(model, state);
     if (meta.replace && state.view.camera) viewer.restore(state.view.camera);
-    if (meta.fit) viewer.fit();
+    if (meta.fit && !$("process-detail").hidden) viewer.fit();
     if (syncTargets() || changedStage || meta.replace) renderFields();
     else syncFieldValues();
     syncUI();
@@ -236,6 +238,7 @@ const queue = new RebuildQueue({
     clearErrors();
     updateHighlight();
     toolingTools.refresh();
+    overview.refresh(state, result);
     status(
       (preview ? "기록 확정 · " : "CAD 확정 · ") + stages[state.stage],
       "",
@@ -310,7 +313,16 @@ function changeField(path, value) {
   );
 }
 function syncUI() {
-  for (const o of $("stage").options) if (stageContract[o.value]?.r4) o.disabled = !preview && !state.product.processTooling;
+  const tooling = state.product.processTooling;
+  const modern = !!tooling;
+  const agreedProfile = modern && Object.values(tooling.sealBars).some(bar => bar.tabProfile);
+  for (const option of $("stage").options) {
+    const contract = stageContract[option.value];
+    // An already saved R4 project at a compatibility stage remains reopenable.
+    const incompatible = agreedProfile && !contract.r4 && (contract.pouch || contract.legacyPouch);
+    option.hidden = incompatible && option.value !== state.stage;
+    option.disabled = option.hidden || (!!contract.r4 && !preview && !modern);
+  }
   renderPouchResults();
   $("data-origin").textContent = state.demo
     ? "DEMO · 예시값"
@@ -1908,7 +1920,10 @@ async function boot() {
   setDirty(false);
   if (live || preview) {
     request(state, { record: false, replace: true, fit: true });
+    overview.available(true);
+    $("overview-engine").textContent = $("engine-state").textContent;
   } else {
+    overview.available(false);
     $("engine-state").textContent = "읽기 전용 · CAD 서버 없음";
     status("계산 서버 연결 필요", "error", failure.message);
   }
@@ -1947,6 +1962,7 @@ const createModels = () => mountModels({
     renderFields();
     syncUI();
     renderCalculated();
+    if (result) overview.refresh(state, result);
     status(
       "모델 적용 · " +
         (state.modelIdentity?.modelId || state.product.id) +
@@ -2017,10 +2033,6 @@ $("anchor-create").onclick = () => {
   addAnchor(a);
 };
 
-// Dedicated process entry is an explicit virtual model, never a legacy migration.
-$("pouch-example").onclick = () => {
-  request(previewExamples["pouch-process"](), { replace: true });
-};
 for (const [id, c] of Object.entries(stageContract))
   if (![...$("stage").options].some((o) => o.value === id))
     $("stage").append(new Option(c.label, id));
@@ -2057,6 +2069,13 @@ function renderPouchResults() {
     };
     el.append(button);
   }
+  for (const side of ["positive", "negative"]) {
+    if (!model.toolingResults?.seals[side]?.tabDimensions || !model.parts.some(p => p.id === "seal." + side)) continue;
+    const inspect = document.createElement("button");
+    inspect.textContent = (side === "positive" ? "양극" : "음극") + " 탭 실링 확대·치수";
+    inspect.onclick = () => inspectTabSeal(side);
+    el.prepend(inspect);
+  }
   const presets = $("pouch-section");
   presets.replaceChildren(new Option("리드 통과부 단면 선택", ""));
   for (const side of ["positive", "negative"]) {
@@ -2080,6 +2099,27 @@ $("pouch-section").onchange = () => {
   $("section-position").value = $("pouch-section").value;
   section();
 };
+
+function inspectTabSeal(side) {
+  if (!model || dirty || busy) return;
+  const seal = model.parts.find(p => p.id === "seal." + side);
+  if (!seal) return;
+  state.view.hidden = [...new Set([...state.view.hidden, ...model.parts
+    .filter(p => p.id.startsWith("tool.seal.")).map(p => p.id)])];
+  state.view.hidden = state.view.hidden.filter(id => ![
+    seal.id, side+".lead", side+".leadFilm", "pouch.upper.pocket"
+  ].includes(id));
+  const x = (seal.bounds.min[0] + seal.bounds.max[0]) / 2;
+  const lead = model.parts.find(p => p.id === side+".lead");
+  const y = lead ? (lead.bounds.min[1] + lead.bounds.max[1]) / 2 : 0;
+  selectPart(seal.id);
+  tab("tooling");
+  toolingTools.selectSeal(side);
+  refreshView();
+  const viewport = $("viewport");
+  const aspect = Math.max(.4, viewport.clientWidth / Math.max(1, viewport.clientHeight));
+  viewer.restore({position:[x,y,400],target:[x,y,0],up:[0,1,0],zoom:Math.min(2.9, 2.4*aspect)});
+}
 
 const toolingTools = mountTooling({
   project: () => state, model: () => model, stageLabel: s => stages[s] || s,
@@ -2110,4 +2150,32 @@ if (previewBuild) {
   };
   $("pouch-example").before(button);
 }
+const overview = mountOverview({
+  host: $("process-overview"),
+  details: $("process-detail"),
+  getProject: () => state,
+  calculate: project => compute(reconcileProject(project), 2000000 + ++editCounter),
+  selectStage: stage => {
+    overview.showDetail();
+    $("open-overview").hidden = false;
+    if (stage === state.stage && model) viewer.fit();
+    else request({ ...state, stage }, { fit: true });
+  },
+});
+$("open-overview").onclick = () => {
+  if (dirty || toolingPreview || busy)
+    return status("현재 입력을 적용하거나 취소한 뒤 공정 개요를 여세요.");
+  $("open-overview").hidden = true;
+  overview.open();
+};
+function openExampleDetail(project) {
+  overview.showDetail();
+  $("open-overview").hidden = false;
+  request(project, { replace: true, fit: true });
+}
+$("overview-main").onclick = () => request(previewExamples["pouch-phase1"](), { replace: true });
+$("phase1-example").onclick = () => openExampleDetail(previewExamples["pouch-phase1"]());
+$("overview-legacy").onclick = () => openExampleDetail(previewExamples["pouch-process"]());
+$("pouch-example").onclick = () => openExampleDetail(previewExamples["pouch-process"]());
+overview.open();
 boot();

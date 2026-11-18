@@ -25,6 +25,7 @@ EXAMPLES = {
     "demo": ("#preview-demo", "stacked"),
     "pouch-process": ("#pouch-example", "sealed"),
     "process-tooling-r4": ("#r4-example", "preweld"),
+    "pouch-phase1": ("#phase1-example", "tab_sealed"),
 }
 GROUPS = {"stack", "positive", "negative", "pouch", "seal", "tool"}
 
@@ -131,6 +132,14 @@ def expect_stage(page, stage, dataset, label, recorded=True):
     assert page.locator("#viewport canvas").count() >= 1
 
 
+def enter_demo(page, url):
+    page.goto(url)
+    expect(page.locator("#status")).to_contain_text("기록 확정")
+    page.locator('.process-card[data-stage="tab_sealed"]').click()
+    page.locator("#preview-demo").click()
+    expect(page.locator("#status")).to_contain_text("기록 확정 · S0")
+
+
 def matrix(browser, folder):
     manifest = json.loads((folder / "preview/manifest.json").read_bytes())
     labels = {key: info["label"] for key, info in json.loads((ROOT / "src/data/stages.json").read_bytes()).items()}
@@ -139,12 +148,16 @@ def matrix(browser, folder):
         faults, console = instrument(page)
         page.goto(url)
         expect(page.locator("#status")).to_contain_text("기록 확정")
+        expect(page.locator("#overview-model")).to_contain_text("phase1-1")
+        page.locator('.process-card[data-stage="tab_sealed"]').click()
         expect(page.locator("#engine-state")).to_have_text(
             "읽기 전용 프리뷰 · 사전 계산 형상(" + manifest["sourceCommit"][:7] + ")")
         expect(page.locator("#undo")).to_be_disabled()
         design_requests = lambda: [path.split("/")[-1] for _, path in requests
                                    if path.startswith(PREFIX + "/preview/")]
-        assert design_requests() == ["manifest.json", "demo.json"], requests
+        assert design_requests() == ["manifest.json", "pouch-phase1.json"], requests
+        page.locator("#preview-demo").click()
+        expect(page.locator("#status")).to_contain_text("기록 확정 · S0")
         for id in ["save", "open", "step", "models", "apply", "auto-rebuild", "edit-selection"]:
             expect(page.locator("#" + id)).to_be_disabled()
         assert page.locator("#models-dialog").count() == 0
@@ -172,6 +185,10 @@ def matrix(browser, folder):
             page.locator(selector).click()
             expect_stage(page, current, dataset, labels[current])
             for stage, code in design["stages"].items():
+                if page.locator("#stage option[value='" + stage + "']").is_disabled():
+                    # Phase 1 keeps old P/S5/S6 routes out of the current model picker.
+                    assert design["name"] == "pouch-phase1"
+                    continue
                 page.locator("#stage").select_option(stage)
                 if code == 200:
                     expect_stage(page, stage, dataset, labels[stage])
@@ -198,7 +215,7 @@ def matrix(browser, folder):
                     expect(page.locator("#" + button)).to_be_disabled()
                 page.locator('[data-r4-stage="film_formed"]').click()
                 expect_stage(page, "film_formed", dataset, labels["film_formed"])
-        assert len(design_requests()) == 4
+        assert len(design_requests()) == 5
         assert not [path for method, path in requests if method == "POST"], requests
         no_errors(faults, console)
         print(f"Static matrix {sum(counts.values())}: {counts}, lazy dataset loads, R4 read-only controls", flush=True)
@@ -206,7 +223,7 @@ def matrix(browser, folder):
 
         page = browser.new_page()
         faults, console = instrument(page)
-        page.goto(url)
+        enter_demo(page, url)
         demo = load_dataset(folder, manifest["designs"][0])
         expect_stage(page, "stacked", demo, labels["stacked"])
         for stage in ["gathered", "preweld", "welded"]:
@@ -256,8 +273,7 @@ def delayed_and_corrupt(browser, folder):
     with static_host(folder, delay) as (url, _):
         page = browser.new_page()
         faults, console = instrument(page)
-        page.goto(url)
-        expect(page.locator("#status")).to_contain_text("기록 확정")
+        enter_demo(page, url)
         page.locator("#pouch-example").click()
         assert arrived.wait(10)
         page.locator("#tooling-tab").click()
@@ -268,7 +284,7 @@ def delayed_and_corrupt(browser, folder):
         expect(page.locator("#status")).to_contain_text("기록 확정 · S2")
         page.locator("#undo").click()
         expect(page.locator("#status")).to_contain_text("기록 확정 · S0")
-        expect(page.locator("#undo")).to_be_disabled()
+        expect(page.locator("#undo")).to_be_enabled()
         no_errors(faults, console)
         page.close()
     print("Delayed old response does not overwrite new geometry/history/error: PASS", flush=True)
@@ -288,15 +304,14 @@ def delayed_and_corrupt(browser, folder):
         with static_host(folder, overrides.get) as (url, _):
             page = browser.new_page()
             faults, console = instrument(page)
-            page.goto(url)
-            expect(page.locator("#status")).to_contain_text("기록 확정 · S0")
+            enter_demo(page, url)
             page.locator("#pouch-example").click()
             expect(page.locator("#status")).to_contain_text("마지막 확정 형상 유지")
             expect(page.locator("#messages")).to_contain_text("프리뷰 데이터 로딩 오류")
             expect(page.locator("#messages")).to_contain_text(
                 "Missing part reference" if break_reference else "해시 불일치")
             expect(page.locator("#stage")).to_have_value("stacked")
-            expect(page.locator("#undo")).to_be_disabled()
+            expect(page.locator("#undo")).to_be_enabled()
             no_errors(faults, console)
             page.close()
     print("Damaged asset and unresolved part keep the accepted model: PASS", flush=True)
@@ -322,6 +337,8 @@ def live_check(browser, folder, live_url):
         page.set_default_timeout(60_000)
         faults, console = instrument(page)
         page.goto(url)
+        expect(page.locator("#status")).to_contain_text("CAD 확정", timeout=60_000)
+        page.locator('.process-card[data-stage="stacked"]').click()
         expect(page.locator("#status")).to_contain_text("CAD 확정 · S0", timeout=60_000)
         expect(page.locator("#engine-state")).to_contain_text("실시간 CadQuery")
         page.locator("#design-tab").click()

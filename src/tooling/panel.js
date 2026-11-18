@@ -1,8 +1,10 @@
+import { tabSealPlan } from "./seal-plan.js";
 import {clone,get,set,labels,fieldsForObject,toolingDictionary,r4Stages,toolingPreviewProject} from './contract.js';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const num=x=>Number.isFinite(x)?x.toFixed(3):'—';
 export function mountTooling(api){
  const root=document.getElementById('tooling-pane');
+ let paired=true;
  let project=null,result=null,part='ultrasonic',side='positive',ws='preweld',kind='horn',location='positive',half='upper',pending=false,working=false,token=0,validated=null;
  root.innerHTML=`<div class="tooling-intro"><b>공정·요소기술 R4</b><p>가상 예시 · mm · 공칭 형상. 설계 / 계산 / 실측을 구분합니다.</p></div><button id="r4-example" class="primary">R4 가상 예제 열기</button><div id="r4-controls" hidden><div class="tooling-nav"><select id="r4-mode" aria-label="요소기술 종류"><option value="ultrasonic">혼·엔빌 작업면</option><option value="gathering">가용접 포일 집속</option><option value="laser">레이저 스팟</option><option value="seal">실링바 평면 윤곽</option><option value="pouch">한 장 필름·가스방</option></select><select id="r4-side" aria-label="요소기술 극"><option value="positive">양극 · 독립</option><option value="negative">음극 · 독립</option></select><select id="r4-wstage" aria-label="공구 적용 공정"><option value="preweld">S2 가용접 공구</option><option value="welded">S3 메인 용접 공구</option></select><select id="r4-kind" aria-label="혼 또는 엔빌"><option value="horn">혼 (상부)</option><option value="anvil">엔빌 (하부)</option></select><select id="r4-location" aria-label="실링 위치"><option value="positive">양극 탭측</option><option value="negative">음극 탭측</option><option value="gas">가스방 외곽</option><option value="final">몸체 최종 실링</option></select><select id="r4-half" aria-label="실링바 상하"><option value="upper">상부 바</option><option value="lower">하부 바</option></select></div><div id="r4-basis" class="small"></div><div id="r4-plan"></div><div id="r4-results" aria-live="polite"></div><div class="r4-actions"><button id="r4-preview">CAD 미리보기</button><button id="r4-apply" class="primary" disabled>미리보기 적용</button><button id="r4-cancel">취소 · 확정 복원</button></div><p id="r4-message" role="status"></p><div id="r4-special"></div><div id="r4-fields"></div><button id="r4-dictionary">R4 필드·명칭 양식 내려받기</button></div>`;
  const $=id=>document.getElementById(id),value=()=>project?.product.processTooling;
@@ -27,9 +29,17 @@ export function mountTooling(api){
   fs=[{...fields({method:q.poles[side].method},pre)[0]},...fields(q.poles[side].laser,pre+'.laser').filter(f=>!f.id.includes('.spots.'))];basis='S3 이후 메인 방식=레이저일 때 표시 · 탭–리드 실제 겹침면 기준. 빨강은 중심이 내부여도 원주가 겹침 밖인 점입니다. 배열 변경 후에도 기존 ID 유지.';
   special='<button id="r4-grid">행×열 배열 재구성</button><button id="r4-add-spot">스팟 1개 추가</button>'+q.poles[side].laser.spots.map((s,i)=>`<details><summary>${esc(s.id)} · 행 ${s.row}, 열 ${s.column}</summary>${fields(s,pre+'.laser.spots.'+i).map(input).join('')}<button data-r4-remove="${esc(s.id)}">${esc(s.id)} 삭제</button></details>`).join('');
  }else if(part==='seal'){
-  const f=q.sealBars[location+'_'+half];fs=fields(f,'processTooling.sealBars.'+location+'_'+half).filter(f=>!f.id.includes('.vertices.'));
-  basis='U–V 닫힌 작업면. 각 점의 원호 값은 직전 점→현재 점의 현에서 왼쪽 방향 처짐(mm), 0=직선. 외곽과 내측선을 따로 편집합니다. 제품 면적=상하 작업면 중첩∩남아 있는 필름. 추가 타격은 합집합입니다.';
-  special='<h4>작업면 윤곽 · 직선/원호</h4>'+f.vertices.map((v,i)=>`<details open><summary>${esc(v.id)}</summary>${fields({...v,arc:v.arc||0},'processTooling.sealBars.'+location+'_'+half+'.vertices.'+i).map(input).join('')}</details>`).join('');
+  const f=q.sealBars[location+'_'+half], prefix='processTooling.sealBars.'+location+'_'+half;
+  if (f.tabProfile) {
+   fs=fields(f.tabProfile,prefix+'.tabProfile').filter(field=>/\.(centerLength|transitionR)$/.test(field.id));
+   basis='리드 중심 기준 · L은 중앙 수평부의 두 접점 간 거리. R은 전이 접선 원호입니다. 중앙·바깥 폭과 리드 쪽 외측선은 고정합니다.';
+   const pairAvailable = q.sealBars[location+'_upper'].tabProfile && q.sealBars[location+'_lower'].tabProfile;
+   special=pairAvailable ? `<label><input id="r4-paired-tab" type="checkbox" ${paired?'checked':''}> 상·하 바의 L·R 함께 편집</label>` : '';
+  } else {
+   fs=fields(f,prefix).filter(field=>!field.id.includes('.vertices.'));
+   basis='U–V 닫힌 작업면. 각 점의 원호 값은 직전 점→현재 점의 현에서 왼쪽 방향 처짐(mm), 0=직선. 제품 면적=상하 작업면 중첩∩남아 있는 필름.';
+   special='<h4>작업면 윤곽 · 직선/원호</h4>'+f.vertices.map((v,i)=>`<details open><summary>${esc(v.id)}</summary>${fields({...v,arc:v.arc||0},prefix+'.vertices.'+i).map(input).join('')}</details>`).join('');
+  }
  }else{
   fs=fields(q.packaging,'processTooling.packaging').filter(f=>!['gasOuterY','finalSealY'].includes(f.id.split('.').at(-1)));
   for(const h of ['lower','upper'])fs.push(...fields(project.product.pouchProcess.sheets[h],'pouchProcess.sheets.'+h).filter(f=>!f.id.includes('.blank.')&&!f.id.includes('.cut.')));
@@ -41,7 +51,22 @@ export function mountTooling(api){
   el.disabled = !editable();
  for (const el of root.querySelectorAll('[data-r4-stage]'))
   el.disabled = !editable() && !api.recorded();
- root.querySelectorAll('[data-r4-field]').forEach(el=>el.oninput=()=>{if(!editable())return;const path=el.dataset.r4Field;set(project.product,path,el.type==='checkbox'?el.checked:el.type==='number'?(el.value.trim()===''?NaN:Number(el.value)):el.value);mark();});
+ const pair=$('r4-paired-tab');
+ if (pair) {
+  pair.disabled=!editable();
+  pair.onchange=()=>{paired=pair.checked;};
+ }
+ root.querySelectorAll('[data-r4-field]').forEach(el=>el.oninput=()=>{
+  if(!editable())return;
+  const path=el.dataset.r4Field;
+  const value=el.type==='checkbox'?el.checked:el.type==='number'?(el.value.trim()===''?NaN:Number(el.value)):el.value;
+  set(project.product,path,value);
+  if (pair && paired && path.includes('.tabProfile.')) {
+   const other=half==='upper'?'lower':'upper';
+   set(project.product,path.replace(location+'_'+half,location+'_'+other),value);
+  }
+  mark();
+ });
  root.querySelectorAll('[data-r4-remove]').forEach(el=>el.onclick=()=>{if(!editable())return;const l=q.poles[side].laser;l.spots=l.spots.filter(s=>s.id!==el.dataset.r4Remove);mark();render();});
  root.querySelectorAll('[data-r4-stage]').forEach(el=>el.onclick=()=>{if(api.recorded())return api.openStage(el.dataset.r4Stage);if(!editable())return;project.stage=el.dataset.r4Stage;mark();preview();});
  if($('r4-half-pitch'))$('r4-half-pitch').onclick=()=>{if(!editable())return;const f=q.poles[side].tools[ws][kind];f.x+=f.pitchU/2;mark();render();};
@@ -51,7 +76,7 @@ export function mountTooling(api){
  }
  function draw(){
  const r=result?.toolingResults;$('r4-plan').innerHTML='';$('r4-results').innerHTML='';if(!r)return;
- let layer=[],caption='',rows=[],detail='';
+ let layer=[],caption='',rows=[],detail='',profilePlan='';
  const add=(ps,color,dash=false)=>{for(const points of ps||[])if(points.length)layer.push({points,color,dash});};
  if(part==='ultrasonic'||part==='laser'){
   const p=r.plans[side];if(!p){$('r4-results').textContent='현재 공정에는 용접 작업면이 없습니다. 공정 상태에서 S2 또는 S3를 선택하세요.';return;}
@@ -70,6 +95,15 @@ export function mountTooling(api){
   for(const s of p.spots||[]){if (!api.recorded()) {const pts=Array.from({length:49},(_,i)=>[s.x+s.diameter/2*Math.cos(i*Math.PI/24),s.y+s.diameter/2*Math.sin(i*Math.PI/24),0]);add([pts],s.outside?'#ef5757':'#299e82');}rows.push([s.id,`${num(s.x)}, ${num(s.y)} · Ø${num(s.diameter)}${s.outside?' · 원주 이탈':''}`]);}
  }else if(part==='seal'){
   const f=r.seals[location+'_'+half],s=r.seals[location];if(!f){$('r4-results').textContent='닫힌 패키지 R2 이후에서 실링 평면을 계산합니다.';return;}
+  if (f.definition.tabProfile) {
+   profilePlan=tabSealPlan(r.seals,project,location,half);
+   const dim=s.tabDimensions || {};
+   rows.push(['제품 중앙 접점 L',dim.center ? num(dim.center.length)+' mm' : '동일 접점 없음 · 중첩 경계 확인'],
+     ['제품 전이 R',dim.radius ? num(dim.radius.radius)+' mm' : '동일 원호 없음 · 중첩 경계 확인'],
+     ['공구 제한',s.limitingBars?.length ? s.limitingBars.map(x=>x==='upper'?'상부':'하부').join(' · ') : '상·하 일치']);
+   for (const [label,key] of [['바깥 왼쪽','left'],['중앙','center'],['바깥 오른쪽','right']])
+    if (s.profileWidths) rows.push([label+' 폭',num(s.profileWidths[key])+' mm']);
+  }
   add(f.base,'#5792dc');add(f.union,'#d6923c',true);add(f.working,'#48ab8e');caption=`${location} / ${half} · 작업면 U–V · 파랑 1회 타격, 주황 합집합`;
   rows.push(['선택 바 1회 타격',num(f.baseArea)+' mm²'],['선택 바 투영 합집합',num(f.projectionArea)+' mm²'],['상하 유효 중첩',num(s.overlapArea)+' mm²'],['제품 필름 위 공칭 실링',num(s.productArea)+' mm²']);
   for(const v of s.sections)rows.push([v.id+' / Y='+num(v.y),`폭 ${num(v.width)} / 실런트 중첩 ${num(v.sealantOverlap)} mm`]);
@@ -80,7 +114,7 @@ export function mountTooling(api){
  }else{
   const p=r.packaging;if(p)rows=Object.entries(p).filter(([k])=>!['step','open'].includes(k)).map(([k,v])=>[k,typeof v==='number'?num(v)+' mm':v]);caption='왼쪽 실제 CAD: 열린 두 컵 → 닫힘 → 실링 → 절단·폴딩';
  }
- if(layer.length){const pts=layer.flatMap(x=>x.points),xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]),xmin=Math.min(...xs),xmax=Math.max(...xs),ymin=Math.min(...ys),ymax=Math.max(...ys),w=Math.max(xmax-xmin,1),h=Math.max(ymax-ymin,1),pad=Math.max(w,h)*.08;const svg=layer.map(l=>`<polyline points="${l.points.map(p=>p[0]+','+(-p[1])).join(' ')}" fill="none" stroke="${l.color}" stroke-width="1.5" vector-effect="non-scaling-stroke" ${l.dash?'stroke-dasharray="5 3"':''}/>`).join('');$('r4-plan').innerHTML=`<p>${esc(caption)}</p><svg viewBox="${xmin-pad} ${-ymax-pad} ${w+2*pad} ${h+2*pad}" role="img" aria-label="${esc(caption)}">${svg}</svg>${detail}`;}else $('r4-plan').innerHTML=`<p>${esc(caption)}</p>${detail}`;
+ if(profilePlan){$('r4-plan').innerHTML=profilePlan;}else if(layer.length){const pts=layer.flatMap(x=>x.points),xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]),xmin=Math.min(...xs),xmax=Math.max(...xs),ymin=Math.min(...ys),ymax=Math.max(...ys),w=Math.max(xmax-xmin,1),h=Math.max(ymax-ymin,1),pad=Math.max(w,h)*.08;const svg=layer.map(l=>`<polyline points="${l.points.map(p=>p[0]+','+(-p[1])).join(' ')}" fill="none" stroke="${l.color}" stroke-width="1.5" vector-effect="non-scaling-stroke" ${l.dash?'stroke-dasharray="5 3"':''}/>`).join('');$('r4-plan').innerHTML=`<p>${esc(caption)}</p><svg viewBox="${xmin-pad} ${-ymax-pad} ${w+2*pad} ${h+2*pad}" role="img" aria-label="${esc(caption)}">${svg}</svg>${detail}`;}else $('r4-plan').innerHTML=`<p>${esc(caption)}</p>${detail}`;
  $('r4-results').innerHTML=`<strong>${api.recorded()?'사전 계산 기록':pending?'미리보기 CAD 계산':'확정 CAD 계산'} · ${esc(api.stageLabel(result.stage))}</strong><table>${rows.map(([k,v])=>`<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`).join('')}</table>`;
  }
  async function preview(){if(working||!editable())return;project=toolingPreviewProject(api.project(),project);const id=++token;working=true;api.lock(true);$('r4-preview').disabled=true;$('r4-apply').disabled=true;$('r4-message').textContent='미리보기 CAD 계산 중…';try{
@@ -95,5 +129,14 @@ export function mountTooling(api){
  $('r4-preview').onclick=preview;$('r4-cancel').onclick=()=>{if(!editable())return;api.restore();api.lock(false);reset();$('r4-message').textContent='취소 완료 · 확정 형상과 설정을 복원했습니다.';};
  $('r4-apply').onclick=()=>{if(!editable()||validated!==JSON.stringify(project))return;api.apply(clone(project));};
  $('r4-dictionary').onclick=()=>{if(!editable())return;const data={format:'cell-r4-field-guide',sourceModel:project.product.id,revision:value().revision,unit:'mm',example:project.demo,fields:toolingDictionary(project.product).map(f=>({...f,companyName:'',sourceDocument:'',tolerance:null,note:'설계 입력. 실측은 공정별 검사 항목에 저장.'}))};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='R4-field-and-naming-guide.json';a.click();URL.revokeObjectURL(a.href);};
- reset();return {refresh:reset,isPending:()=>pending};
+ reset();
+ return {
+  refresh:reset,
+  isPending:()=>pending,
+  selectSeal(side){
+   part='seal'; location=side; half='upper';
+   $('r4-mode').value=part; $('r4-location').value=location; $('r4-half').value=half;
+   reset();
+  },
+ };
 }
