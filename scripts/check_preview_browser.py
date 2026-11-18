@@ -185,7 +185,7 @@ def matrix(browser, folder):
             page.locator(selector).click()
             expect_stage(page, current, dataset, labels[current])
             for stage, code in design["stages"].items():
-                if page.locator("#stage option[value='" + stage + "']").is_disabled():
+                if page.locator("#stage option[value='" + stage + "']").evaluate("(option) => option.disabled"):
                     # Phase 1 keeps old P/S5/S6 routes out of the current model picker.
                     assert design["name"] == "pouch-phase1"
                     continue

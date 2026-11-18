@@ -60,7 +60,7 @@ def run(page, url, output):
     page.locator('.process-card[data-stage="package_folded"]').click()
     expect(page.locator("#scene-title")).to_contain_text("virtual-pouch-phase1 / phase1-1")
     expect(page.locator("#status")).to_contain_text("CAD 확정")
-    assert page.locator('#stage option[value="folded"]').is_hidden()
+    assert page.locator('#stage option[value="folded"]').evaluate('(option) => option.disabled')
     page.locator("#open-overview").click()
     expect(page.locator('.process-card[data-stage="package_folded"]')).to_have_attribute("aria-current", "true")
     page.locator('.process-card[data-stage="tab_sealed"]').click()
