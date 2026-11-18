@@ -4,6 +4,12 @@
 
 사용자의 2026-11-17 정정을 반영했습니다. 분포된 포일 탭 뿌리가 두께 중앙의 유한한 집속 구간으로 부드럽게 모입니다. KR20240073603A의 V자 굽힘/블레이드, W2 특수 가이드, W3 복합 용접 실시예는 적용하지 않았습니다.
 
+## R4 공정·요소기술
+
+오른쪽 **요소기술 → R4 가상 예제 열기**에서 시작합니다. 혼·엔빌 작업면, 가용접 침입 깊이, 극별 레이저 스팟, 직선/원호 실링바 윤곽을 편집하고 **CAD 미리보기 → 취소/적용**으로 확정합니다. R0–R7은 한 장 필름의 열린 두 컵 → 수납/닫힘 → 탭측·가스 외곽·최종 실링 → 절단/폴딩을 구분합니다. 기존 셀에 R4 가상값을 자동 입력하지 않습니다.
+
+[조작·실행·Copilot 가이드](docs/r4/copilot-and-operation.md) · [실제 화면/전후 치수 검증](docs/r4/verification.md) · [사내 명칭/필드 ID 양식](docs/r4/fields-and-company-names.json) · [R4 가상 셀](examples/process-tooling-r4.json) · [입력 양식 1.3 예제](examples/intake/virtual-tooling-1.3.json).
+
 ## v1.5 성형 → 수납 → 실링 → 절단 → 폴딩
 
 **가상 파우치 공정 예제 열기**에서 새 모델을 열고 P0–P4를 선택합니다. 기존 S0–S4 및 packaged/finished는 호환 경로로 보존됩니다. 상하 포켓 독립 치수, 조립체 3D 강체 배치, 8개 작업면·공통 실링 영역, 실제 CAD 절단, 긴 변 순차 절곡과 재료에 붙는 주석을 제공합니다.
@@ -108,7 +114,7 @@ npm run dev
 
 ```sh
 npm test
-python -m unittest discover -s tests -p '*geometry.py' -v
+python -m unittest discover -s tests -p '*geometry*.py' -v
 npm run build
 python scripts/render_proofs.py
 python scripts/check_process_step.py

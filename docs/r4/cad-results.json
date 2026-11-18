@@ -1,0 +1,666 @@
+{
+  "gathering": {
+    "before": {
+      "positive": {
+        "topZ": 0.2999999999999998,
+        "entryZ": -8.326672684688674e-17,
+        "bottomZ": -0.3,
+        "residualThickness": 0.5999999999999999,
+        "topSlope": -0.29000000000000004,
+        "bottomSlope": 0.29000000000000004,
+        "entryX": 10,
+        "foilWidth": 32,
+        "rootZ": 0,
+        "rootSpread": 6.4,
+        "depth": 2.9000000000000004
+      },
+      "negative": {
+        "topZ": 0.25,
+        "entryZ": 0.0,
+        "bottomZ": -0.25,
+        "residualThickness": 0.5,
+        "topSlope": -0.3055555555555556,
+        "bottomSlope": 0.3055555555555556,
+        "entryX": 9,
+        "foilWidth": 29,
+        "rootZ": 0,
+        "rootSpread": 6,
+        "depth": 2.75
+      }
+    },
+    "after": {
+      "positive": {
+        "topZ": 0.2000000000000002,
+        "entryZ": -0.049999999999999906,
+        "bottomZ": -0.3,
+        "residualThickness": 0.5000000000000002,
+        "topSlope": -0.3,
+        "bottomSlope": 0.29000000000000004,
+        "entryX": 10,
+        "foilWidth": 32,
+        "rootZ": 0,
+        "rootSpread": 6.4,
+        "depth": 3
+      },
+      "negative": {
+        "topZ": 0.25,
+        "entryZ": 0.0,
+        "bottomZ": -0.25,
+        "residualThickness": 0.5,
+        "topSlope": -0.3055555555555556,
+        "bottomSlope": 0.3055555555555556,
+        "entryX": 9,
+        "foilWidth": 29,
+        "rootZ": 0,
+        "rootSpread": 6,
+        "depth": 2.75
+      }
+    }
+  },
+  "horn": {
+    "before": {
+      "positive": {
+        "horn": {
+          "contactArea": 48.0,
+          "center": [
+            1.5,
+            0.0
+          ],
+          "surfaceZ": 0.2999999999999998
+        },
+        "anvil": {
+          "contactArea": 48.0,
+          "center": [
+            1.5,
+            0.0
+          ],
+          "surfaceZ": -0.3
+        }
+      },
+      "negative": {
+        "horn": {
+          "contactArea": 44.0,
+          "center": [
+            1.5,
+            2.220446049250313e-16
+          ],
+          "surfaceZ": 0.25
+        },
+        "anvil": {
+          "contactArea": 44.0,
+          "center": [
+            1.5,
+            2.220446049250313e-16
+          ],
+          "surfaceZ": -0.25
+        }
+      }
+    },
+    "after": {
+      "positive": {
+        "horn": {
+          "contactArea": 48.0,
+          "center": [
+            1.8999999999999997,
+            0.0
+          ],
+          "surfaceZ": 0.2999999999999998
+        },
+        "anvil": {
+          "contactArea": 48.0,
+          "center": [
+            1.5,
+            0.0
+          ],
+          "surfaceZ": -0.3
+        }
+      },
+      "negative": {
+        "horn": {
+          "contactArea": 44.0,
+          "center": [
+            1.5,
+            2.220446049250313e-16
+          ],
+          "surfaceZ": 0.25
+        },
+        "anvil": {
+          "contactArea": 44.0,
+          "center": [
+            1.5,
+            2.220446049250313e-16
+          ],
+          "surfaceZ": -0.25
+        }
+      }
+    }
+  },
+  "seal": {
+    "before": {
+      "positive": {
+        "overlapArea": 626.6799952420592,
+        "productArea": 626.6799952420592,
+        "sections": [
+          {
+            "id": "left",
+            "y": -18.5,
+            "width": 5.894610705976788,
+            "sealantOverlap": 4.894610705976788,
+            "intervals": [
+              [
+                -156.0,
+                -150.1053892940232
+              ]
+            ]
+          },
+          {
+            "id": "center",
+            "y": -0.5,
+            "width": 5.0,
+            "sealantOverlap": 4.0,
+            "intervals": [
+              [
+                -156.0,
+                -151.0
+              ]
+            ]
+          },
+          {
+            "id": "right",
+            "y": 17.5,
+            "width": 5.0,
+            "sealantOverlap": 4.0,
+            "intervals": [
+              [
+                -156.0,
+                -151.0
+              ]
+            ]
+          }
+        ]
+      },
+      "negative": {
+        "overlapArea": 600.0,
+        "productArea": 600.0,
+        "sections": [
+          {
+            "id": "left",
+            "y": -16.0,
+            "width": 5.0,
+            "sealantOverlap": 4.0,
+            "intervals": [
+              [
+                151.0,
+                156.0
+              ]
+            ]
+          },
+          {
+            "id": "center",
+            "y": 1.0,
+            "width": 5.0,
+            "sealantOverlap": 4.0,
+            "intervals": [
+              [
+                151.0,
+                156.0
+              ]
+            ]
+          },
+          {
+            "id": "right",
+            "y": 18.0,
+            "width": 5.0,
+            "sealantOverlap": 4.0,
+            "intervals": [
+              [
+                151.0,
+                156.0
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "after": {
+      "positive": {
+        "overlapArea": 573.3200047579408,
+        "productArea": 573.3200047579408,
+        "sections": [
+          {
+            "id": "left",
+            "y": -18.5,
+            "width": 4.105389294023155,
+            "sealantOverlap": 3.105389294023155,
+            "intervals": [
+              [
+                -156.0,
+                -151.89461070597685
+              ]
+            ]
+          },
+          {
+            "id": "center",
+            "y": -0.5,
+            "width": 5.0,
+            "sealantOverlap": 4.0,
+            "intervals": [
+              [
+                -156.0,
+                -151.0
+              ]
+            ]
+          },
+          {
+            "id": "right",
+            "y": 17.5,
+            "width": 5.0,
+            "sealantOverlap": 4.0,
+            "intervals": [
+              [
+                -156.0,
+                -151.0
+              ]
+            ]
+          }
+        ]
+      },
+      "negative": {
+        "overlapArea": 600.0,
+        "productArea": 600.0,
+        "sections": [
+          {
+            "id": "left",
+            "y": -16.0,
+            "width": 5.0,
+            "sealantOverlap": 4.0,
+            "intervals": [
+              [
+                151.0,
+                156.0
+              ]
+            ]
+          },
+          {
+            "id": "center",
+            "y": 1.0,
+            "width": 5.0,
+            "sealantOverlap": 4.0,
+            "intervals": [
+              [
+                151.0,
+                156.0
+              ]
+            ]
+          },
+          {
+            "id": "right",
+            "y": 18.0,
+            "width": 5.0,
+            "sealantOverlap": 4.0,
+            "intervals": [
+              [
+                151.0,
+                156.0
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "unchangedLead": {
+      "before": {
+        "min": [
+          -170.0,
+          -18.500000000000007,
+          -0.6499999999999999
+        ],
+        "max": [
+          -132.0,
+          17.5,
+          -0.29999999999999993
+        ],
+        "volume": 478.79999999999995
+      },
+      "after": {
+        "min": [
+          -170.0,
+          -18.500000000000007,
+          -0.6499999999999999
+        ],
+        "max": [
+          -132.0,
+          17.5,
+          -0.29999999999999993
+        ],
+        "volume": 478.79999999999995
+      }
+    }
+  },
+  "pouch": {
+    "film_formed": {
+      "state": {
+        "step": 0,
+        "open": true,
+        "bridgeWidth": 1.4922565104551517,
+        "bridgeEdgeY": -45,
+        "gasState": "열린 필름 여유",
+        "cutY": 50,
+        "upperDepth": 4.3,
+        "upperFloorR": 1.2,
+        "lowerDepth": 4.2,
+        "lowerFloorR": 1.1,
+        "remainingFlange": 10.5
+      },
+      "seals": [],
+      "lower": {
+        "min": [
+          -163.0,
+          -45.0,
+          -0.55
+        ],
+        "max": [
+          165.0,
+          80.0,
+          -0.4
+        ],
+        "volume": 2625.0092939961146
+      }
+    },
+    "assembly_loaded_open": {
+      "state": {
+        "step": 1,
+        "open": true,
+        "bridgeWidth": 1.4922565104551517,
+        "bridgeEdgeY": -45,
+        "gasState": "수납 · 열린 여유",
+        "cutY": 50,
+        "upperDepth": 4.3,
+        "upperFloorR": 1.2,
+        "lowerDepth": 4.2,
+        "lowerFloorR": 1.1,
+        "remainingFlange": 10.5,
+        "positiveSealantX": -152.5,
+        "negativeSealantX": 152.5
+      },
+      "seals": [],
+      "lower": {
+        "min": [
+          -163.0,
+          -45.0,
+          -0.55
+        ],
+        "max": [
+          165.0,
+          80.0,
+          -0.4
+        ],
+        "volume": 2625.0092939961146
+      }
+    },
+    "package_closed": {
+      "state": {
+        "step": 2,
+        "open": false,
+        "bridgeWidth": 1.4922565104551517,
+        "bridgeEdgeY": -45,
+        "gasState": "닫힘 · 가스측 개구",
+        "cutY": 50,
+        "upperDepth": 4.3,
+        "upperFloorR": 1.2,
+        "lowerDepth": 4.2,
+        "lowerFloorR": 1.1,
+        "remainingFlange": 10.5,
+        "positiveSealantX": -152.5,
+        "negativeSealantX": 152.5
+      },
+      "seals": [],
+      "lower": {
+        "min": [
+          -163.0,
+          -45.0,
+          -0.55
+        ],
+        "max": [
+          165.0,
+          80.0,
+          -0.4
+        ],
+        "volume": 2625.0092939961146
+      }
+    },
+    "tab_sealed": {
+      "state": {
+        "step": 3,
+        "open": false,
+        "bridgeWidth": 1.4922565104551517,
+        "bridgeEdgeY": -45,
+        "gasState": "탭 실링 · 가스측 개구",
+        "cutY": 50,
+        "upperDepth": 4.3,
+        "upperFloorR": 1.2,
+        "lowerDepth": 4.2,
+        "lowerFloorR": 1.1,
+        "remainingFlange": 10.5,
+        "positiveSealantX": -152.5,
+        "negativeSealantX": 152.5
+      },
+      "seals": [
+        "seal.positive",
+        "seal.negative"
+      ],
+      "lower": {
+        "min": [
+          -163.0,
+          -45.0,
+          -0.55
+        ],
+        "max": [
+          165.0,
+          80.0,
+          -0.4
+        ],
+        "volume": 2625.0092939961146
+      }
+    },
+    "gas_sealed": {
+      "state": {
+        "step": 4,
+        "open": false,
+        "bridgeWidth": 1.4922565104551517,
+        "bridgeEdgeY": -45,
+        "gasState": "가스방 외곽 실링 · 몸체와 연통",
+        "cutY": 50,
+        "upperDepth": 4.3,
+        "upperFloorR": 1.2,
+        "lowerDepth": 4.2,
+        "lowerFloorR": 1.1,
+        "remainingFlange": 10.5,
+        "positiveSealantX": -152.5,
+        "negativeSealantX": 152.5
+      },
+      "seals": [
+        "seal.positive",
+        "seal.negative",
+        "seal.gas"
+      ],
+      "lower": {
+        "min": [
+          -163.0,
+          -45.0,
+          -0.55
+        ],
+        "max": [
+          165.0,
+          80.0,
+          -0.4
+        ],
+        "volume": 2625.0092939961146
+      }
+    },
+    "final_sealed": {
+      "state": {
+        "step": 5,
+        "open": false,
+        "bridgeWidth": 1.4922565104551517,
+        "bridgeEdgeY": -45,
+        "gasState": "최종 실링 · 가스방 격리",
+        "cutY": 50,
+        "upperDepth": 4.3,
+        "upperFloorR": 1.2,
+        "lowerDepth": 4.2,
+        "lowerFloorR": 1.1,
+        "remainingFlange": 10.5,
+        "positiveSealantX": -152.5,
+        "negativeSealantX": 152.5
+      },
+      "seals": [
+        "seal.positive",
+        "seal.negative",
+        "seal.gas",
+        "seal.final"
+      ],
+      "lower": {
+        "min": [
+          -163.0,
+          -45.0,
+          -0.55
+        ],
+        "max": [
+          165.0,
+          80.0,
+          -0.4
+        ],
+        "volume": 2625.0092939961146
+      }
+    },
+    "package_trimmed": {
+      "state": {
+        "step": 6,
+        "open": false,
+        "bridgeWidth": 1.4922565104551517,
+        "bridgeEdgeY": -45,
+        "gasState": "가스방 제거",
+        "cutY": 50,
+        "upperDepth": 4.3,
+        "upperFloorR": 1.2,
+        "lowerDepth": 4.2,
+        "lowerFloorR": 1.1,
+        "remainingFlange": 10.5,
+        "positiveSealantX": -152.5,
+        "negativeSealantX": 152.5
+      },
+      "seals": [
+        "seal.positive",
+        "seal.negative",
+        "seal.final"
+      ],
+      "lower": {
+        "min": [
+          -160.0,
+          -45.0,
+          -0.55
+        ],
+        "max": [
+          161.0,
+          50.0,
+          -0.4
+        ],
+        "volume": 1049.2592939961148
+      }
+    },
+    "package_folded": {
+      "state": {
+        "step": 7,
+        "open": false,
+        "bridgeWidth": 1.4922565104551517,
+        "bridgeEdgeY": -45,
+        "gasState": "절단 잔여 플랜지 폴딩",
+        "cutY": 50,
+        "upperDepth": 4.3,
+        "upperFloorR": 1.2,
+        "lowerDepth": 4.2,
+        "lowerFloorR": 1.1,
+        "remainingFlange": 10.5,
+        "positiveSealantX": -152.5,
+        "negativeSealantX": 152.5
+      },
+      "seals": [
+        "seal.positive",
+        "seal.negative",
+        "seal.final"
+      ],
+      "lower": {
+        "min": [
+          -160.0,
+          -45.0,
+          -0.55
+        ],
+        "max": [
+          161.0,
+          48.23840833783031,
+          3.1290278198948527
+        ],
+        "volume": 1081.1935833198386
+      }
+    }
+  },
+  "cupChange": {
+    "upper": {
+      "min": [
+        -149.0000001,
+        -130.99225661045514,
+        -5.250000099999999
+      ],
+      "max": [
+        149.0000001,
+        -51.99225641045515,
+        -0.3999998999999909
+      ],
+      "volume": 3937.7747672943797
+    },
+    "lower": {
+      "min": [
+        -149.0000001,
+        -39.500000100000015,
+        -4.750000100000007
+      ],
+      "max": [
+        149.00000010000002,
+        39.50000010000001,
+        -0.3999998999999998
+      ],
+      "volume": 3899.3083433413794
+    },
+    "settings": {
+      "step": 1,
+      "open": true,
+      "bridgeWidth": 1.4922565104551517,
+      "bridgeEdgeY": -45,
+      "gasState": "수납 · 열린 여유",
+      "cutY": 50,
+      "upperDepth": 4.7,
+      "upperFloorR": 1.4,
+      "lowerDepth": 4.2,
+      "lowerFloorR": 1.1,
+      "remainingFlange": 10.5,
+      "positiveSealantX": -152.5,
+      "negativeSealantX": 152.5
+    }
+  },
+  "trimChange": {
+    "step": 6,
+    "open": false,
+    "bridgeWidth": 1.4922565104551517,
+    "bridgeEdgeY": -45,
+    "gasState": "가스방 제거",
+    "cutY": 52,
+    "upperDepth": 4.3,
+    "upperFloorR": 1.2,
+    "lowerDepth": 4.2,
+    "lowerFloorR": 1.1,
+    "remainingFlange": 12.5,
+    "positiveSealantX": -152.5,
+    "negativeSealantX": 152.5
+  }
+}

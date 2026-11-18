@@ -73,7 +73,14 @@ export function fieldsFor(p, stage) {
           );
     }
   }
-  return result;
+  return result.filter(b => {
+    if (!p.processTooling) return true;
+    const pole = b.path.split('.')[0];
+    if (p.processTooling.poles[pole]?.method === 'laser' && b.path.includes('.joints.')) return false;
+    if (/\.tab\.(thickness|gatherZ)$/.test(b.path) && assemblyRank(stage)>=2) return false;
+    if (stageContract[stage]?.r4 && b.path.startsWith('pouchProcess.')) return /^pouchProcess\.sheets\.(upper|lower)\.(openingLength|openingWidth|depth|floorR|rimR|planR|filmThickness)$/.test(b.path);
+    return true;
+  });
 }
 function descriptor(p, stage, path, f, item) {
   const [side, section] = path.split("."),

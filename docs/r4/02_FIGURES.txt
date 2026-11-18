@@ -1,0 +1,15 @@
+이미 검토한 원본 그림과 구현 시 볼 위치
+
+1. EP4571953A1 도 4 — 펼친 필름의 좌우 컵 110, 가운데 브리지 130. 특허 고유 돌출부 120은 데모에 필요하지 않다.
+https://patentimages.storage.googleapis.com/f2/da/d7/6e3c030fb09f7a/imgf0004.png
+
+2. WO2021112582A1 도 7·8 — 양방향 리드 양끝의 실링과 측면 실링. 도 8에서 기본 띠 S1에 추가된 S2의 평면 경계를 읽는다. 한 번의 타격과 추가 실링을 합한 제품 형상을 구별한다.
+https://patentimages.storage.googleapis.com/c4/37/65/0e292dcf3527f4/PCTKR2020017534-appb-D000007.png
+
+3. KR20230029246A 도 1a — 몸체 옆 가스방 여유부, 양끝 리드와 가스방 바깥 실링 위치. 이 그림의 S2는 2번 특허의 S2와 다른 기호다.
+https://patentimages.storage.googleapis.com/99/18/22/492316a33d1ef6/pat00002.png
+
+4. Materials 12(3), 369 Fig. 1(b) — 오른쪽 위는 혼 팁, 아래는 엔빌 작업면 실물. 외곽과 너링 범위를 각각 판독한다. Al 판재 실험의 치수는 회사 탭 공구 사양이 아니다.
+https://mdpi-res.com/materials/materials-12-00369/article_deploy/html/images/materials-12-00369-g001-550.jpg
+
+5. US20230170565A1 도 4 — 동봉 PNG. SK온 실링 블록의 공구 형상 사례. 2번 특허의 제품과 한 쌍이라는 의미는 없다.

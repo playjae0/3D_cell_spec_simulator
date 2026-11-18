@@ -324,6 +324,11 @@ def folded_margin(q,upper=True):
     return cq.Compound.makeCompound([flat]+parts)
 
 def build(p,stage='assembly'):
+    if STAGE_CONTRACT.get(stage,{}).get('r4') and not p.get('processTooling'):
+        raise ModelError(['R4 공정 설정이 없는 기존 모델입니다. 요소기술 → R4 가상 예제에서 별도로 시작하세요. 기존 값은 변경하지 않았습니다.'])
+    if p.get('processTooling'):
+        from process_tooling import build_r4
+        return build_r4(p,stage,build)
     if STAGE_CONTRACT.get(stage,{}).get('pouch'):
         from pouch_process import build_process
         return build_process(p,stage,build)

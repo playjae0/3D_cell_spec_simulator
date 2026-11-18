@@ -1,3 +1,4 @@
+import { syncTooling, validateTooling } from "../tooling/contract.js";
 import { emptyPouchProcess } from "../data/pouch-fields.js";
 import {
   dictionaryFor,
@@ -73,6 +74,7 @@ export function productFromIntake(intake, stage) {
       : null;
     delete t.gatheredLength;
   }
+  if (intake.processTooling) { validateTooling(intake.processTooling); p.processTooling = clone(intake.processTooling); }
   return p;
 }
 export function projectFromIntake(intake, stage) {
@@ -166,7 +168,7 @@ export function intakeFromProject(project, identity = {}) {
     x.inspectionItems = inspectionItems(project);
     x.anchors = clone(project.anchors || []);
     x.inspectionViews = clone(project.inspectionViews || []);
-    return x;
+    return syncTooling(x, project.product);
   }
   const x = template({
     modelId: project.product.id,
@@ -240,7 +242,7 @@ export function intakeFromProject(project, identity = {}) {
   }));
   x.anchors = clone(project.anchors || []);
   x.inspectionViews = clone(project.inspectionViews || []);
-  return x;
+  return syncTooling(x, project.product);
 }
 // Reconcile only explicit CAD edits. Unknown future inputs remain null.
 export function reconcileProject(project) {
@@ -322,5 +324,6 @@ export function reconcileProject(project) {
   x.intake.legacyDatum = clone(x.datumSet);
   x.intake.anchors = clone(x.anchors || []);
   x.intake.inspectionViews = clone(x.inspectionViews || []);
+  syncTooling(x.intake, x.product);
   return x;
 }

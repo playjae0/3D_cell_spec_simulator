@@ -4,7 +4,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { SoftwareRenderer } from "./software.js";
 import { clipMesh } from "./clip.js";
 import { locateOnPatch } from "../annotations/anchors.js";
-import { ORTHOGRAPHIC_HEIGHT } from "./framing.js";
+import { ORTHOGRAPHIC_HEIGHT, frameBounds } from "./framing.js";
 import { dimensionLayout, worldVector } from "../annotations/measure.js";
 const NS = "http://www.w3.org/2000/svg";
 const sv = (tag, attrs = {}, text) => {
@@ -403,24 +403,14 @@ export class Viewer {
     this.draw();
   }
   fit(id) {
-    const part = this.data?.parts.find((p) => p.id === id);
-    if (part) {
-      const a = part.bounds.min,
-        b = part.bounds.max;
-      this.controls.target.set(...a.map((v, i) => (v + b[i]) / 2));
-      this.camera.zoom = Math.min(
-        6,
-        (230 / Math.max(...a.map((v, i) => b[i] - v))) * 0.65,
-      );
-    } else {
-      this.controls.target.set(0, 0, 0);
-      this.camera.zoom = Math.min(
-        1.5,
-        ((this.host.clientWidth / this.host.clientHeight) * 230) / 390,
-      );
-    }
-    this.camera.updateProjectionMatrix();
+    const parts = this.data?.parts || [];
+    const part = parts.find(p => p.id === id);
+    const visible = part ? [part] : parts.filter(p => !this.state.view.hidden.includes(p.id));
+    if (!visible.length || !this.host.clientWidth || !this.host.clientHeight) return;
     this.view("iso");
+    this.restore(frameBounds(visible.map(p => p.bounds), this.getCamera(), [{
+      width: this.host.clientWidth, height: this.host.clientHeight,
+    }]));
   }
   draw() {
     if (!this.renderer || !this.overlay) return;
