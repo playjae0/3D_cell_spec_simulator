@@ -84,6 +84,15 @@ export function basicMeasurements(project, data, datumId = "legacy") {
         { datumId, group: title(side) + " 실런트", visible: false },
       ),
     );
+  for (const item of data.processMetrics || [])
+    candidates.push(
+      measurement(item.name, item.a, item.b, item.mode, project.stage, {
+        datumId,
+        parameterId: item.parameterId || null,
+        group: item.kind === "input" ? "파우치 생성 치수" : "파우치 계산 결과",
+        visible: false,
+      }),
+    );
   const keys = new Set(project.measurements.map((m) => measurementKey(m))),
     added = [],
     unsupported = [];

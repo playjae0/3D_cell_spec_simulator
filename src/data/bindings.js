@@ -1,3 +1,5 @@
+import { assemblyRank, stageContract } from "./stages.js";
+import { pouchFields, pouchReferences } from "./pouch-fields.js";
 // One table joins editable DOFs, semantic references, highlighted geometry and docs.
 // No triangle index is ever a persistent reference.
 import { dictionaries } from "./fields.js";
@@ -34,8 +36,13 @@ export function writeField(p, path, value) {
 }
 const rootKeys = ["foilWidth", "rootLength", "rootSpread", "rootY", "rootZ"];
 export function fieldsFor(p, stage) {
-  const result = [];
+  const result = pouchFields(p, stage);
   for (const side of ["stack", "positive", "negative", "pouch"]) {
+    if (
+      stageContract[stage]?.pouch &&
+      (side === "pouch" || !stageContract[stage].assembly)
+    )
+      continue;
     if (side === "stack" || side === "pouch") {
       for (const f of dictionaries[side])
         result.push(descriptor(p, stage, side + "." + f.key, f));
@@ -71,7 +78,7 @@ export function fieldsFor(p, stage) {
 function descriptor(p, stage, path, f, item) {
   const [side, section] = path.split("."),
     k = f.key,
-    rank = stageOrder.indexOf(stage);
+    rank = assemblyRank(stage);
   let min = 0,
     partId = side,
     upstream = "조립체 A/B/C",
@@ -150,6 +157,7 @@ export function bindingFor(p, stage, path) {
   return fieldsFor(p, stage).find((x) => x.path === path);
 }
 export function references(b, p, stage) {
+  if (b.path.startsWith("pouchProcess.")) return pouchReferences(b, stage);
   const [side, section] = b.path.split("."),
     k = b.key,
     pre = side + ".",
@@ -264,6 +272,7 @@ export function references(b, p, stage) {
 }
 // Predicted endpoints are analytic design guides, never committed CAD geometry.
 export function forecast(b, p, stage) {
+  if (b.path.startsWith("pouchProcess.")) return null;
   const [side, section] = b.path.split("."),
     k = b.key;
   let A,
@@ -558,6 +567,22 @@ export function forecast(b, p, stage) {
   };
 }
 export function driversForFeature(id, p, stage) {
+  if (stageContract[stage]?.pouch && /^(pouch|seal|tool)\./.test(id)) {
+    if (id.startsWith("pouch.input.")) {
+      const path = "pouchProcess." + id.slice(12).replace(/\.[ab]$/, "");
+      return pouchFields(p, stage).some((f) => f.path === path) ? [path] : [];
+    }
+    if (id.startsWith("pouch.result.")) return [];
+    return pouchFields(p, stage)
+      .filter(
+        (f) =>
+          f.available &&
+          (f.partId === id ||
+            id.startsWith(f.partId + ".") ||
+            f.partId === id.replace(/^tool\./, "seal.")),
+      )
+      .map((f) => f.path);
+  }
   const [side, part, item, ...rest] = id.split("."),
     pre = side + ".";
   if (side === "stack") {

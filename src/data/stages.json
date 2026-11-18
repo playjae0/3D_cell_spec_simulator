@@ -1,0 +1,72 @@
+{
+  "stacked": {
+    "label": "S0 적층체 / Jellyroll",
+    "assembly": "stacked"
+  },
+  "gathered": {
+    "label": "S1 정렬·집속 / 용접 전",
+    "assembly": "gathered"
+  },
+  "preweld": {
+    "label": "S2 가용접 후",
+    "assembly": "preweld"
+  },
+  "welded": {
+    "label": "S3 메인 용접 후",
+    "assembly": "welded"
+  },
+  "assembly": {
+    "label": "S4 테이프 부착 후",
+    "assembly": "assembly"
+  },
+  "packaged": {
+    "label": "기존 파우치 패키징 (호환)",
+    "assembly": "assembly",
+    "legacyPouch": true
+  },
+  "finished": {
+    "label": "기존 완성 셀 (호환)",
+    "assembly": "assembly",
+    "legacyPouch": true
+  },
+  "pouch_formed": {
+    "label": "P0 파우치 성형 · 조립체 없음",
+    "assembly": null,
+    "pouch": true,
+    "seal": false,
+    "cut": false,
+    "fold": false
+  },
+  "loaded": {
+    "label": "P1 수납 · S4 조립체 합류",
+    "assembly": "assembly",
+    "pouch": true,
+    "seal": false,
+    "cut": false,
+    "fold": false
+  },
+  "sealed": {
+    "label": "P2 실링 공칭 영역",
+    "assembly": "assembly",
+    "pouch": true,
+    "seal": true,
+    "cut": false,
+    "fold": false
+  },
+  "trimmed": {
+    "label": "P3 절단 후",
+    "assembly": "assembly",
+    "pouch": true,
+    "seal": true,
+    "cut": true,
+    "fold": false
+  },
+  "folded": {
+    "label": "P4 순차 폴딩 후",
+    "assembly": "assembly",
+    "pouch": true,
+    "seal": true,
+    "cut": true,
+    "fold": true
+  }
+}

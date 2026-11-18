@@ -1,3 +1,4 @@
+import { assemblyRank, stageContract } from "../data/stages.js";
 import { validateInspectionViews } from "../annotations/presets.js";
 import Ajv from "ajv/dist/2020.js";
 import schema from "./schema.json" with { type: "json" };
@@ -74,7 +75,7 @@ export function validateIntake(input, stage = "stacked") {
   }
   for (const side of ["positive", "negative"])
     for (const [kind, k] of Object.entries(COMPONENTS)) {
-      const rank = STAGES.indexOf(stage);
+      const rank = assemblyRank(stage);
       if (
         !(kind === "leadFilm" && legacyUnknownSealant(d, side, stage)) &&
         rank >= k.min &&

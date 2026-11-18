@@ -9,7 +9,7 @@
     <header>
       <div class="brand">
         <span class="brandmark">▱</span>
-        <div><b>POUCH CELL</b><small>치수 & 스펙 스튜디오 / 1.4</small></div>
+        <div><b>POUCH CELL</b><small>치수 & 스펙 스튜디오 / 1.5</small></div>
         <span class="demo" id="data-origin">DEMO · 예시값</span>
       </div>
       <div class="header-actions">
@@ -37,6 +37,7 @@
           <option value="packaged">S5 패키징 후</option>
           <option value="finished">S6 완성 셀 · 접힘 예시</option>
         </select>
+        <button id="pouch-example">가상 파우치 공정 예제 열기</button>
         <div class="model-caption">
           낱장 적층형 · 양끝 리드<br />양극/음극 독립 설계 · mm
         </div>
@@ -62,6 +63,10 @@
             접촉 면·리드 필름·감쌈·접힘은 변경 가능한 가정입니다.<br />실링
             압축·국부 리드 통과부 성형 및 실제 포일 변형 해석은 미지원.
           </p>
+        </details>
+        <details id="pouch-results-panel" hidden>
+          <summary>파우치 CAD 계산 / 관리 치수 추가</summary>
+          <div id="pouch-results" hidden></div>
         </details>
       </aside>
       <section class="workspace">
@@ -97,6 +102,12 @@
           ><button id="add-selected-dim">선택 기준 → 관리 치수</button>
         </div>
         <div class="view-settings">
+          <label id="pouch-section-control" hidden
+            >리드 통과부 · Y 단면
+            <select id="pouch-section">
+              <option value="">단면 선택</option>
+            </select></label
+          >
           <label><input id="transparent" type="checkbox" /> 외장 투명</label
           ><label><input id="through" type="checkbox" /> 내부만 선택</label
           ><label><input id="datums" type="checkbox" checked /> 데이텀</label
@@ -213,7 +224,7 @@
                 <option value="x">X 방향 투영</option>
                 <option value="y">Y 방향 투영</option>
                 <option value="z">Z 방향 투영</option>
-                <option value="thickness">Z 대응 면 두께</option>
+                <option value="thickness">대응 면 법선 두께</option>
                 <option value="radius">반경 R</option>
                 <option value="signed_coordinate">
                   부호 좌표 · 검사 원점→A
@@ -239,7 +250,7 @@
               <option value="edge">모서리 중점</option>
               <option value="face">기준 면 중심</option>
               <option value="radius">원호 반경</option>
-              <option value="surface">평면 자유점 (리드/조립체 상하면)</option>
+              <option value="surface">등록 표면점 (평탄면·파우치 재료)</option>
             </select></label
           ><label>새 표면점 이름<input id="anchor-name" value="표면점" /></label
           ><label
@@ -275,12 +286,13 @@
                 step="any"
             /></label>
           </div>
-          <label>등록 평탄면<select id="anchor-host"></select></label
+          <label>등록 표면 패치<select id="anchor-host"></select></label
           ><button id="anchor-create">위치 규칙으로 기준점 추가</button>
           <p class="small">
             고정 mm: 선택 모서리 중점에서 U/V 거리. 비율: 선택 면의 양끝을
-            0/100%로 사용합니다. 클릭 선택은 리드·조립체 상하면의 평탄 패치만
-            지원합니다. 곡면/실루엣은 미지원입니다.
+            0/100%로 사용합니다. 리드·조립체 평탄면과 파우치 바닥·긴 변 재료
+            패치를 지원합니다. 접힌 재료는 원래 재료 좌표를 유지합니다. 임의
+            곡면/실루엣은 미지원입니다.
           </p>
           <button id="pick" class="outline">모델에서 기준 선택 시작</button>
           <p id="pick-hint" class="small muted">

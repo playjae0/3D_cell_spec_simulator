@@ -1,17 +1,13 @@
+import { stageContract, assemblyRank } from "./stages.js";
 import { validateInspectionViews } from "../annotations/presets.js";
 import { productFromIntake } from "../intake/adapter.js";
 import demo from "../../examples/demo.json" with { type: "json" };
 export const clone = (x) => structuredClone(x);
 export const initial = () => ({ ...clone(demo), anchors: [] });
-export const stages = {
-  stacked: "S0 적층체 / Jellyroll",
-  gathered: "S1 정렬·집속 / 용접 전",
-  preweld: "S2 가용접 후 · 리드 포함은 설정",
-  welded: "S3 메인 용접 후",
-  assembly: "S4 테이프 부착 후",
-  packaged: "파우치 패키징 후",
-  finished: "완성 셀 · 접힘 예시",
-};
+export const stages = Object.fromEntries(
+  Object.entries(stageContract).map(([id, c]) => [id, c.label]),
+);
+
 export function validateProject(p) {
   const err = (m) => {
     throw Error(m);
@@ -285,7 +281,7 @@ export function demoMeasurements(stage, product = initial().product) {
       ["joints", "joint", "메인 용접", 3],
       ["tapes", "tape", "테이프", 4],
     ]) {
-      if (Object.keys(stages).indexOf(stage) < min) continue;
+      if (assemblyRank(stage) < min) continue;
       for (const item of p[list]) {
         if (!item.enabled) continue;
         const k = side + "." + kind + "." + item.id + ".";
@@ -343,7 +339,7 @@ export function demoMeasurements(stage, product = initial().product) {
       }
     }
     if (
-      Object.keys(stages).indexOf(stage) >= 3 ||
+      assemblyRank(stage) >= 3 ||
       (stage === "preweld" && p.preweldLead.included)
     ) {
       const l = side + ".lead.";

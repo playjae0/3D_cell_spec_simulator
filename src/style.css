@@ -906,4 +906,53 @@ dialog p {
   }
 }
 
-.inspection-guide {white-space:pre-wrap;font:12px/1.6 system-ui;background:#edf5f3;border-left:3px solid #0b877e;padding:10px;overflow-wrap:anywhere}.related-inspections{display:flex;gap:6px;flex-wrap:wrap;padding:6px 20px;max-height:86px;overflow:auto}.related-inspections button{font-size:11px}
+.inspection-guide {
+  white-space: pre-wrap;
+  font: 12px/1.6 system-ui;
+  background: #edf5f3;
+  border-left: 3px solid #0b877e;
+  padding: 10px;
+  overflow-wrap: anywhere;
+}
+.related-inspections {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 6px 20px;
+  max-height: 86px;
+  overflow: auto;
+}
+.related-inspections button {
+  font-size: 11px;
+}
+
+#pouch-results {
+  max-height: 240px;
+  overflow: auto;
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+}
+#pouch-results[hidden] {
+  display: none;
+}
+#pouch-results button {
+  text-align: left;
+  font-size: 12px;
+}
+
+#pouch-section-control {
+  flex-basis: 100%;
+  justify-content: center;
+}
+#pouch-section-control[hidden] {
+  display: none;
+}
+#pouch-section {
+  max-width: 210px;
+  margin: 0;
+  padding: 4px;
+}
+.workspace:has(#pouch-section-control:not([hidden])) #viewport {
+  bottom: 145px;
+}

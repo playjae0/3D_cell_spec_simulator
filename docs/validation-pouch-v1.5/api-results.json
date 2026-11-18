@@ -1,0 +1,104 @@
+{
+  "virtualOnly": true,
+  "calls": 9,
+  "summary": [
+    {
+      "stage": "pouch_formed",
+      "geometryId": "8d7118d19cef1733e1e80c778cfe8e900f12e44445b64563f6d6d17d69eef0d5",
+      "parts": 4,
+      "metrics": 34,
+      "interference": []
+    },
+    {
+      "stage": "loaded",
+      "geometryId": "6bc36dd50394155fc1336517b234ae1de8ae8e31811749236f006d498287de1d",
+      "parts": 17,
+      "metrics": 47,
+      "interference": [
+        {
+          "level": "error",
+          "message": "positive.lead / lower 외장 간섭 2.16965 mm³ · 자동 축소 안 함",
+          "code": "interference",
+          "volume": 2.1696478727969923
+        },
+        {
+          "level": "error",
+          "message": "negative.lead / lower 외장 간섭 1.61719 mm³ · 자동 축소 안 함",
+          "code": "interference",
+          "volume": 1.6171856704451448
+        }
+      ]
+    },
+    {
+      "stage": "sealed",
+      "geometryId": "a8e24fdbb69799ee8b018b1afe1e5269b1f5fb5759c0e07007a308b79e03839c",
+      "parts": 37,
+      "metrics": 119,
+      "interference": [
+        {
+          "level": "error",
+          "message": "positive.lead / lower 외장 간섭 2.16965 mm³ · 자동 축소 안 함",
+          "code": "interference",
+          "volume": 2.1696478727969923
+        },
+        {
+          "level": "error",
+          "message": "negative.lead / lower 외장 간섭 1.61719 mm³ · 자동 축소 안 함",
+          "code": "interference",
+          "volume": 1.6171856704451448
+        }
+      ]
+    },
+    {
+      "stage": "trimmed",
+      "geometryId": "874b430a56cef1e2a841fd217ab2b7d5aa2a7aaea3662e5031779d0b836d9170",
+      "parts": 37,
+      "metrics": 119,
+      "interference": [
+        {
+          "level": "error",
+          "message": "positive.lead / lower 외장 간섭 2.16965 mm³ · 자동 축소 안 함",
+          "code": "interference",
+          "volume": 2.1696478727969923
+        },
+        {
+          "level": "error",
+          "message": "negative.lead / lower 외장 간섭 1.61719 mm³ · 자동 축소 안 함",
+          "code": "interference",
+          "volume": 1.6171856704451448
+        }
+      ]
+    },
+    {
+      "stage": "folded",
+      "geometryId": "4827d21799b80d51c8d109e835276242b4eb9eae1d201dbe758dcd593014d0b0",
+      "parts": 37,
+      "metrics": 127,
+      "interference": [
+        {
+          "level": "error",
+          "message": "positive.lead / lower 외장 간섭 2.16965 mm³ · 자동 축소 안 함",
+          "code": "interference",
+          "volume": 2.1696478727969923
+        },
+        {
+          "level": "error",
+          "message": "negative.lead / lower 외장 간섭 1.61719 mm³ · 자동 축소 안 함",
+          "code": "interference",
+          "volume": 1.6171856704451448
+        }
+      ]
+    }
+  ],
+  "checks": [
+    "5 process stages through actual CAD API, revision/token echoed",
+    "basic measurement set idempotent",
+    "intake 1.2 JSON and CAD roundtrip",
+    "inspection views and model library roundtrip",
+    "changed pouch design rejects old revision sample",
+    "nonempty duplicate backup merge preserves views and observations",
+    "upper depth A/B changes upper local surface, lower and negative unchanged",
+    "invalid depth returns 422; valid geometry stays recoverable"
+  ],
+  "measurementCount": 235
+}
