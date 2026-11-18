@@ -53,7 +53,7 @@ export function mountOverview({ host, details, getProject, calculate, selectStag
     const opened = ["film_formed", "assembly_loaded_open"].includes(result.stage);
     canvas.height = opened ? 452 : 250;
     drawThumbnail(canvas, result, opened ? { ...overviewFrame, centerY: -46 } : overviewFrame);
-    const photo = { url: canvas.toDataURL() };
+    const photo = { url: canvas.toDataURL(), result };
     photos.set(result.stage, photo);
     paint(cards.get(result.stage), photo);
   }
@@ -146,7 +146,10 @@ export function mountOverview({ host, details, getProject, calculate, selectStag
   }
 
   return {
-    open, showDetail, remember,
+    open, showDetail,
+    acceptedResult(project) {
+      if (designIdentity(project) === key) return photos.get(project.stage)?.result;
+    },
     refresh(project, result) {
       const previous = key;
       sync();

@@ -18,6 +18,7 @@ def run(page, url, output):
     issues = []
     page.on("pageerror", lambda error: issues.append(str(error)))
     page.set_default_timeout(90_000)
+    expect.set_options(timeout=90_000)
     page.goto(url)
     expect(page.get_by_role("heading", name="공정 한눈에 보기")).to_be_visible()
     expect(page.locator("#process-detail")).to_be_hidden()

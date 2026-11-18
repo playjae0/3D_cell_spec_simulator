@@ -997,9 +997,9 @@ body.overview-open .header-actions { display: none; }
 .process-card { display: grid; grid-template-rows: auto 1fr; gap: 5px; padding: 5px; text-align: left; min-width: 0; background: #fff; }
 .process-card:focus-visible, .process-card[aria-current] { border-color: #218477; box-shadow: inset 0 0 0 1px #218477; }
 .process-card strong { align-self: center; padding: 4px 5px; font-size: .81rem; }
-.process-frame { display: grid; place-items: center; aspect-ratio: 2.6; background: #edf2f3; border-radius: 4px; overflow: hidden; }
-#overview-groups > section:nth-child(2) .process-frame { aspect-ratio: 3.4; }
-.process-frame img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.process-frame { position: relative; display: grid; place-items: center; aspect-ratio: 2.6; background: #edf2f3; border-radius: 4px; overflow: hidden; }
+#overview-groups > section:nth-child(2) .process-frame { aspect-ratio: 2.7; }
+.process-frame img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; }
 .process-frame img[hidden] { display: none; }
 .process-frame > span { font-size: .72rem; color: #61757c; padding: 6px; }
 .process-frame > span:empty { display: none; }

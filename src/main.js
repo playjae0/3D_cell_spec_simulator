@@ -185,8 +185,12 @@ function nextProject() {
     stage: targetStage,
   });
 }
-async function compute(p, revision) {
+async function compute(p, revision, meta) {
   validateProject(p);
+  if (meta?.overviewCard) {
+    const result = overview.acceptedResult(p);
+    if (result) return result;
+  }
   if (live) return rebuild(p, revision);
   if (preview) return preview.model(p);
   throw Error("읽기 전용 · 실시간 CAD 서버 연결 필요");
@@ -2159,7 +2163,7 @@ const overview = mountOverview({
     overview.showDetail();
     $("open-overview").hidden = false;
     if (stage === state.stage && model) viewer.fit();
-    else request({ ...state, stage }, { fit: true });
+    else request({ ...state, stage }, { fit: true, overviewCard: true });
   },
 });
 $("open-overview").onclick = () => {

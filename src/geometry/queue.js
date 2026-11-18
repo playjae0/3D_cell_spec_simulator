@@ -38,7 +38,7 @@ export class RebuildQueue {
     this.running = true;
     this.onStart(job);
     try {
-      const value = await this.compute(job.payload, job.revision);
+      const value = await this.compute(job.payload, job.revision, job.meta);
       if (job.revision === this.revision) this.onAccept(value, job);
     } catch (error) {
       if (job.revision === this.revision) this.onError(error, job);

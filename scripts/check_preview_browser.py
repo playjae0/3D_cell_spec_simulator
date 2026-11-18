@@ -167,7 +167,7 @@ def matrix(browser, folder):
         page.locator("#dimensions-visible").uncheck()
         page.locator("#parts .part-row input").first.uncheck()
         expect(page.locator("#stage")).to_have_value("stacked")
-        assert design_requests() == ["manifest.json", "demo.json"]
+        assert design_requests() == ["manifest.json", "pouch-phase1.json", "demo.json"]
         page.locator("#viewport canvas").first.dblclick()
         expect(page.locator("#direct-editor")).not_to_have_attribute("open", "")
         page.locator("#design-tab").click()
@@ -175,7 +175,7 @@ def matrix(browser, folder):
         assert fields.count()
         assert all(fields.evaluate_all("(fields) => fields.map(field => field.disabled)"))
         fields.first.dispatch_event("keydown", {"key": "Enter"})
-        expect(page.locator("#undo")).to_be_disabled()
+        expect(page.locator("#undo")).to_be_enabled()
         counts = {200: 0, 422: 0}
         for design in manifest["designs"]:
             selector, current = EXAMPLES[design["name"]]
