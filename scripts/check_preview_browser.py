@@ -11,6 +11,7 @@ import http.client
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import json
 import os
+import subprocess
 from pathlib import Path
 from threading import Event, Thread
 from urllib.parse import urlsplit
@@ -29,7 +30,7 @@ GROUPS = {"stack", "positive", "negative", "pouch", "seal", "tool"}
 
 
 @contextmanager
-def static_host(folder, mutate=None, api=None):
+def static_host(folder, mutate=None, api=None, prefix=PREFIX):
     requests = []
 
     class Handler(SimpleHTTPRequestHandler):
@@ -67,9 +68,9 @@ def static_host(folder, mutate=None, api=None):
             requests.append((self.command, self.path))
             if api and self.path.startswith("/api/"):
                 return self.relay()
-            if not self.path.startswith(PREFIX + "/"):
+            if not self.path.startswith(prefix + "/"):
                 return self.send_error(404)
-            self.path = self.path.removeprefix(PREFIX)
+            self.path = self.path.removeprefix(prefix)
             body = mutate(self.path) if mutate else None
             if body is None:
                 return super().do_GET()
@@ -83,7 +84,7 @@ def static_host(folder, mutate=None, api=None):
         worker = Thread(target=server.serve_forever, daemon=True)
         worker.start()
         try:
-            yield f"http://127.0.0.1:{server.server_port}{PREFIX}/", requests
+            yield f"http://127.0.0.1:{server.server_port}{prefix}/", requests
         finally:
             server.shutdown()
             worker.join()
@@ -147,12 +148,21 @@ def matrix(browser, folder):
         for id in ["save", "open", "step", "models", "apply", "auto-rebuild", "edit-selection"]:
             expect(page.locator("#" + id)).to_be_disabled()
         assert page.locator("#models-dialog").count() == 0
+        page.locator("#section").select_option("y")
+        page.locator("#section-position").fill("2")
+        page.locator("#datums").uncheck()
+        page.locator("#dimensions-visible").uncheck()
+        page.locator("#parts .part-row input").first.uncheck()
+        expect(page.locator("#stage")).to_have_value("stacked")
+        assert design_requests() == ["manifest.json", "demo.json"]
         page.locator("#viewport canvas").first.dblclick()
         expect(page.locator("#direct-editor")).not_to_have_attribute("open", "")
         page.locator("#design-tab").click()
         fields = page.locator("[data-field]")
         assert fields.count()
         assert all(fields.evaluate_all("(fields) => fields.map(field => field.disabled)"))
+        fields.first.dispatch_event("keydown", {"key": "Enter"})
+        expect(page.locator("#undo")).to_be_disabled()
         counts = {200: 0, 422: 0}
         for design in manifest["designs"]:
             selector, current = EXAMPLES[design["name"]]
@@ -181,6 +191,9 @@ def matrix(browser, folder):
                     page.locator("#r4-mode").select_option(mode)
                     controls = page.locator("#r4-fields [data-r4-field], #r4-special [data-r4-field]")
                     assert controls.count() and all(controls.evaluate_all("(xs) => xs.map(x => x.disabled)"))
+                    locked = {"ultrasonic": ["r4-half-pitch"], "laser": ["r4-grid", "r4-add-spot"]}
+                    for button in locked.get(mode, []):
+                        expect(page.locator("#" + button)).to_be_disabled()
                 for button in ["r4-preview", "r4-apply", "r4-cancel", "r4-dictionary"]:
                     expect(page.locator("#" + button)).to_be_disabled()
                 page.locator('[data-r4-stage="film_formed"]').click()
@@ -222,6 +235,7 @@ def matrix(browser, folder):
         no_errors(faults, console)
         print("History, 422 rollback, P2/P4 dual views and delta: PASS", flush=True)
         page.close()
+        subprocess.run(["node", "scripts/check_preview_lookup.mjs", url], cwd=ROOT, check=True)
 
 
 def delayed_and_corrupt(browser, folder):
@@ -289,7 +303,7 @@ def delayed_and_corrupt(browser, folder):
 
 
 def ordinary_build(browser):
-    with static_host(ROOT / "dist") as (url, requests):
+    with static_host(ROOT / "dist", prefix="") as (url, requests):
         page = browser.new_page()
         faults, console = instrument(page)
         page.goto(url)
@@ -303,7 +317,7 @@ def ordinary_build(browser):
 
 
 def live_check(browser, folder, live_url):
-    with static_host(folder, api=live_url) as (url, requests):
+    with static_host(folder, api=live_url, prefix=PREFIX if folder.name == "dist-preview" else "") as (url, requests):
         page = browser.new_page()
         page.set_default_timeout(60_000)
         faults, console = instrument(page)
@@ -311,6 +325,7 @@ def live_check(browser, folder, live_url):
         expect(page.locator("#status")).to_contain_text("CAD 확정 · S0", timeout=60_000)
         expect(page.locator("#engine-state")).to_contain_text("실시간 CadQuery")
         page.locator("#design-tab").click()
+        page.locator("#editor").select_option("stack")
         field = page.locator('[data-field="stack.length"]')
         field.evaluate('(el) => { el.closest("details").open = true; }')
         before = float(field.input_value())
