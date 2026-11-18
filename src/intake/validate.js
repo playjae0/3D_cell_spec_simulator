@@ -1,8 +1,10 @@
+import { validateInspectionViews } from "../annotations/presets.js";
 import Ajv from "ajv/dist/2020.js";
 import schema from "./schema.json" with { type: "json" };
 import {
   dictionaryFor,
   requiredField,
+  legacyUnknownSealant,
   componentFor,
   COMPONENTS,
   STAGES,
@@ -32,6 +34,11 @@ export function validateIntake(input, stage = "stacked") {
   if (JSON.stringify(input).length > 12 * 1024 * 1024) {
     issue("/", "파일은 12 MB 이하");
     return { valid: false, ready: false, issues, rows, normalized };
+  }
+  try {
+    validateInspectionViews(input.inspectionViews);
+  } catch (e) {
+    issue("/inspectionViews", e.message);
   }
   const d = input,
     fields = dictionaryFor(d.componentInstances),
@@ -69,6 +76,7 @@ export function validateIntake(input, stage = "stacked") {
     for (const [kind, k] of Object.entries(COMPONENTS)) {
       const rank = STAGES.indexOf(stage);
       if (
+        !(kind === "leadFilm" && legacyUnknownSealant(d, side, stage)) &&
         rank >= k.min &&
         rank <= (k.max ?? 6) &&
         !d.componentInstances.some(
@@ -208,6 +216,15 @@ export function validateIntake(input, stage = "stacked") {
     d.coordinateMapping.targetConvention !== TARGET
   )
     issue("/coordinateMapping", "원점·축·극성 매핑 확인 필요");
+  for (const side of ["positive", "negative"])
+    if (legacyUnknownSealant(d, side, stage))
+      issue(
+        "/componentInstances",
+        side +
+          ".leadFilm: 구버전 S3 실런트 미확정 · 생성 제외, 부재로 확정하지 않음. 1.1 새 개정에서 검토 필요",
+        side + ".leadFilm.enabled",
+        false,
+      );
   for (const f of fields) {
     const p = params.get(f.parameterId),
       required = requiredField(f, d, stage),
@@ -267,7 +284,11 @@ export function validateIntake(input, stage = "stacked") {
     refs(x.sourceRefs, "/unmappedRequirements");
     issue("/unmappedRequirements", x.description, null, false);
   }
-  const anchorIds=new Set();for(const a of d.anchors||[]){if(anchorIds.has(a.id))issue("/anchors","중복 표면점 ID: "+a.id);anchorIds.add(a.id);}
+  const anchorIds = new Set();
+  for (const a of d.anchors || []) {
+    if (anchorIds.has(a.id)) issue("/anchors", "중복 표면점 ID: " + a.id);
+    anchorIds.add(a.id);
+  }
   const datums = new Set(["legacy"]);
   for (const f of d.inspectionDatums || []) {
     if (datums.has(f.id)) issue("/inspectionDatums", "중복 datumId");

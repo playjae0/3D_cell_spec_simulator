@@ -50,8 +50,12 @@ export function anchorPoint(host, a) {
   );
 }
 export function withAnchors(data, anchors = []) {
-  const features = { ...data.features },
-    diagnostics = [...data.diagnostics];
+  const features = Object.fromEntries(
+      Object.entries(data.features).filter(
+        ([id, f]) => !id.startsWith("anchor.") && !f.anchor,
+      ),
+    ),
+    diagnostics = data.diagnostics.filter((d) => !d.anchorId);
   for (const a of anchors) {
     const host = features[a.baseFeatureId],
       point = anchorPoint(host, a);
@@ -63,22 +67,35 @@ export function withAnchors(data, anchors = []) {
         point,
         anchor: true,
       };
-    else if (host?.available === false) {
+    else {
+      const code =
+        host?.available === false
+          ? host.reasonCode || "stage_absent"
+          : !host
+            ? "reference_lost"
+            : "anchor_outside";
+      const reason =
+        code === "stage_absent"
+          ? "해당 공정에 없음"
+          : code === "reference_lost"
+            ? "부착 기준 참조 소실"
+            : host?.available === false
+              ? host.reason || "부착 기준 미확정"
+              : "측정점이 평탄 패치 범위를 벗어남";
       features[a.id] = {
-        partId: host.partId,
+        partId: host?.partId,
         name: a.name,
-        kind: "unavailable",
+        kind: "invalid",
         available: false,
+        reasonCode: code,
+        reason,
       };
       diagnostics.push({
-        level: "info",
-        message: a.name + ": 해당 상태에서 사용 불가 · 참조 ID 보존",
+        anchorId: a.id,
+        level: code === "stage_absent" ? "info" : "error",
+        message: a.name + ": " + reason + " · 자동 재연결하지 않음",
       });
-    } else
-      diagnostics.push({
-        level: "error",
-        message: a.name + ": 부착 기준 소실 또는 면 범위 이탈 · 재선택 필요",
-      });
+    }
   }
   return { ...data, features, diagnostics };
 }

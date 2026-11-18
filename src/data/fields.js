@@ -100,14 +100,14 @@ export const dictionaries = {
   leadFilm: [
     {
       key: "enabled",
-      label: "리드 필름 사용",
-      basis: "사진으로 세부 단면 미확정 · 가정",
+      label: "리드 실런트 존재",
+      basis: "상세 단면은 기존 가정 · 노란 테이프와 독립",
       type: "checkbox",
     },
-    f("start", "필름 시작 위치", "집속점 기준 바깥 X"),
-    f("length", "필름 X 길이", "노출 리드 부착 범위"),
+    f("start", "실런트 시작 위치", "집속점 기준 바깥 X"),
+    f("length", "실런트 X 길이", "노출 리드 부착 범위"),
     f("overhang", "양쪽 Y 피복 여유", "리드 폭 대비"),
-    f("thickness", "필름 공칭 두께", "리드 외면 법선 방향", 0.01),
+    f("thickness", "실런트 공칭 두께", "리드 외면 법선 방향", 0.01),
   ],
   pouch: [
     f("openingLength", "성형 개구 길이 X", "성형 경계 기준 · 조립체와 별도"),

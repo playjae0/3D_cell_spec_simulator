@@ -8,11 +8,11 @@ export const STAGES = [
   "packaged",
   "finished",
 ];
-export const VERSION = "1.0",
-  DICTIONARY = "cell-intake-1.0";
+export const VERSION = "1.1",
+  DICTIONARY = "cell-intake-1.1";
 export const GENERATOR = {
-  version: "1.3.0",
-  baselineCommit: "3e0f9f8a3d63601a6f310d6a383f714650dfeff4",
+  version: "1.4.0",
+  baselineCommit: "4df91c9efdb2db4bf3c001ee6c1ef02cf1524837",
 };
 export const TARGET =
   "X=조립체 길이, Y=폭, Z=두께; A=Z0, B=Y0, C=X0; 원점=조립체 중심";
@@ -20,7 +20,7 @@ export const COMPONENTS = {
   preweld: { section: "prewelds", id: "pre-1", min: 2 },
   joint: { section: "joints", id: "main", min: 3 },
   tape: { section: "tapes", id: "yellow", min: 4 },
-  leadFilm: { section: "leadFilm", id: "leadFilm", min: 4 },
+  leadFilm: { section: "leadFilm", id: "leadFilm", min: 3 },
   preweldLead: { section: "preweldLead", id: "preweldLead", min: 2, max: 2 },
 };
 export const clone = (x) => structuredClone(x);
@@ -61,7 +61,22 @@ export function componentFor(id, instances) {
     );
   });
 }
+export function legacyUnknownSealant(intake, side, stage) {
+  if (intake.formatVersion !== "1.0" || stage !== "welded") return false;
+  const c = intake.componentInstances.find(
+    (c) => c.polarity === side && c.kind === "leadFilm",
+  );
+  const enabled = intake.parameters.find(
+    (p) => p.parameterId === side + ".leadFilm.enabled",
+  )?.value;
+  return (!c || c.existenceStatus === "unknown") && enabled == null;
+}
 export function requiredField(f, intake, stage) {
+  if (
+    f.parameterId.includes(".leadFilm.") &&
+    legacyUnknownSealant(intake, f.parameterId.split(".")[0], stage)
+  )
+    return false;
   if (
     !f.activeStages.includes(stage) ||
     /\.(material|process)$/.test(f.parameterId)

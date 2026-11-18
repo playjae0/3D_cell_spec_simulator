@@ -1,6 +1,6 @@
 {
-  "dictionaryVersion": "cell-intake-1.0",
-  "baselineCommit": "3e0f9f8a3d63601a6f310d6a383f714650dfeff4",
+  "dictionaryVersion": "cell-intake-1.1",
+  "baselineCommit": "4df91c9efdb2db4bf3c001ee6c1ef02cf1524837",
   "notes": [
     "현재 v1.2 입력 기준. 실제 제조 스펙이나 모든 가능한 형상 목록이 아님.",
     "배열 항목명은 템플릿 ID다. 같은 종류의 항목은 새 stable ID로 복제하고 사전도 함께 확장한다.",
@@ -324,7 +324,13 @@
       "unit": null,
       "basis": "실제 용접 흔적을 확정하지 않는 관리 영역",
       "partId": "positive.preweld.pre-1",
-      "activeStages": ["preweld", "welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "preweld",
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.prewelds.pre-1.enabled",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -337,7 +343,13 @@
       "unit": "mm",
       "basis": "집속점 기준 바깥 X",
       "partId": "positive.preweld.pre-1",
-      "activeStages": ["preweld", "welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "preweld",
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.prewelds.pre-1.start",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -350,7 +362,13 @@
       "unit": "mm",
       "basis": "집속 포일 내부",
       "partId": "positive.preweld.pre-1",
-      "activeStages": ["preweld", "welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "preweld",
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.prewelds.pre-1.length",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -363,7 +381,13 @@
       "unit": "mm",
       "basis": "Y 방향",
       "partId": "positive.preweld.pre-1",
-      "activeStages": ["preweld", "welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "preweld",
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.prewelds.pre-1.width",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -376,7 +400,13 @@
       "unit": "mm",
       "basis": "집속 Y 대비",
       "partId": "positive.preweld.pre-1",
-      "activeStages": ["preweld", "welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "preweld",
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.prewelds.pre-1.offsetY",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -389,8 +419,19 @@
       "unit": null,
       "basis": "형상 변경 없음 · 스펙 메타데이터",
       "partId": "positive.preweld.pre-1",
-      "activeStages": ["preweld", "welded", "assembly", "packaged", "finished"],
-      "allowedValues": ["unspecified", "ultrasonic", "laser", "other"],
+      "activeStages": [
+        "preweld",
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
+      "allowedValues": [
+        "unspecified",
+        "ultrasonic",
+        "laser",
+        "other"
+      ],
       "adapterPath": "positive.prewelds.pre-1.process",
       "writeRule": "direct; resolve array by stable item ID, not position",
       "condition": "stage + component existence + enabled/included + tape path (src/intake/contract.js)"
@@ -402,7 +443,9 @@
       "unit": null,
       "basis": "데모 가정 · 메인 용접 단계 리드와 별도 배치 입력",
       "partId": "positive.lead",
-      "activeStages": ["preweld"],
+      "activeStages": [
+        "preweld"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.preweldLead.included",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -415,7 +458,9 @@
       "unit": "mm",
       "basis": "집속점 기준 바깥 X",
       "partId": "positive.lead",
-      "activeStages": ["preweld"],
+      "activeStages": [
+        "preweld"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.preweldLead.start",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -428,7 +473,9 @@
       "unit": "mm",
       "basis": "겹침 포함 · 돌출 길이는 계산",
       "partId": "positive.lead",
-      "activeStages": ["preweld"],
+      "activeStages": [
+        "preweld"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.preweldLead.length",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -441,7 +488,9 @@
       "unit": "mm",
       "basis": "Y 방향",
       "partId": "positive.lead",
-      "activeStages": ["preweld"],
+      "activeStages": [
+        "preweld"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.preweldLead.width",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -454,7 +503,9 @@
       "unit": "mm",
       "basis": "Z 방향",
       "partId": "positive.lead",
-      "activeStages": ["preweld"],
+      "activeStages": [
+        "preweld"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.preweldLead.thickness",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -467,7 +518,9 @@
       "unit": "mm",
       "basis": "리드 중심 = 집속 Y + 오프셋",
       "partId": "positive.lead",
-      "activeStages": ["preweld"],
+      "activeStages": [
+        "preweld"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.preweldLead.offsetY",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -480,8 +533,13 @@
       "unit": null,
       "basis": "미확정 관계 · 변경 가능한 예시. 리드 Z는 접촉면에서 계산",
       "partId": "positive.lead",
-      "activeStages": ["preweld"],
-      "allowedValues": ["below", "above"],
+      "activeStages": [
+        "preweld"
+      ],
+      "allowedValues": [
+        "below",
+        "above"
+      ],
       "adapterPath": "positive.preweldLead.contactSide",
       "writeRule": "direct; resolve array by stable item ID, not position",
       "condition": "stage + component existence + enabled/included + tape path (src/intake/contract.js)"
@@ -493,7 +551,12 @@
       "unit": "mm",
       "basis": "집속점 기준 바깥 X",
       "partId": "positive.lead",
-      "activeStages": ["welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.lead.start",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -506,7 +569,12 @@
       "unit": "mm",
       "basis": "겹침 포함 · 돌출 길이는 계산",
       "partId": "positive.lead",
-      "activeStages": ["welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.lead.length",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -519,7 +587,12 @@
       "unit": "mm",
       "basis": "Y 방향",
       "partId": "positive.lead",
-      "activeStages": ["welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.lead.width",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -532,7 +605,12 @@
       "unit": "mm",
       "basis": "Z 방향",
       "partId": "positive.lead",
-      "activeStages": ["welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.lead.thickness",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -545,7 +623,12 @@
       "unit": "mm",
       "basis": "리드 중심 = 집속 Y + 오프셋",
       "partId": "positive.lead",
-      "activeStages": ["welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.lead.offsetY",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -558,8 +641,16 @@
       "unit": null,
       "basis": "미확정 관계 · 변경 가능한 예시. 리드 Z는 접촉면에서 계산",
       "partId": "positive.lead",
-      "activeStages": ["welded", "assembly", "packaged", "finished"],
-      "allowedValues": ["below", "above"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
+      "allowedValues": [
+        "below",
+        "above"
+      ],
       "adapterPath": "positive.lead.contactSide",
       "writeRule": "direct; resolve array by stable item ID, not position",
       "condition": "stage + component existence + enabled/included + tape path (src/intake/contract.js)"
@@ -571,7 +662,12 @@
       "unit": null,
       "basis": "실제 용접 흔적을 확정하지 않는 관리 영역",
       "partId": "positive.joint.main",
-      "activeStages": ["welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.joints.main.enabled",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -584,7 +680,12 @@
       "unit": "mm",
       "basis": "집속점 기준 바깥 X",
       "partId": "positive.joint.main",
-      "activeStages": ["welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.joints.main.start",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -597,7 +698,12 @@
       "unit": "mm",
       "basis": "실제 겹침 영역 내부",
       "partId": "positive.joint.main",
-      "activeStages": ["welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.joints.main.length",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -610,7 +716,12 @@
       "unit": "mm",
       "basis": "Y 방향",
       "partId": "positive.joint.main",
-      "activeStages": ["welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.joints.main.width",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -623,7 +734,12 @@
       "unit": "mm",
       "basis": "집속 Y 대비",
       "partId": "positive.joint.main",
-      "activeStages": ["welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.joints.main.offsetY",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -636,8 +752,18 @@
       "unit": null,
       "basis": "형상 변경 없음 · 스펙 메타데이터",
       "partId": "positive.joint.main",
-      "activeStages": ["welded", "assembly", "packaged", "finished"],
-      "allowedValues": ["unspecified", "ultrasonic", "laser", "other"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
+      "allowedValues": [
+        "unspecified",
+        "ultrasonic",
+        "laser",
+        "other"
+      ],
       "adapterPath": "positive.joints.main.process",
       "writeRule": "direct; resolve array by stable item ID, not position",
       "condition": "stage + component existence + enabled/included + tape path (src/intake/contract.js)"
@@ -649,7 +775,11 @@
       "unit": null,
       "basis": "사진에서 확인한 노란 테이프",
       "partId": "positive.tape.yellow",
-      "activeStages": ["assembly", "packaged", "finished"],
+      "activeStages": [
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.tapes.yellow.enabled",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -662,8 +792,15 @@
       "unit": null,
       "basis": "카메라 기준 아님 · 탭 로컬 상/하면. 리드 접촉면과 충돌하면 거부",
       "partId": "positive.tape.yellow",
-      "activeStages": ["assembly", "packaged", "finished"],
-      "allowedValues": ["top", "bottom"],
+      "activeStages": [
+        "assembly",
+        "packaged",
+        "finished"
+      ],
+      "allowedValues": [
+        "top",
+        "bottom"
+      ],
       "adapterPath": "positive.tapes.yellow.face",
       "writeRule": "direct; resolve array by stable item ID, not position",
       "condition": "stage + component existence + enabled/included + tape path (src/intake/contract.js)"
@@ -675,8 +812,15 @@
       "unit": null,
       "basis": "뒷면 전체 감쌈은 미확정 · 자동 복제 없음",
       "partId": "positive.tape.yellow",
-      "activeStages": ["assembly", "packaged", "finished"],
-      "allowedValues": ["top", "top_edges"],
+      "activeStages": [
+        "assembly",
+        "packaged",
+        "finished"
+      ],
+      "allowedValues": [
+        "top",
+        "top_edges"
+      ],
       "adapterPath": "positive.tapes.yellow.path",
       "writeRule": "direct; resolve array by stable item ID, not position",
       "condition": "stage + component existence + enabled/included + tape path (src/intake/contract.js)"
@@ -688,7 +832,11 @@
       "unit": "mm",
       "basis": "집속점 기준 바깥 X",
       "partId": "positive.tape.yellow",
-      "activeStages": ["assembly", "packaged", "finished"],
+      "activeStages": [
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.tapes.yellow.start",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -701,7 +849,11 @@
       "unit": "mm",
       "basis": "집속 상면 범위 내",
       "partId": "positive.tape.yellow",
-      "activeStages": ["assembly", "packaged", "finished"],
+      "activeStages": [
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.tapes.yellow.length",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -714,7 +866,11 @@
       "unit": "mm",
       "basis": "Y 방향 · 모서리 경로에서는 호스트 폭으로 계산",
       "partId": "positive.tape.yellow",
-      "activeStages": ["assembly", "packaged", "finished"],
+      "activeStages": [
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.tapes.yellow.width",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -727,7 +883,11 @@
       "unit": "mm",
       "basis": "집속 중심 대비 · 모서리 경로에서는 0",
       "partId": "positive.tape.yellow",
-      "activeStages": ["assembly", "packaged", "finished"],
+      "activeStages": [
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.tapes.yellow.offsetY",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -740,7 +900,11 @@
       "unit": "mm",
       "basis": "부착면 법선 방향",
       "partId": "positive.tape.yellow",
-      "activeStages": ["assembly", "packaged", "finished"],
+      "activeStages": [
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.tapes.yellow.thickness",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -753,7 +917,11 @@
       "unit": "mm",
       "basis": "모서리 경로 전용 · R 이후 측면 구간",
       "partId": "positive.tape.yellow",
-      "activeStages": ["assembly", "packaged", "finished"],
+      "activeStages": [
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.tapes.yellow.edgeDrop",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -761,12 +929,17 @@
     },
     {
       "parameterId": "positive.leadFilm.enabled",
-      "label": "리드 필름 사용",
+      "label": "리드 실런트 사용",
       "valueType": "boolean",
       "unit": null,
-      "basis": "사진으로 세부 단면 미확정 · 가정",
+      "basis": "존재와 별개로 상세 단면은 기존 편집 가능 가정",
       "partId": "positive.leadFilm",
-      "activeStages": ["assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.leadFilm.enabled",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -774,12 +947,17 @@
     },
     {
       "parameterId": "positive.leadFilm.start",
-      "label": "필름 시작 위치",
+      "label": "실런트 시작 위치",
       "valueType": "number",
       "unit": "mm",
       "basis": "집속점 기준 바깥 X",
       "partId": "positive.leadFilm",
-      "activeStages": ["assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.leadFilm.start",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -787,12 +965,17 @@
     },
     {
       "parameterId": "positive.leadFilm.length",
-      "label": "필름 X 길이",
+      "label": "실런트 X 길이",
       "valueType": "number",
       "unit": "mm",
       "basis": "노출 리드 부착 범위",
       "partId": "positive.leadFilm",
-      "activeStages": ["assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.leadFilm.length",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -805,7 +988,12 @@
       "unit": "mm",
       "basis": "리드 폭 대비",
       "partId": "positive.leadFilm",
-      "activeStages": ["assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.leadFilm.overhang",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -813,12 +1001,17 @@
     },
     {
       "parameterId": "positive.leadFilm.thickness",
-      "label": "필름 공칭 두께",
+      "label": "실런트 공칭 두께",
       "valueType": "number",
       "unit": "mm",
       "basis": "리드 외면 법선 방향",
       "partId": "positive.leadFilm",
-      "activeStages": ["assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "positive.leadFilm.thickness",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1056,7 +1249,13 @@
       "unit": null,
       "basis": "실제 용접 흔적을 확정하지 않는 관리 영역",
       "partId": "negative.preweld.pre-1",
-      "activeStages": ["preweld", "welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "preweld",
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.prewelds.pre-1.enabled",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1069,7 +1268,13 @@
       "unit": "mm",
       "basis": "집속점 기준 바깥 X",
       "partId": "negative.preweld.pre-1",
-      "activeStages": ["preweld", "welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "preweld",
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.prewelds.pre-1.start",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1082,7 +1287,13 @@
       "unit": "mm",
       "basis": "집속 포일 내부",
       "partId": "negative.preweld.pre-1",
-      "activeStages": ["preweld", "welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "preweld",
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.prewelds.pre-1.length",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1095,7 +1306,13 @@
       "unit": "mm",
       "basis": "Y 방향",
       "partId": "negative.preweld.pre-1",
-      "activeStages": ["preweld", "welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "preweld",
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.prewelds.pre-1.width",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1108,7 +1325,13 @@
       "unit": "mm",
       "basis": "집속 Y 대비",
       "partId": "negative.preweld.pre-1",
-      "activeStages": ["preweld", "welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "preweld",
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.prewelds.pre-1.offsetY",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1121,8 +1344,19 @@
       "unit": null,
       "basis": "형상 변경 없음 · 스펙 메타데이터",
       "partId": "negative.preweld.pre-1",
-      "activeStages": ["preweld", "welded", "assembly", "packaged", "finished"],
-      "allowedValues": ["unspecified", "ultrasonic", "laser", "other"],
+      "activeStages": [
+        "preweld",
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
+      "allowedValues": [
+        "unspecified",
+        "ultrasonic",
+        "laser",
+        "other"
+      ],
       "adapterPath": "negative.prewelds.pre-1.process",
       "writeRule": "direct; resolve array by stable item ID, not position",
       "condition": "stage + component existence + enabled/included + tape path (src/intake/contract.js)"
@@ -1134,7 +1368,9 @@
       "unit": null,
       "basis": "데모 가정 · 메인 용접 단계 리드와 별도 배치 입력",
       "partId": "negative.lead",
-      "activeStages": ["preweld"],
+      "activeStages": [
+        "preweld"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.preweldLead.included",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1147,7 +1383,9 @@
       "unit": "mm",
       "basis": "집속점 기준 바깥 X",
       "partId": "negative.lead",
-      "activeStages": ["preweld"],
+      "activeStages": [
+        "preweld"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.preweldLead.start",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1160,7 +1398,9 @@
       "unit": "mm",
       "basis": "겹침 포함 · 돌출 길이는 계산",
       "partId": "negative.lead",
-      "activeStages": ["preweld"],
+      "activeStages": [
+        "preweld"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.preweldLead.length",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1173,7 +1413,9 @@
       "unit": "mm",
       "basis": "Y 방향",
       "partId": "negative.lead",
-      "activeStages": ["preweld"],
+      "activeStages": [
+        "preweld"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.preweldLead.width",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1186,7 +1428,9 @@
       "unit": "mm",
       "basis": "Z 방향",
       "partId": "negative.lead",
-      "activeStages": ["preweld"],
+      "activeStages": [
+        "preweld"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.preweldLead.thickness",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1199,7 +1443,9 @@
       "unit": "mm",
       "basis": "리드 중심 = 집속 Y + 오프셋",
       "partId": "negative.lead",
-      "activeStages": ["preweld"],
+      "activeStages": [
+        "preweld"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.preweldLead.offsetY",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1212,8 +1458,13 @@
       "unit": null,
       "basis": "미확정 관계 · 변경 가능한 예시. 리드 Z는 접촉면에서 계산",
       "partId": "negative.lead",
-      "activeStages": ["preweld"],
-      "allowedValues": ["below", "above"],
+      "activeStages": [
+        "preweld"
+      ],
+      "allowedValues": [
+        "below",
+        "above"
+      ],
       "adapterPath": "negative.preweldLead.contactSide",
       "writeRule": "direct; resolve array by stable item ID, not position",
       "condition": "stage + component existence + enabled/included + tape path (src/intake/contract.js)"
@@ -1225,7 +1476,12 @@
       "unit": "mm",
       "basis": "집속점 기준 바깥 X",
       "partId": "negative.lead",
-      "activeStages": ["welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.lead.start",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1238,7 +1494,12 @@
       "unit": "mm",
       "basis": "겹침 포함 · 돌출 길이는 계산",
       "partId": "negative.lead",
-      "activeStages": ["welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.lead.length",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1251,7 +1512,12 @@
       "unit": "mm",
       "basis": "Y 방향",
       "partId": "negative.lead",
-      "activeStages": ["welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.lead.width",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1264,7 +1530,12 @@
       "unit": "mm",
       "basis": "Z 방향",
       "partId": "negative.lead",
-      "activeStages": ["welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.lead.thickness",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1277,7 +1548,12 @@
       "unit": "mm",
       "basis": "리드 중심 = 집속 Y + 오프셋",
       "partId": "negative.lead",
-      "activeStages": ["welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.lead.offsetY",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1290,8 +1566,16 @@
       "unit": null,
       "basis": "미확정 관계 · 변경 가능한 예시. 리드 Z는 접촉면에서 계산",
       "partId": "negative.lead",
-      "activeStages": ["welded", "assembly", "packaged", "finished"],
-      "allowedValues": ["below", "above"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
+      "allowedValues": [
+        "below",
+        "above"
+      ],
       "adapterPath": "negative.lead.contactSide",
       "writeRule": "direct; resolve array by stable item ID, not position",
       "condition": "stage + component existence + enabled/included + tape path (src/intake/contract.js)"
@@ -1303,7 +1587,12 @@
       "unit": null,
       "basis": "실제 용접 흔적을 확정하지 않는 관리 영역",
       "partId": "negative.joint.main",
-      "activeStages": ["welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.joints.main.enabled",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1316,7 +1605,12 @@
       "unit": "mm",
       "basis": "집속점 기준 바깥 X",
       "partId": "negative.joint.main",
-      "activeStages": ["welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.joints.main.start",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1329,7 +1623,12 @@
       "unit": "mm",
       "basis": "실제 겹침 영역 내부",
       "partId": "negative.joint.main",
-      "activeStages": ["welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.joints.main.length",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1342,7 +1641,12 @@
       "unit": "mm",
       "basis": "Y 방향",
       "partId": "negative.joint.main",
-      "activeStages": ["welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.joints.main.width",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1355,7 +1659,12 @@
       "unit": "mm",
       "basis": "집속 Y 대비",
       "partId": "negative.joint.main",
-      "activeStages": ["welded", "assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.joints.main.offsetY",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1368,8 +1677,18 @@
       "unit": null,
       "basis": "형상 변경 없음 · 스펙 메타데이터",
       "partId": "negative.joint.main",
-      "activeStages": ["welded", "assembly", "packaged", "finished"],
-      "allowedValues": ["unspecified", "ultrasonic", "laser", "other"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
+      "allowedValues": [
+        "unspecified",
+        "ultrasonic",
+        "laser",
+        "other"
+      ],
       "adapterPath": "negative.joints.main.process",
       "writeRule": "direct; resolve array by stable item ID, not position",
       "condition": "stage + component existence + enabled/included + tape path (src/intake/contract.js)"
@@ -1381,7 +1700,11 @@
       "unit": null,
       "basis": "사진에서 확인한 노란 테이프",
       "partId": "negative.tape.yellow",
-      "activeStages": ["assembly", "packaged", "finished"],
+      "activeStages": [
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.tapes.yellow.enabled",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1394,8 +1717,15 @@
       "unit": null,
       "basis": "카메라 기준 아님 · 탭 로컬 상/하면. 리드 접촉면과 충돌하면 거부",
       "partId": "negative.tape.yellow",
-      "activeStages": ["assembly", "packaged", "finished"],
-      "allowedValues": ["top", "bottom"],
+      "activeStages": [
+        "assembly",
+        "packaged",
+        "finished"
+      ],
+      "allowedValues": [
+        "top",
+        "bottom"
+      ],
       "adapterPath": "negative.tapes.yellow.face",
       "writeRule": "direct; resolve array by stable item ID, not position",
       "condition": "stage + component existence + enabled/included + tape path (src/intake/contract.js)"
@@ -1407,8 +1737,15 @@
       "unit": null,
       "basis": "뒷면 전체 감쌈은 미확정 · 자동 복제 없음",
       "partId": "negative.tape.yellow",
-      "activeStages": ["assembly", "packaged", "finished"],
-      "allowedValues": ["top", "top_edges"],
+      "activeStages": [
+        "assembly",
+        "packaged",
+        "finished"
+      ],
+      "allowedValues": [
+        "top",
+        "top_edges"
+      ],
       "adapterPath": "negative.tapes.yellow.path",
       "writeRule": "direct; resolve array by stable item ID, not position",
       "condition": "stage + component existence + enabled/included + tape path (src/intake/contract.js)"
@@ -1420,7 +1757,11 @@
       "unit": "mm",
       "basis": "집속점 기준 바깥 X",
       "partId": "negative.tape.yellow",
-      "activeStages": ["assembly", "packaged", "finished"],
+      "activeStages": [
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.tapes.yellow.start",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1433,7 +1774,11 @@
       "unit": "mm",
       "basis": "집속 상면 범위 내",
       "partId": "negative.tape.yellow",
-      "activeStages": ["assembly", "packaged", "finished"],
+      "activeStages": [
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.tapes.yellow.length",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1446,7 +1791,11 @@
       "unit": "mm",
       "basis": "Y 방향 · 모서리 경로에서는 호스트 폭으로 계산",
       "partId": "negative.tape.yellow",
-      "activeStages": ["assembly", "packaged", "finished"],
+      "activeStages": [
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.tapes.yellow.width",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1459,7 +1808,11 @@
       "unit": "mm",
       "basis": "집속 중심 대비 · 모서리 경로에서는 0",
       "partId": "negative.tape.yellow",
-      "activeStages": ["assembly", "packaged", "finished"],
+      "activeStages": [
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.tapes.yellow.offsetY",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1472,7 +1825,11 @@
       "unit": "mm",
       "basis": "부착면 법선 방향",
       "partId": "negative.tape.yellow",
-      "activeStages": ["assembly", "packaged", "finished"],
+      "activeStages": [
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.tapes.yellow.thickness",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1485,7 +1842,11 @@
       "unit": "mm",
       "basis": "모서리 경로 전용 · R 이후 측면 구간",
       "partId": "negative.tape.yellow",
-      "activeStages": ["assembly", "packaged", "finished"],
+      "activeStages": [
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.tapes.yellow.edgeDrop",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1493,12 +1854,17 @@
     },
     {
       "parameterId": "negative.leadFilm.enabled",
-      "label": "리드 필름 사용",
+      "label": "리드 실런트 사용",
       "valueType": "boolean",
       "unit": null,
-      "basis": "사진으로 세부 단면 미확정 · 가정",
+      "basis": "존재와 별개로 상세 단면은 기존 편집 가능 가정",
       "partId": "negative.leadFilm",
-      "activeStages": ["assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.leadFilm.enabled",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1506,12 +1872,17 @@
     },
     {
       "parameterId": "negative.leadFilm.start",
-      "label": "필름 시작 위치",
+      "label": "실런트 시작 위치",
       "valueType": "number",
       "unit": "mm",
       "basis": "집속점 기준 바깥 X",
       "partId": "negative.leadFilm",
-      "activeStages": ["assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.leadFilm.start",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1519,12 +1890,17 @@
     },
     {
       "parameterId": "negative.leadFilm.length",
-      "label": "필름 X 길이",
+      "label": "실런트 X 길이",
       "valueType": "number",
       "unit": "mm",
       "basis": "노출 리드 부착 범위",
       "partId": "negative.leadFilm",
-      "activeStages": ["assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.leadFilm.length",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1537,7 +1913,12 @@
       "unit": "mm",
       "basis": "리드 폭 대비",
       "partId": "negative.leadFilm",
-      "activeStages": ["assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.leadFilm.overhang",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1545,12 +1926,17 @@
     },
     {
       "parameterId": "negative.leadFilm.thickness",
-      "label": "필름 공칭 두께",
+      "label": "실런트 공칭 두께",
       "valueType": "number",
       "unit": "mm",
       "basis": "리드 외면 법선 방향",
       "partId": "negative.leadFilm",
-      "activeStages": ["assembly", "packaged", "finished"],
+      "activeStages": [
+        "welded",
+        "assembly",
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "negative.leadFilm.thickness",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1563,7 +1949,10 @@
       "unit": "mm",
       "basis": "성형 경계 기준 · 조립체와 별도",
       "partId": "pouch.upper.pocket",
-      "activeStages": ["packaged", "finished"],
+      "activeStages": [
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "pouch.openingLength",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1576,7 +1965,10 @@
       "unit": "mm",
       "basis": "성형 경계 기준",
       "partId": "pouch.upper.pocket",
-      "activeStages": ["packaged", "finished"],
+      "activeStages": [
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "pouch.openingWidth",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1589,7 +1981,10 @@
       "unit": "mm",
       "basis": "성형 개구의 XY 곡선",
       "partId": "pouch.upper.pocket",
-      "activeStages": ["packaged", "finished"],
+      "activeStages": [
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "pouch.planR",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1602,7 +1997,10 @@
       "unit": "mm",
       "basis": "내면의 법선 오프셋 · 균일 공칭값",
       "partId": "pouch.upper.pocket",
-      "activeStages": ["packaged", "finished"],
+      "activeStages": [
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "pouch.filmThickness",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1615,7 +2013,10 @@
       "unit": "mm",
       "basis": "A에서 내면 평탄부까지 +Z",
       "partId": "pouch.upper.pocket",
-      "activeStages": ["packaged", "finished"],
+      "activeStages": [
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "pouch.upperDepth",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1628,7 +2029,10 @@
       "unit": "mm",
       "basis": "내면 바닥–측벽",
       "partId": "pouch.upper.pocket",
-      "activeStages": ["packaged", "finished"],
+      "activeStages": [
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "pouch.upperFloorR",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1641,7 +2045,10 @@
       "unit": "mm",
       "basis": "내면 측벽–외곽 평면",
       "partId": "pouch.upper.pocket",
-      "activeStages": ["packaged", "finished"],
+      "activeStages": [
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "pouch.upperRimR",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1654,7 +2061,10 @@
       "unit": "mm",
       "basis": "A에서 내면 평탄부까지 −Z",
       "partId": "pouch.lower.pocket",
-      "activeStages": ["packaged", "finished"],
+      "activeStages": [
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "pouch.lowerDepth",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1667,7 +2077,10 @@
       "unit": "mm",
       "basis": "내면 바닥–측벽",
       "partId": "pouch.lower.pocket",
-      "activeStages": ["packaged", "finished"],
+      "activeStages": [
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "pouch.lowerFloorR",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1680,7 +2093,10 @@
       "unit": "mm",
       "basis": "내면 측벽–외곽 평면",
       "partId": "pouch.lower.pocket",
-      "activeStages": ["packaged", "finished"],
+      "activeStages": [
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "pouch.lowerRimR",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1693,7 +2109,10 @@
       "unit": "mm",
       "basis": "성형 끝→실링 시작",
       "partId": "pouch.upper.seal",
-      "activeStages": ["packaged", "finished"],
+      "activeStages": [
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "pouch.sealGap",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1706,7 +2125,10 @@
       "unit": "mm",
       "basis": "실링 시작→실링 끝 · 압축 단면 미지원",
       "partId": "pouch.upper.seal",
-      "activeStages": ["packaged", "finished"],
+      "activeStages": [
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "pouch.sealWidth",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1719,7 +2141,10 @@
       "unit": "mm",
       "basis": "실링 끝→절단 끝 · 접기 전 재료 길이",
       "partId": "pouch.upper.margin",
-      "activeStages": ["packaged", "finished"],
+      "activeStages": [
+        "packaged",
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "pouch.trimMargin",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1732,7 +2157,9 @@
       "unit": "deg",
       "basis": "완성 상태에만 적용 · 양끝 릴리프 있는 예시",
       "partId": "pouch.upper.margin",
-      "activeStages": ["finished"],
+      "activeStages": [
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "pouch.foldAngle",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1745,7 +2172,9 @@
       "unit": "mm",
       "basis": "완성 상태 · 외곽 여유를 호 길이로 소비",
       "partId": "pouch.upper.margin",
-      "activeStages": ["finished"],
+      "activeStages": [
+        "finished"
+      ],
       "allowedValues": null,
       "adapterPath": "pouch.foldR",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1758,7 +2187,9 @@
       "unit": "mm",
       "basis": "패키징 상태만 · 용도 미확정 · 완성 시 제거 가정",
       "partId": "pouch.upper.pocket",
-      "activeStages": ["packaged"],
+      "activeStages": [
+        "packaged"
+      ],
       "allowedValues": null,
       "adapterPath": "pouch.packagingExtraYMinus",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1771,7 +2202,9 @@
       "unit": "mm",
       "basis": "패키징 상태만 · 실제 용도는 사내 확인",
       "partId": "pouch.upper.pocket",
-      "activeStages": ["packaged"],
+      "activeStages": [
+        "packaged"
+      ],
       "allowedValues": null,
       "adapterPath": "pouch.packagingExtraYPlus",
       "writeRule": "direct; resolve array by stable item ID, not position",
@@ -1793,7 +2226,10 @@
         "packaged",
         "finished"
       ],
-      "allowedValues": [-1, 1],
+      "allowedValues": [
+        -1,
+        1
+      ],
       "adapterPath": "positive.end",
       "writeRule": "direct",
       "condition": "stage + component existence + enabled/included + tape path (src/intake/contract.js)"
@@ -1827,7 +2263,10 @@
         "packaged",
         "finished"
       ],
-      "allowedValues": [-1, 1],
+      "allowedValues": [
+        -1,
+        1
+      ],
       "adapterPath": "negative.end",
       "writeRule": "direct",
       "condition": "stage + component existence + enabled/included + tape path (src/intake/contract.js)"

@@ -4,7 +4,7 @@ import { initial } from "../src/data/project.js";
 import { intakeFromProject, projectFromIntake } from "../src/intake/adapter.js";
 const output = (name, value) =>
   fs.writeFileSync(name, JSON.stringify(value, null, 2) + "\n");
-output("examples/intake/template-1.0.json", template());
+output("examples/intake/template-1.1.json", template());
 output("docs/intake/required-fields.json", conditionsDocument());
 const fixture = intakeFromProject(initial(), {
   modelId: "virtual-validation-001",

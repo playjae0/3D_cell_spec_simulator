@@ -29,7 +29,13 @@ def resolve_pole(source, stage='assembly'):
     if stage=='preweld' and p['_hasLead']:p['lead']={k:v for k,v in p['preweldLead'].items() if k!='included'}
     if stage not in STAGES[2:]:p['prewelds']=[]
     if stage not in STAGES[3:]:p['joints']=[]
-    if stage not in STAGES[4:]:p['tapes']=[];p['leadFilm']={'enabled':False}
+    if stage not in STAGES[4:]:p['tapes']=[]
+    if stage not in STAGES[3:]:p['leadFilm']={'enabled':False}
+    elif p.get('leadFilm',{}).get('enabled') is None:
+        if stage!='welded':raise ModelError(['leadFilm.enabled: 실런트 존재/부재와 입력 확인 필요'])
+        # Legacy S3 compatibility only; no source mutation or inferred absence.
+        p['_leadFilmUnknown']=True
+        p['leadFilm']={'enabled':False}
     if not p['_hasLead']:p['lead']={}
     return p
 

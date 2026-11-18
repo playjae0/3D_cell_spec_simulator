@@ -905,3 +905,5 @@ dialog p {
     bottom: 126px;
   }
 }
+
+.inspection-guide {white-space:pre-wrap;font:12px/1.6 system-ui;background:#edf5f3;border-left:3px solid #0b877e;padding:10px;overflow-wrap:anywhere}.related-inspections{display:flex;gap:6px;flex-wrap:wrap;padding:6px 20px;max-height:86px;overflow:auto}.related-inspections button{font-size:11px}

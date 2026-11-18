@@ -89,6 +89,7 @@ export function projectFromIntake(intake, stage) {
     datumSet: clone(intake.legacyDatum || { origin: [0, 0, 0], rotationZ: 0 }),
     inspectionDatums: clone(intake.inspectionDatums || []),
     anchors: clone(intake.anchors || []),
+    inspectionViews: clone(intake.inspectionViews || []),
     measurements: intake.inspectionItems.map((x) => ({
       id: x.itemId,
       name: x.name,
@@ -98,6 +99,7 @@ export function projectFromIntake(intake, stage) {
       axis: x.definition.axis,
       datumId: x.definition.datumId || "legacy",
       parameterId: x.definition.parameterId || null,
+      conditions: x.conditions || "",
       a: { featureId: x.definition.a || "unmapped." + x.itemId },
       b: { featureId: x.definition.b || "unmapped." + x.itemId },
       visible: x.display?.visible ?? true,
@@ -142,6 +144,7 @@ function inspectionItems(project) {
         ?.sourceRefs || [],
     ),
     description: m.spec.note,
+    conditions: m.conditions || "",
     display: {
       group: m.group,
       visible: m.visible,
@@ -158,6 +161,7 @@ export function intakeFromProject(project, identity = {}) {
     x.legacyDatum = clone(project.datumSet);
     x.inspectionItems = inspectionItems(project);
     x.anchors = clone(project.anchors || []);
+    x.inspectionViews = clone(project.inspectionViews || []);
     return x;
   }
   const x = template({
@@ -225,6 +229,7 @@ export function intakeFromProject(project, identity = {}) {
     sourceRefs: refs,
   }));
   x.anchors = clone(project.anchors || []);
+  x.inspectionViews = clone(project.inspectionViews || []);
   return x;
 }
 // Reconcile only explicit CAD edits. Unknown future inputs remain null.
@@ -306,5 +311,6 @@ export function reconcileProject(project) {
   x.intake.inspectionDatums = clone(x.inspectionDatums || []);
   x.intake.legacyDatum = clone(x.datumSet);
   x.intake.anchors = clone(x.anchors || []);
+  x.intake.inspectionViews = clone(x.inspectionViews || []);
   return x;
 }

@@ -557,12 +557,13 @@
   },
   {
     "parameterId": "positive.leadFilm.enabled",
-    "label": "리드 필름 사용",
+    "label": "리드 실런트 사용",
     "valueType": "boolean",
     "unit": null,
-    "basis": "사진으로 세부 단면 미확정 · 가정",
+    "basis": "존재와 별개로 상세 단면은 기존 편집 가능 가정",
     "partId": "positive.leadFilm",
     "activeStages": [
+      "welded",
       "assembly",
       "packaged",
       "finished"
@@ -575,12 +576,13 @@
   },
   {
     "parameterId": "positive.leadFilm.start",
-    "label": "필름 시작 위치",
+    "label": "실런트 시작 위치",
     "valueType": "number",
     "unit": "mm",
     "basis": "집속점 기준 바깥 X",
     "partId": "positive.leadFilm",
     "activeStages": [
+      "welded",
       "assembly",
       "packaged",
       "finished"
@@ -593,12 +595,13 @@
   },
   {
     "parameterId": "positive.leadFilm.length",
-    "label": "필름 X 길이",
+    "label": "실런트 X 길이",
     "valueType": "number",
     "unit": "mm",
     "basis": "노출 리드 부착 범위",
     "partId": "positive.leadFilm",
     "activeStages": [
+      "welded",
       "assembly",
       "packaged",
       "finished"
@@ -617,6 +620,7 @@
     "basis": "리드 폭 대비",
     "partId": "positive.leadFilm",
     "activeStages": [
+      "welded",
       "assembly",
       "packaged",
       "finished"
@@ -629,12 +633,13 @@
   },
   {
     "parameterId": "positive.leadFilm.thickness",
-    "label": "필름 공칭 두께",
+    "label": "실런트 공칭 두께",
     "valueType": "number",
     "unit": "mm",
     "basis": "리드 외면 법선 방향",
     "partId": "positive.leadFilm",
     "activeStages": [
+      "welded",
       "assembly",
       "packaged",
       "finished"
@@ -1115,12 +1120,13 @@
   },
   {
     "parameterId": "negative.leadFilm.enabled",
-    "label": "리드 필름 사용",
+    "label": "리드 실런트 사용",
     "valueType": "boolean",
     "unit": null,
-    "basis": "사진으로 세부 단면 미확정 · 가정",
+    "basis": "존재와 별개로 상세 단면은 기존 편집 가능 가정",
     "partId": "negative.leadFilm",
     "activeStages": [
+      "welded",
       "assembly",
       "packaged",
       "finished"
@@ -1133,12 +1139,13 @@
   },
   {
     "parameterId": "negative.leadFilm.start",
-    "label": "필름 시작 위치",
+    "label": "실런트 시작 위치",
     "valueType": "number",
     "unit": "mm",
     "basis": "집속점 기준 바깥 X",
     "partId": "negative.leadFilm",
     "activeStages": [
+      "welded",
       "assembly",
       "packaged",
       "finished"
@@ -1151,12 +1158,13 @@
   },
   {
     "parameterId": "negative.leadFilm.length",
-    "label": "필름 X 길이",
+    "label": "실런트 X 길이",
     "valueType": "number",
     "unit": "mm",
     "basis": "노출 리드 부착 범위",
     "partId": "negative.leadFilm",
     "activeStages": [
+      "welded",
       "assembly",
       "packaged",
       "finished"
@@ -1175,6 +1183,7 @@
     "basis": "리드 폭 대비",
     "partId": "negative.leadFilm",
     "activeStages": [
+      "welded",
       "assembly",
       "packaged",
       "finished"
@@ -1187,12 +1196,13 @@
   },
   {
     "parameterId": "negative.leadFilm.thickness",
-    "label": "필름 공칭 두께",
+    "label": "실런트 공칭 두께",
     "valueType": "number",
     "unit": "mm",
     "basis": "리드 외면 법선 방향",
     "partId": "negative.leadFilm",
     "activeStages": [
+      "welded",
       "assembly",
       "packaged",
       "finished"

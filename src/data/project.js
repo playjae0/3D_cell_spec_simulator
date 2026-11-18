@@ -1,3 +1,4 @@
+import { validateInspectionViews } from "../annotations/presets.js";
 import { productFromIntake } from "../intake/adapter.js";
 import demo from "../../examples/demo.json" with { type: "json" };
 export const clone = (x) => structuredClone(x);
@@ -136,6 +137,7 @@ export function validateProject(p) {
     }
   if (!Array.isArray(p.measurements) || p.measurements.length > 20000)
     err("측정 목록은 20,000개 이하");
+  validateInspectionViews(p.inspectionViews);
   const ids = new Set();
   for (const m of p.measurements) {
     if (
@@ -175,6 +177,8 @@ export function validateProject(p) {
       (m.mode !== "radius" && typeof m.b?.featureId !== "string")
     )
       err("치수 기준 ID 필요");
+    if (m.conditions !== undefined && typeof m.conditions !== "string")
+      err("측정 조건 형식 오류");
     if (!m.spec || typeof m.spec.note !== "string") err("스펙 설명 필요");
     for (const k of ["target", "minus", "plus", "measured"])
       if (m.spec[k] !== null && !Number.isFinite(m.spec[k]))
@@ -194,6 +198,7 @@ export function measurement(name, a, b, mode, stage, extra = {}) {
     name,
     group: "기본",
     stage,
+    datumId: "legacy",
     mode,
     a: { featureId: a },
     b: { featureId: b },

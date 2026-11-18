@@ -32,7 +32,7 @@ const partial = () =>
 const param = (d, id) => d.parameters.find((x) => x.parameterId === id);
 test("contract and required table are generated from the executable dictionary", () => {
   assert.deepEqual(
-    JSON.parse(fs.readFileSync("examples/intake/template-1.0.json")),
+    JSON.parse(fs.readFileSync("examples/intake/template-1.1.json")),
     template(),
   );
   assert.deepEqual(

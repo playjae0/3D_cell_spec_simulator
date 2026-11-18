@@ -1,0 +1,17 @@
+{
+  "virtualOnly": true,
+  "apiCalls": 6,
+  "checks": [
+    "S3 sealant without tape",
+    "actual positive sealant length delta -1 mm",
+    "opposite pole delta zero",
+    "product/stage cache",
+    "S2/S3 absent lead",
+    "positive lead Y movement +0.5 mm, all negative parts unchanged",
+    "datum-only compare reuses geometry, rejects direct delta, common frame delta zero",
+    "JSON intake to actual CAD restore",
+    "inspection preset roundtrip",
+    "changed datum sample rejected",
+    "nonempty library duplicate merge"
+  ]
+}
