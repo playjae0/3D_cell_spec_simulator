@@ -5,7 +5,7 @@ import cadquery as cq
 from process import ModelError, STAGE_CONTRACT
 from proof_pocket import pocket, roundwire
 from pouch_process import line_intervals, transform_model
-from tab_seal import tab_face, edge_info, report_profile
+from tab_seal import continuous_paths, tab_face, edge_info, report_profile
 
 POLES=('positive','negative')
 def rect(l,w,x=0,y=0,z=0,r=0):
@@ -160,6 +160,7 @@ def packaging(m,p,stage):
     flangeFaces=[];fold_profiles={}
     phase1 = any('tabProfile' in bar for bar in cfg['sealBars'].values())
     cup_edge = a['cups']['lower']['y'] + lower['openingWidth'] / 2
+    seal_paths = continuous_paths if phase1 else paths
     for half in ['lower','upper']:
         h=q['sheets'][half];L,W,d,rf,rt,pr,film=[h[k] for k in ['openingLength','openingWidth','depth','floorR','rimR','planR','filmThickness']]
         cx=a['cups'][half]['x'];cy=a['cups'][half]['y']*(-1 if half=='upper' else 1)
@@ -223,7 +224,7 @@ def packaging(m,p,stage):
         if relief['enabled'] and relief['depth']>0:
             bb=union.BoundingBox();working=union.cut(rect(relief['length'],bb.ylen+2,relief['u'],(bb.ymax+bb.ymin)/2))
         projected=seal_transform(working,f,p);seals[key]=projected
-        reports['seals'][key]={'base':paths(base),'union':paths(union),'working':paths(working),'projected':paths(projected),'projectionArea':projected.Area(),'baseArea':base.Area(),'definition':deepcopy(f),'active':step>=required}
+        reports['seals'][key]={'base':seal_paths(base),'union':seal_paths(union),'working':seal_paths(working),'projected':seal_paths(projected),'projectionArea':projected.Area(),'baseArea':base.Area(),'definition':deepcopy(f),'active':step>=required}
         if key in tab_edges:
             reports['seals'][key]['tabDimensions'] = {
                 name: edge_info(edge) for name, edge in tab_edges[key].items()
@@ -243,7 +244,7 @@ def packaging(m,p,stage):
         required=3 if loc in POLES else 4 if loc=='gas' else 5
         upper=seals[loc+'_upper'];bottom=seals[loc+'_lower'];effective=upper.intersect(bottom);product=effective.intersect(film)
         product_regions[loc]=product
-        report={'overlapArea':effective.Area(),'productArea':product.Area(),'effective':paths(effective),'product':paths(product),'sections':[]};reports['seals'][loc]=report
+        report={'overlapArea':effective.Area(),'productArea':product.Area(),'effective':seal_paths(effective),'product':seal_paths(product),'sections':[]};reports['seals'][loc]=report
         # Preserve pre-cut record, while trimmed product only contains retained material.
         if step>=required and not(step>=6 and loc=='gas') and product.Area()>1e-8:
             surface_z = R + t

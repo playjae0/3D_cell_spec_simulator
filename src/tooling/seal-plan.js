@@ -33,7 +33,7 @@ export function tabSealPlan(seals, project, side, half) {
   }
   if (dim?.radius) {
     const a = convert(dim.radius.arc[Math.floor(dim.radius.arc.length/2)]);
-    guides += `<path d="M${a[0]} ${a[1]} l11 7 h10" stroke="#8a4d23" stroke-width=".26" fill="none" marker-start="url(#seal-radius-arrow)"/><text x="${a[0]+23}" y="${a[1]+7.8}" fill="#8a4d23">R ${format(dim.radius.radius)}</text>`;
+    guides += `<path d="M${a[0]} ${a[1]} l8 7 h6" stroke="#8a4d23" stroke-width=".26" fill="none" marker-start="url(#seal-radius-arrow)"/><text class="radius-label" x="${a[0]+15}" y="${a[1]+7.8}" fill="#8a4d23">R ${format(dim.radius.radius)}</text>`;
   }
   const w = Math.max(p.centerLength + 52, 92);
   return `<p>${side === "positive" ? "양극" : "음극"} · 리드 쪽 ↑ / 컵 쪽 ↓ · ${measured ? "제품 접점·원호" : "선택 공구 기준"}</p>

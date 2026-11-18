@@ -2,6 +2,7 @@
 import math
 
 import cadquery as cq
+from OCP.BRepTools import BRepTools_WireExplorer
 
 from process import ModelError
 
@@ -76,6 +77,26 @@ def tab_face(bar, product):
     return face, {"center": center, "radius": right_edges[0]}
 
 
+def continuous_paths(shape):
+    """Tessellate consecutive walk-oriented BRep edges for the workface drawing."""
+    paths = []
+    for wire in shape.Wires():
+        explorer = BRepTools_WireExplorer(wire.wrapped)
+        points = []
+        while explorer.More():
+            edge = cq.Edge(explorer.Current())
+            start = cq.Vertex(explorer.CurrentVertex()).Center()
+            steps = 16 if edge.geomType() != "LINE" else 1
+            coords = edge.positions([i / steps for i in range(steps + 1)])
+            if (coords[-1] - start).Length < (coords[0] - start).Length:
+                coords.reverse()
+            points.extend(list(point.toTuple()) for point in coords[:-1])
+            explorer.Next()
+        if points:
+            paths.append([*points, points[0]])
+    return paths
+
+
 def on_boundary(region, reference):
     """Locate an exact OCC edge by testing the complete reference against it."""
     for edge in region.Edges():
@@ -97,7 +118,7 @@ def edge_info(edge):
 def report_profile(model, product, side, step, region, tab_edges, reports, profiles, surface_z):
     from pouch_material import mapped_point
     from pouch_process import line_intervals
-    from process_tooling import feature, metric, paths, seal_transform, slab
+    from process_tooling import feature, metric, seal_transform, slab
     from proof_pocket import roundwire
 
     report = reports["seals"][side]
@@ -160,5 +181,5 @@ def report_profile(model, product, side, step, region, tab_edges, reports, profi
     upper = product["pouchProcess"]["sheets"]["upper"]
     datum = product["processTooling"]["packaging"]["cups"]["upper"]
     opening = roundwire(upper["openingLength"], upper["openingWidth"], upper["planR"])
-    report["cupOpening"] = paths(opening.translate((datum["x"], datum["y"], 0)))
+    report["cupOpening"] = continuous_paths(opening.translate((datum["x"], datum["y"], 0)))
     report["planContext"] = context

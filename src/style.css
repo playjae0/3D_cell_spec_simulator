@@ -1007,5 +1007,6 @@ body.overview-open .header-actions { display: none; }
   .overview-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 #r4-plan svg.tab-seal-plan { background: #edf4f5; height: auto; max-height: 240px; }
-.tab-seal-plan text { font-size: 2.55px; }
-#r4-plan .seal-legend { color: #52656a; font-size: .73rem; }
+#r4-plan .tab-seal-plan text { font-size: 2.55px; fill: #184c51; }
+#r4-plan .tab-seal-plan .radius-label { fill: #8a4d23; }
+#r4-plan .seal-legend { color: #c5d7df; font-size: .73rem; }
