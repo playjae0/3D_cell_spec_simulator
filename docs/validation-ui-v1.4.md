@@ -1,6 +1,6 @@
 # v1.4 병합 후 실제 화면 검증
 
-2026-11-18 KST. 사용자 요청으로 PR #5 병합 후 전체 개발 앱의 실제 UI를 확인했다. 기준 main은 `644f7235b4dd3cb82d26113432f3eb8b5f7703a8`이며 PR #5의 코드 트리와 동일하다. 검증 중 발견한 화면 문제는 `fix/integrated-ui-validation` 브랜치에서 수정하고 해당 경로를 다시 확인했다. 최종 코드는 이 문서를 포함한 후속 PR HEAD다.
+2026-11-18 KST. 사용자 요청으로 PR #5 병합 후 전체 개발 앱의 실제 UI를 확인했다. 기준 main은 `644f7235b4dd3cb82d26113432f3eb8b5f7703a8`이며 PR #5의 코드 트리와 동일하다. 검증 중 발견한 화면 문제는 `fix/integrated-ui-validation` 브랜치에서 수정하고 해당 경로를 다시 확인했다. 검증한 최종 코드 `56108e36bd16fc8b5351bfbbea5e9c4229e26d6f`는 [PR #6](https://github.com/playjae0/3D_cell_spec_simulator/pull/6)으로 main의 `b7940d9722741df02b1dc79de1a2ed5ce9706be1`에 병합됐다. 후속 스크린샷 추가는 실행 코드를 변경하지 않는다.
 
 환경: Linux의 Cloud Chromium, 1180×757 화면, Node.js v24.22.1, Python 3.12 / CadQuery 2.7.0, `POUCH_PORT=8768 python cad/server.py`. 이 브라우저는 WebGL context 생성이 제한되어 기존 CPU CAD 렌더러로 실행했다. WebGL/사내 Windows/iPad 실기 결과로 확대 해석하지 않는다. 실행파일이나 배포 사이트는 변경하지 않았다.
 
@@ -42,7 +42,17 @@
 
 이번 수정은 화면/표기/저장 후 흐름에 한정한다. CAD 생성 및 STEP 코드는 변경하지 않아 이전 [28개 CAD 검사와 실제 API 결과](validation-integrated.md)를 유지하며, 이번에는 UI를 통한 실제 CAD 생성·공정 전환·치수 변경을 추가 확인했다. 새 CAD/STEP 전체 검사를 다시 실행한 것으로 기록하지 않는다.
 
-스크린샷은 자동 승인 검토에서 외부 저장소 게시 권한이 확인되지 않아 이 PR에 포함하지 않았다. 작업공간 `/workspace/shared/cell-ui-validation/`에 보존하고 사용자 대화에서 제공한다. 증빙 파일: `01-intake-preview.jpg`, `02-library-merge.jpg`, `03-sample-guard.jpg`, `06-compare-front-fixed.jpg`, `07-compare-rotation.jpg`, `08-compare-section-fixed.jpg`, `09-revision-delta.jpg`, `final-comparison.jpg`. 게시 허용 전에는 GitHub에 업로드하지 않는다.
+아래 이미지는 위 검증에서 촬영한 가상 데이터 화면이다. 사용자 요청에 따라 저장소에 포함했다.
+
+- [파일 검토·임시 CAD](validation-integrated/ui/01-intake-preview.jpg)
+- [기존 목록 중복 병합](validation-integrated/ui/02-library-merge.jpg)
+- [바뀐 검사 기준의 실측 차단](validation-integrated/ui/03-sample-guard.jpg)
+- [수정 후 공통 정면](validation-integrated/ui/06-compare-front-fixed.jpg)
+- [드래그 회전 동기](validation-integrated/ui/07-compare-rotation.jpg)
+- [공통 Y 단면](validation-integrated/ui/08-compare-section-fixed.jpg)
+- [5→6 mm, Δ=1 mm 개정 비교](validation-integrated/ui/09-revision-delta.jpg)
+
+![최종 S2/S3 비교 화면](validation-integrated/ui/final-comparison.jpg)
 
 다운로드 파일의 실제 경로는 `/opt/codex/downloads/42fb5796-b4de-4879-91a1-42c6145a07e3/343459e3-2975-4ad6-9c04-f6175bfe3e41` (보관함)과 같은 디렉터리의 `ea0bef0f-7a66-441f-978b-85db2f448249` (비교 후 셀 JSON)이었다. 재가져오기는 보관함을 `/workspace/shared/cell-ui-validation/pouch-model-library.json`으로 복사해 수행했다. 이들은 개발 작업공간의 가상 테스트 산출물이며 지속적인 배포 URL이 아니다.
 
