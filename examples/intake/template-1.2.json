@@ -27,7 +27,15 @@
     "loaded",
     "sealed",
     "trimmed",
-    "folded"
+    "folded",
+    "film_formed",
+    "assembly_loaded_open",
+    "package_closed",
+    "tab_sealed",
+    "gas_sealed",
+    "final_sealed",
+    "package_trimmed",
+    "package_folded"
   ],
   "coordinateMapping": {
     "sourceConvention": null,

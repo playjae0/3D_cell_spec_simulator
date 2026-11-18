@@ -1,3 +1,4 @@
+import { validateTooling } from "../tooling/contract.js";
 import { stageContract, assemblyRank } from "./stages.js";
 import { validateInspectionViews } from "../annotations/presets.js";
 import { productFromIntake } from "../intake/adapter.js";
@@ -9,6 +10,7 @@ export const stages = Object.fromEntries(
 );
 
 export function validateProject(p) {
+  validateTooling(p?.product?.processTooling);
   const err = (m) => {
     throw Error(m);
   };

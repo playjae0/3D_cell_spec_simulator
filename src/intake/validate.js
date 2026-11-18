@@ -1,3 +1,4 @@
+import { validateTooling } from "../tooling/contract.js";
 import { assemblyRank, stageContract } from "../data/stages.js";
 import { validateInspectionViews } from "../annotations/presets.js";
 import Ajv from "ajv/dist/2020.js";
@@ -41,6 +42,7 @@ export function validateIntake(input, stage = "stacked") {
   } catch (e) {
     issue("/inspectionViews", e.message);
   }
+  try { validateTooling(input.processTooling); } catch (e) { issue("/processTooling", e.message); }
   const d = input,
     fields = dictionaryFor(d.componentInstances),
     byId = new Map(fields.map((f) => [f.parameterId, f])),

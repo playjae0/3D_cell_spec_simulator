@@ -1,3 +1,11 @@
+# Current R4 scope
+
+For R4 use `docs/r4/01_WORK_ORDER.md`, `docs/r4/02_FIGURES.txt`, `docs/r4/design.md` and `docs/r4/copilot-and-operation.md`. These supersede the historical reading order below for this iteration. Do not reopen old research archives, delete files, refactor unrelated code, or build installers. Source geometry comes only from the designated figures and the user's confirmed stacked-foil structure.
+
+R4 data is an explicit optional `product.processTooling` snapshot; intake 1.3 carries it with tool ID/revision, polarity/stage, placement and stable spot/outline IDs. Never auto-fill it into an older model. R0–R7 stage IDs preserve the original S/P meanings. CAD is `cad/process_tooling.py`; the element-technology panel is `src/tooling/`. Reuse existing cup and bend kernels. Seal measurements come from exact projected workface intersections, not displayed meshes. A tool geometry draft must merge with the latest inspection metadata before preview/apply.
+
+Run `npm test`, `python -m unittest discover -s tests -p '*geometry*.py' -v`, `npm run build`. `python scripts/check_tooling_r4.py` produces the measured before/after report. The following sections document earlier versions and remain compatibility context, not an instruction to repeat their research.
+
 Read docs/spec-integrated.md and docs/validation-integrated.md first for v1.4. It extends full main 4df91c9 / PR #4. Keep the original CAD; no new pouch/executable/deployment work in this scope.
 
 Read docs/spec-v1.3.md and docs/intake/internal-copilot-prompt.md for the current intake contract. v1.3 extends the full main 3e0f9f8 app, never the read-only hosted review.

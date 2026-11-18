@@ -1,3 +1,4 @@
+import { mountTooling } from "./tooling/panel.js";
 import {
   editorGroup,
   fieldOwner,
@@ -56,6 +57,7 @@ const $ = (id) => document.getElementById(id),
           "'": "&#39;",
         })[c],
     );
+let toolingPreview = false;
 let state = initial(),
   draft = clone(state.product),
   targetStage = state.stage,
@@ -77,11 +79,11 @@ let state = initial(),
 state.measurements = demoMeasurements(state.stage);
 const history = new History();
 const viewer = new Viewer($("viewport"), {
-  onSelect: selectPart,
-  onPick: picked,
-  onAnchor: addAnchor,
+  onSelect: (...hit) => { if (!toolingPreview) selectPart(...hit); },
+  onPick: hit => { if (!toolingPreview) picked(hit); },
+  onAnchor: hit => { if (!toolingPreview) addAnchor(hit); },
   onCamera: (c) => {
-    state.view.camera = c;
+    if (!toolingPreview) state.view.camera = c;
   },
   onHover: (hit) => {
     const el = $("hover-tip");
@@ -102,7 +104,7 @@ const viewer = new Viewer($("viewport"), {
         }[hit.kind] || hit.kind);
     }
   },
-  onEdit: openDirect,
+  onEdit: hit => { if (!toolingPreview) openDirect(hit); },
 });
 const inspectionTools = mountInspection({
   getProject: () => state,
@@ -180,6 +182,7 @@ const queue = new RebuildQueue({
     );
   },
   onAccept: (result, job) => {
+    toolingPreview = false;
     const meta = job.meta,
       changedStage = state.stage !== job.payload.stage;
     if (meta.record !== false && meta.group !== lastHistoryGroup) {
@@ -212,6 +215,7 @@ const queue = new RebuildQueue({
     renderCalculated();
     clearErrors();
     updateHighlight();
+    toolingTools.refresh();
     status(
       "CAD 확정 · " + stages[state.stage],
       "",
@@ -276,6 +280,7 @@ function changeField(path, value) {
   );
 }
 function syncUI() {
+  for (const o of $("stage").options) if (stageContract[o.value]?.r4) o.disabled = !state.product.processTooling;
   renderPouchResults();
   $("data-origin").textContent = state.demo
     ? "DEMO · 예시값"
@@ -362,7 +367,7 @@ function renderParts() {
       negative: "NEGATIVE / 음극 독립 변수",
       pouch: "POUCH / 외장과 경계",
       seal: "SEAL / 제품 공칭 실링 영역",
-      tool: "TOOL / 실링바 작업면",
+      tool: "TOOL / 공구 작업면",
     }[group];
     $("parts").append(head);
     for (const p of ps) {
@@ -1239,6 +1244,7 @@ function renderMeasurements() {
     show.textContent = "대상·기준·방향 보기";
     show.onclick = () => inspectionTools.highlight(m);
     card.append(show);
+    card.querySelector("summary").onpointerenter = () => inspectionTools.highlight(m, true);
     card
       .querySelector("summary")
       .addEventListener("click", () => inspectionTools.highlight(m));
@@ -1258,6 +1264,10 @@ function renderMeasurements() {
     );
 }
 function tab(which) {
+  $("tooling-pane").hidden = which !== "tooling";
+  $("tooling-tab").classList.toggle("active", which === "tooling");
+  document.body.classList.toggle("tooling-open", which === "tooling");
+  window.dispatchEvent(new Event("resize"));
   if (which === "measure") {
     activePath = null;
     viewer.setHighlight(null);
@@ -2006,3 +2016,13 @@ $("pouch-section").onchange = () => {
   $("section-position").value = $("pouch-section").value;
   section();
 };
+
+const toolingTools = mountTooling({
+  project: () => state, model: () => model, stageLabel: s => stages[s] || s,
+  lock: v => setDirty(v),
+  preview: async p => { const next = reconcileProject(p); validateProject(next); return rebuild(next, 1000000 + ++editCounter); },
+  showPreview: (m,p) => { toolingPreview = true; viewer.setModel(m,p); viewer.fit(); status("R4 미리보기 · 적용 전 · " + stages[p.stage]); },
+  restore: () => { toolingPreview = false; if(model) {viewer.setModel(model,state); viewer.fit();} },
+  apply: (p,replace=false) => request(p,{replace:true,fit:true}),
+});
+$("tooling-tab").onclick = () => tab("tooling");

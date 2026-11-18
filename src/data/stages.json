@@ -68,5 +68,85 @@
     "seal": true,
     "cut": true,
     "fold": true
+  },
+  "film_formed": {
+    "label": "R0 열린 두 컵 · 한 장 필름",
+    "assembly": null,
+    "pouch": true,
+    "r4": true,
+    "step": 0,
+    "seal": false,
+    "cut": false,
+    "fold": false
+  },
+  "assembly_loaded_open": {
+    "label": "R1 열린 컵에 조립체 수납",
+    "assembly": "assembly",
+    "pouch": true,
+    "r4": true,
+    "step": 1,
+    "seal": false,
+    "cut": false,
+    "fold": false
+  },
+  "package_closed": {
+    "label": "R2 브리지 닫힘 · 실링 전",
+    "assembly": "assembly",
+    "pouch": true,
+    "r4": true,
+    "step": 2,
+    "seal": false,
+    "cut": false,
+    "fold": false
+  },
+  "tab_sealed": {
+    "label": "R3 탭측 실링 · 가스측 개구",
+    "assembly": "assembly",
+    "pouch": true,
+    "r4": true,
+    "step": 3,
+    "seal": true,
+    "cut": false,
+    "fold": false
+  },
+  "gas_sealed": {
+    "label": "R4 가스방 외곽 실링 · 몸체와 연통",
+    "assembly": "assembly",
+    "pouch": true,
+    "r4": true,
+    "step": 4,
+    "seal": true,
+    "cut": false,
+    "fold": false
+  },
+  "final_sealed": {
+    "label": "R5 최종 실링 · 가스방 격리",
+    "assembly": "assembly",
+    "pouch": true,
+    "r4": true,
+    "step": 5,
+    "seal": true,
+    "cut": false,
+    "fold": false
+  },
+  "package_trimmed": {
+    "label": "R6 가스방 절단 · 플랜지 잔존",
+    "assembly": "assembly",
+    "pouch": true,
+    "r4": true,
+    "step": 6,
+    "seal": true,
+    "cut": true,
+    "fold": false
+  },
+  "package_folded": {
+    "label": "R7 잔여 플랜지 폴딩",
+    "assembly": "assembly",
+    "pouch": true,
+    "r4": true,
+    "step": 7,
+    "seal": true,
+    "cut": true,
+    "fold": true
   }
 }

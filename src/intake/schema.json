@@ -26,14 +26,16 @@
       "enum": [
         "1.0",
         "1.1",
-        "1.2"
+        "1.2",
+        "1.3"
       ]
     },
     "dictionaryVersion": {
       "enum": [
         "cell-intake-1.0",
         "cell-intake-1.1",
-        "cell-intake-1.2"
+        "cell-intake-1.2",
+        "cell-intake-1.3"
       ]
     },
     "model": {
@@ -96,7 +98,15 @@
           "loaded",
           "sealed",
           "trimmed",
-          "folded"
+          "folded",
+          "film_formed",
+          "assembly_loaded_open",
+          "package_closed",
+          "tab_sealed",
+          "gas_sealed",
+          "final_sealed",
+          "package_trimmed",
+          "package_folded"
         ]
       }
     },
@@ -248,7 +258,15 @@
               "loaded",
               "sealed",
               "trimmed",
-              "folded"
+              "folded",
+              "film_formed",
+              "assembly_loaded_open",
+              "package_closed",
+              "tab_sealed",
+              "gas_sealed",
+              "final_sealed",
+              "package_trimmed",
+              "package_folded"
             ]
           },
           "name": {
@@ -614,6 +632,37 @@
       "maxItems": 100,
       "items": {
         "type": "object"
+      }
+    },
+    "processTooling": {
+      "type": "object",
+      "required": [
+        "version",
+        "revision",
+        "poles",
+        "packaging",
+        "sealBars"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "revision": {
+          "type": "string"
+        },
+        "poles": {
+          "type": "object",
+          "required": [
+            "positive",
+            "negative"
+          ]
+        },
+        "packaging": {
+          "type": "object"
+        },
+        "sealBars": {
+          "type": "object"
+        }
       }
     }
   },
