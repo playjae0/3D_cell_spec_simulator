@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Pouch cell intake 1.1 (1.0 legacy supported)",
+  "title": "Pouch cell intake 1.2 (1.0/1.1 compatible)",
   "description": "입력 양식 구조 검증용. CAD 생성 가능 여부, 사전별 타입/단위/조건/근거/충돌은 별도 의미 검증 필요.",
   "type": "object",
   "additionalProperties": false,
@@ -25,13 +25,15 @@
     "formatVersion": {
       "enum": [
         "1.0",
-        "1.1"
+        "1.1",
+        "1.2"
       ]
     },
     "dictionaryVersion": {
       "enum": [
         "cell-intake-1.0",
-        "cell-intake-1.1"
+        "cell-intake-1.1",
+        "cell-intake-1.2"
       ]
     },
     "model": {
@@ -89,7 +91,12 @@
           "welded",
           "assembly",
           "packaged",
-          "finished"
+          "finished",
+          "pouch_formed",
+          "loaded",
+          "sealed",
+          "trimmed",
+          "folded"
         ]
       }
     },
@@ -236,7 +243,12 @@
               "welded",
               "assembly",
               "packaged",
-              "finished"
+              "finished",
+              "pouch_formed",
+              "loaded",
+              "sealed",
+              "trimmed",
+              "folded"
             ]
           },
           "name": {
@@ -818,11 +830,36 @@
             "const": "cell-intake-1.0"
           }
         }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "formatVersion": {
+            "const": "1.1"
+          }
+        }
       },
-      "else": {
+      "then": {
         "properties": {
           "dictionaryVersion": {
             "const": "cell-intake-1.1"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "formatVersion": {
+            "const": "1.2"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "dictionaryVersion": {
+            "const": "cell-intake-1.2"
           }
         }
       }

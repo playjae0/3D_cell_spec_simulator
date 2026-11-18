@@ -1,18 +1,17 @@
+import {
+  stageIds,
+  newPouchStages,
+  assemblyStage,
+  stageContract,
+} from "../data/stages.js";
+import { pouchFieldDefinitions } from "../data/pouch-fields.js";
 import dictionary from "./dictionary.json" with { type: "json" };
-export const STAGES = [
-  "stacked",
-  "gathered",
-  "preweld",
-  "welded",
-  "assembly",
-  "packaged",
-  "finished",
-];
-export const VERSION = "1.1",
-  DICTIONARY = "cell-intake-1.1";
+export const STAGES = stageIds;
+export const VERSION = "1.2",
+  DICTIONARY = "cell-intake-1.2";
 export const GENERATOR = {
-  version: "1.4.0",
-  baselineCommit: "4df91c9efdb2db4bf3c001ee6c1ef02cf1524837",
+  version: "1.5.0",
+  baselineCommit: "cde0950f6255c946524b05973619750b0e123522",
 };
 export const TARGET =
   "X=조립체 길이, Y=폭, Z=두께; A=Z0, B=Y0, C=X0; 원점=조립체 중심";
@@ -48,7 +47,7 @@ export function dictionaryFor(instances = []) {
         partId: `${c.polarity}.${c.kind}.${c.instanceId}`,
       });
   }
-  return fields;
+  return [...fields, ...pouchFieldDefinitions];
 }
 export function componentFor(id, instances) {
   return instances.find((c) => {
@@ -72,6 +71,29 @@ export function legacyUnknownSealant(intake, side, stage) {
   return (!c || c.existenceStatus === "unknown") && enabled == null;
 }
 export function requiredField(f, intake, stage) {
+  if (f.parameterId.startsWith("pouchProcess.")) {
+    if (!f.activeStages.includes(stage)) return false;
+    const pre = f.parameterId.slice(0, f.parameterId.lastIndexOf("."));
+    const val = (k) =>
+      intake.parameters.find((p) => p.parameterId === pre + "." + k)?.value;
+    if (
+      /\.(toolFaces|folds)\./.test(f.parameterId) &&
+      !f.parameterId.endsWith(".enabled") &&
+      val("enabled") === false
+    )
+      return false;
+    if (
+      /\.relief(Length|Width|Offset)$/.test(f.parameterId) &&
+      val("reliefEnabled") === false
+    )
+      return false;
+    return true;
+  }
+  if (stageContract[stage]?.pouch) {
+    if (f.parameterId.startsWith("pouch.") || !assemblyStage(stage))
+      return false;
+    stage = assemblyStage(stage);
+  }
   if (
     f.parameterId.includes(".leadFilm.") &&
     legacyUnknownSealant(intake, f.parameterId.split(".")[0], stage)

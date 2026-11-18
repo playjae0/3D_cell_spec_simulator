@@ -1,0 +1,157 @@
+{
+  "reviewedAt": "2026-11-18",
+  "newOrRechecked": [
+    {
+      "id": "N1",
+      "patent": "US20230170565A1",
+      "assignee": "SK On",
+      "title": "Battery cell sealing apparatus",
+      "evidence": "FIG.1/4/6/7; PDF p2/5/7/8",
+      "checked": "본문+PDF+도면 확인",
+      "use": "바 작업면과 리드 통과 영역을 구분",
+      "exclude": "바 relief와 경사 실링 구조를 제품 기본값으로 채택 금지",
+      "url": "https://patents.google.com/patent/US20230170565A1/en",
+      "localPDF": "research/US20230170565A1.pdf",
+      "targetProductApplicability": "치수 항목/관계 참고; 대상 제품 채택은 미확정"
+    },
+    {
+      "id": "N2",
+      "patent": "US20230369632A1",
+      "assignee": "SK On",
+      "title": "Apparatus and Method of Folding Pouch Case of Battery Cell",
+      "evidence": "FIG.3/4/7/15; PDF p4/5/8/16",
+      "checked": "본문+PDF+도면/사진 확인",
+      "use": "절단선/접힘선/실링·미실링 구역을 독립 참조",
+      "exclude": "특정 접힘 순서/각도/가열·롤러 공법을 기본 채택하지 않음",
+      "url": "https://patents.google.com/patent/US20230369632A1/en",
+      "localPDF": "research/US20230369632A1.pdf",
+      "targetProductApplicability": "치수 항목/관계 참고; 대상 제품 채택은 미확정"
+    },
+    {
+      "id": "N3",
+      "patent": "EP4391161A1",
+      "assignee": "SK On",
+      "title": "Pouch unit and battery cell including the same",
+      "evidence": "FIG.6/7; PDF p16/17; FIG.12/13 설명",
+      "checked": "본문+PDF+도6 단면 확인",
+      "use": "노치 분류 오류 방지",
+      "exclude": "표면 눌림 홈을 외곽 절단 노치로 오해하지 않음",
+      "url": "https://patents.google.com/patent/EP4391161A1/en",
+      "localPDF": "research/EP4391161A1.pdf",
+      "targetProductApplicability": "치수 항목/관계 참고; 대상 제품 채택은 미확정"
+    },
+    {
+      "id": "N4",
+      "patent": "US20260051596A1",
+      "assignee": "SK On",
+      "title": "Apparatus for alignment of battery cell",
+      "evidence": "terrace 112/113, sealing 114/115, leads 116/117, films F1/F2 본문",
+      "checked": "본문만 확인; 이미지 403, PDF 미확보",
+      "use": "양쪽 리드/필름/실링영역 독립",
+      "exclude": "지그/가압구조·실제 필름 단면을 채택하지 않음",
+      "url": "https://patents.google.com/patent/US20260051596A1/en",
+      "localPDF": null,
+      "targetProductApplicability": "치수 항목/관계 참고; 대상 제품 채택은 미확정"
+    },
+    {
+      "id": "N5",
+      "patent": "US20240175792A1",
+      "assignee": "SK On",
+      "title": "Apparatus for Measuring Sealing Strength",
+      "evidence": "FIG.2 PDF p3 (Prior Art/내압 팽창 상태)",
+      "checked": "본문+PDF+도면 확인",
+      "use": "리드 통과부 접합 검사 위치 구분",
+      "exclude": "팽창 그림을 정상 셀 형상으로 채택하지 않음",
+      "url": "https://patents.google.com/patent/US20240175792A1/en",
+      "localPDF": "research/US20240175792A1.pdf",
+      "targetProductApplicability": "치수 항목/관계 참고; 대상 제품 채택은 미확정"
+    },
+    {
+      "id": "N6",
+      "patent": "KR20220022883A",
+      "assignee": "LG Energy Solution",
+      "title": "파우치 형 전지 케이스 및 파우치 형 이차 전지",
+      "evidence": "FIG.21/23/26; PDF p52/54/55; CT 절단선 설명",
+      "checked": "기존 PDF+도21/22 재확인+원문 절단 설명 재확인",
+      "use": "실링 외측→절단선 잔여 폭",
+      "exclude": "LG 구조를 SK 제품 사양으로 표시하지 않음; 코너 절단 노치 입증 아님",
+      "url": "https://patents.google.com/patent/KR20220022883A/en",
+      "localPDF": "research/KR20220022883A.pdf",
+      "targetProductApplicability": "치수 항목/관계 참고; 대상 제품 채택은 미확정"
+    }
+  ],
+  "priorResearchReferences": [
+    {
+      "id": "R1",
+      "patent": "US20240021929A1",
+      "assignee": "SK On",
+      "title": "Method of manufacturing pouch, pouch for secondary battery, and pouch-type secondary battery",
+      "url": "https://patents.google.com/patent/US20240021929A1/en",
+      "evidence": "FIG.1A/1B, PDF p2; Description forming depth (D), accommodating portion (S), sealing portion (P)",
+      "checked": "원문 본문+PDF+도면 확인",
+      "use": "깊이 기준, 내면/외면, 위치별 두께 구분",
+      "exclude": "내부 보강층 및 해당 제조 방법을 대상 셀에 채택하지 않음",
+      "localPDF": "research/US20240021929A1.pdf"
+    },
+    {
+      "id": "R2",
+      "patent": "KR20220022883A",
+      "assignee": "LG Energy Solution",
+      "title": "파우치 형 전지 케이스 및 파우치 형 이차 전지",
+      "url": "https://patents.google.com/patent/KR20220022883A/ko",
+      "evidence": "[0155]~[0159] PDF p22; [0195]~[0202] p26; 검사 기준 설명 p32~34; 도9 p45, 도12 p47, 도21/22 p52/53, 도26 p55",
+      "checked": "영문 페이지 한글 병기 본문+한국어 PDF+도면 확인",
+      "use": "바닥/상단/측벽 코너 경계, 기준선에서 위치 측정, 절단 외곽 구분",
+      "exclude": "특허의 수치·비율·재료 및 브릿지/배트이어 형상을 실제 셀로 채택하지 않음",
+      "localPDF": "research/KR20220022883A.pdf"
+    },
+    {
+      "id": "R3",
+      "patent": "KR102647371B1",
+      "assignee": "SK On",
+      "title": "전극조립체 삽입장치 및 이를 이용한 전극조립체 삽입방법",
+      "url": "https://patents.google.com/patent/KR102647371B1/en",
+      "evidence": "도1 PDF p10 (종래기술 설명); 도5b~5d PDF p13; 본문 상/하부 파우치와 접철부 설명",
+      "checked": "본문+PDF+도1 확인; 도5는 본문과 페이지 위치 확인",
+      "use": "성형 외장과 조립체를 별도 반제품으로 정의, 수납 이후 상대 배치",
+      "exclude": "경사 삽입 로봇/포크 경로 및 상하 대칭을 기본 제품 규칙으로 채택하지 않음",
+      "localPDF": "research/KR102647371B1.pdf"
+    },
+    {
+      "id": "R4",
+      "patent": "US20240332687A1",
+      "assignee": "SK On",
+      "title": "Battery cell, manufacturing device for battery cell and manufacturing method of battery cell",
+      "url": "https://patents.google.com/patent/US20240332687A1/en",
+      "evidence": "FIG.2A/2B PDF p3/p4, FIG.4 PDF p6; 기존 조사 자료 재사용, 원문 이번 재확인",
+      "checked": "기존 PDF/도면 자료+본문 재확인",
+      "use": "상하 작업면, 구역별 폭/위치/경사와 실링 영역의 연결",
+      "exclude": "다단 공법/특정 경사/수지 유동 결과를 제품 기본값으로 채택하지 않음",
+      "localPDF": "research/US20240332687A1.pdf"
+    },
+    {
+      "id": "R5",
+      "patent": "US20250042063A1",
+      "assignee": "SK On",
+      "title": "Pouch folding method and device",
+      "url": "https://patents.google.com/patent/US20250042063A1/en",
+      "evidence": "FIG.7 PDF p8, FIG.8 PDF p9; Description FIG.2~4, FIG.7~8",
+      "checked": "본문+PDF+도7/8 확인",
+      "use": "실링/미실링 영역과 접힘선의 위치 관계, 접힘별 별도 정의",
+      "exclude": "180도+90도 순서와 가열/사이징 장치를 실제 제품 기본값으로 확정하지 않음",
+      "localPDF": "research/US20250042063A1.pdf"
+    },
+    {
+      "id": "R6",
+      "patent": "US20250296135A1",
+      "assignee": "SK On",
+      "title": "Pouch Forming Device and Method",
+      "url": "https://patents.google.com/patent/US20250296135A1/en",
+      "evidence": "Evaluation Example, TABLE2, FIG.9 설명",
+      "checked": "본문 확인; FIG.9 이미지 접근 실패로 시각 확인 안 됨",
+      "use": "중앙과 코너 높이 차이라는 성형 반제품 실측 항목 후보",
+      "exclude": "진공/지지부 제어 및 결과 수치로 형상/품질 예측하지 않음",
+      "localPDF": null
+    }
+  ]
+}

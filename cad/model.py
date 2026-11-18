@@ -8,10 +8,14 @@ import cadquery as cq
 from functools import lru_cache
 from copy import deepcopy
 from proof_pocket import pocket, roundwire
+from geometry_metrics import exact_bounds
 
-from process import ModelError, STAGES, resolve_product, resolve_pole
+from process import ModelError, STAGES, STAGE_CONTRACT, resolve_product, resolve_pole
 
 def validate(p,stage='assembly'):
+    if STAGE_CONTRACT.get(stage,{}).get('pouch'):
+        from pouch_process import validate as validate_pouch
+        return validate_pouch(p.get('pouchProcess'),stage)
     return _validate_resolved(resolve_product(p,stage),stage)
 
 def _validate_resolved(p,stage):
@@ -320,6 +324,9 @@ def folded_margin(q,upper=True):
     return cq.Compound.makeCompound([flat]+parts)
 
 def build(p,stage='assembly'):
+    if STAGE_CONTRACT.get(stage,{}).get('pouch'):
+        from pouch_process import build_process
+        return build_process(p,stage,build)
     source=p;p=resolve_product(p,stage);_validate_resolved(p,stage); s=p['stack']; q=p['pouch']; parts=[]; features={}; paths=[]
     parts.append({'id':'stack','name':'낱장 전극 적층 조립체','shape':rounded(s['length'],s['width'],s['thickness'],s['cornerR']),'color':'#c2c5c2','role':'solid','meta':{'method':'낱장 적층형, 권취 아님','layers':'포락 형상. 보조선은 실제 층수 아님'}})
     for axis,key,dim in [(0,'length',s['length']),(1,'width',s['width']),(2,'thickness',s['thickness'])]:
@@ -381,7 +388,7 @@ def build(p,stage='assembly'):
 def serialize(model,tolerance=.12):
     out={k:v for k,v in model.items() if k!='parts'};out['parts']=[]
     for part in model['parts']:
-        shape=part['shape']; vertices,triangles=part.get('displayShape',shape).tessellate(tolerance,.3); b=shape.BoundingBox()
+        shape=part['shape']; vertices,triangles=part.get('displayShape',shape).tessellate(tolerance,.3); b=exact_bounds(shape) if model.get('processCapabilities') else shape.BoundingBox()
         out['parts'].append({**{k:v for k,v in part.items() if k not in ['shape','displayShape']},'mesh':{'positions':[round(c,7) for v in vertices for c in v.toTuple()],'indices':[i for tri in triangles for i in tri]},'bounds':{'min':[b.xmin,b.ymin,b.zmin],'max':[b.xmax,b.ymax,b.zmax]},'volume':shape.Volume() if part['role']!='region' else 0})
     return out
 

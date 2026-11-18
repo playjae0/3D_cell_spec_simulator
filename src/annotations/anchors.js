@@ -1,3 +1,4 @@
+import { materialPoint, materialCoordinates } from "../geometry/material.js";
 // Persistent surface points are coordinates on named analytic patches, never mesh indices.
 export function pointOnPatch(feature, u, v) {
   const p = feature?.patch;
@@ -8,6 +9,11 @@ export function pointOnPatch(feature, u, v) {
     Math.abs(v) > 1 + 1e-7
   )
     return null;
+  if (p.material)
+    return materialPoint(
+      p.material,
+      p.material.origin.map((x, i) => x + u * p.u[i] + v * p.v[i]),
+    );
   if (p.cornerR) {
     const x = Math.abs(u) * p.halfSize[0],
       y = Math.abs(v) * p.halfSize[1],
@@ -20,6 +26,7 @@ export function pointOnPatch(feature, u, v) {
 export function locateOnPatch(feature, point) {
   const p = feature.patch;
   if (!p) return null;
+  if (p.material) return materialCoordinates(p, point);
   const d = point.map((x, i) => x - feature.point[i]),
     dot = (a, b) => a.reduce((s, x, i) => s + x * b[i], 0),
     u = dot(d, p.u) / dot(p.u, p.u),

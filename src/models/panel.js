@@ -368,7 +368,7 @@ export function mountModels({ getProject, canOpen, onApply, onGuide, notify }) {
     selectedId = null;
     if (x.format !== "pouch-cell-intake") {
       say(
-        "pouch-cell-intake/1.1 (구버전 1.0 호환) 양식이 필요합니다. 기존 프로젝트는 상단 JSON 열기를 이용하세요.",
+        "pouch-cell-intake/1.2 (구버전 1.0/1.1 호환) 양식이 필요합니다. 기존 프로젝트는 상단 JSON 열기를 이용하세요.",
       );
       return;
     }

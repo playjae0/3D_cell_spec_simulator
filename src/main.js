@@ -1,3 +1,6 @@
+import pouchDemo from "../examples/pouch-process.json" with { type: "json" };
+import { stageContract, assemblyRank } from "./data/stages.js";
+import { rigidPoint } from "./geometry/material.js";
 import { mountComparison } from "./models/compare-panel.js";
 import { basicMeasurements } from "./annotations/sets.js";
 import { mountInspection } from "./annotations/panel.js";
@@ -78,6 +81,8 @@ const viewer = new Viewer($("viewport"), {
       el.textContent =
         hit.name.replaceAll(" · ", " > ") +
         (hit.featureName ? " > " + hit.featureName : "") +
+        " · " +
+        stages[state.stage] +
         " · " +
         ({
           part: "부품",
@@ -251,6 +256,7 @@ function changeField(path, value) {
   );
 }
 function syncUI() {
+  renderPouchResults();
   $("data-origin").textContent = state.demo
     ? "DEMO · 예시값"
     : "입력 모델 · 출처 확인";
@@ -297,7 +303,14 @@ function syncFieldValues() {
 function renderParts() {
   if (!model) return;
   $("parts").replaceChildren();
-  for (const group of ["stack", "positive", "negative", "pouch"]) {
+  for (const group of [
+    "stack",
+    "positive",
+    "negative",
+    "pouch",
+    "seal",
+    "tool",
+  ]) {
     const ps = model.parts.filter((p) => p.id.split(".")[0] === group);
     if (!ps.length) continue;
     const head = document.createElement("div");
@@ -307,6 +320,8 @@ function renderParts() {
       positive: "POSITIVE / 양극 독립 변수",
       negative: "NEGATIVE / 음극 독립 변수",
       pouch: "POUCH / 외장과 경계",
+      seal: "SEAL / 제품 공칭 실링 영역",
+      tool: "TOOL / 실링바 작업면",
     }[group];
     $("parts").append(head);
     for (const p of ps) {
@@ -338,7 +353,7 @@ function selectPart(id, feature) {
   viewer.select(id);
   viewer.selectedFeature = selectedFeature;
   renderParts();
-  $("editor").value = id.startsWith("pouch.")
+  $("editor").value = /^(pouch|seal|tool)\./.test(id)
     ? "pouch"
     : id === "stack"
       ? "stack"
@@ -379,6 +394,16 @@ const sectionNames = {
   leadFilm: "S3+ 리드 실런트 (실링 필름)",
   stack: "적층체 / Jellyroll · A/B/C",
   pouch: "포켓 → 실링 → 외곽 → 예시 접힘",
+  type: "컵 구성",
+  construction: "외장 구성",
+  sidewall: "측벽 기준",
+  seamGap: "상하 공칭 간격",
+  neutralFraction: "폴딩 기준층",
+  "sheet upper": "상부 시트 · 독립 치수",
+  "sheet lower": "하부 시트 · 독립 치수",
+  assemblyPose: "조립체 수납 위치 · 자세",
+  toolFaces: "실링바 작업면 · 상하/변 독립",
+  folds: "재료 접힘 작업",
 };
 function renderFields() {
   const side = $("editor").value,
@@ -410,7 +435,7 @@ function renderFields() {
       first.section === "tab" ||
       first.partId === selected;
     const summary = document.createElement("summary");
-    summary.textContent = sectionNames[first.section] || sectionNames[side];
+    summary.textContent = sectionNames[first.section] || first.section;
     if (first.itemId) summary.textContent += " / " + first.itemId;
     details.append(summary);
     for (const b of bs) {
@@ -443,7 +468,19 @@ function renderFields() {
       const item = b.itemId
         ? draft[side][b.section].find((x) => x.id === b.itemId)
         : null;
+      const processHost = b.path.startsWith("pouchProcess.")
+        ? b.path
+            .split(".")
+            .slice(0, -1)
+            .reduce((o, k) => o?.[k], draft)
+        : null;
+      const processDisabled =
+        processHost &&
+        ((processHost.enabled === false && b.key !== "enabled") ||
+          (/^relief(Length|Width|Offset)$/.test(b.key) &&
+            !processHost.reliefEnabled));
       const disabled =
+        processDisabled ||
         (b.section === "tapes" &&
           ((item.path === "top_edges" &&
             ["width", "offsetY"].includes(b.key)) ||
@@ -504,7 +541,8 @@ function renderFields() {
       input.onchange = () => {
         if (input.type === "checkbox" || b.options) {
           update();
-          if (["path", "included"].includes(b.key)) renderFields();
+          if (["path", "included", "enabled", "reliefEnabled"].includes(b.key))
+            renderFields();
         }
       };
       input.onkeydown = (e) => {
@@ -561,7 +599,7 @@ function renderFields() {
       ["joints", 3, "메인 용접 영역"],
       ["tapes", 4, "테이프"],
     ])
-      if (stageOrder.indexOf(targetStage) >= min) {
+      if (assemblyRank(targetStage) >= min) {
         const add = document.createElement("button");
         add.textContent = title + " 추가";
         add.onclick = () => {
@@ -585,7 +623,7 @@ function renderFields() {
         };
         container.append(add);
       }
-    if (model && stageOrder.indexOf(targetStage) >= 2) {
+    if (model && assemblyRank(targetStage) >= 2) {
       const derived = document.createElement("details");
       derived.id = "derived-values";
       derived.open = true;
@@ -657,7 +695,39 @@ function updateHighlight() {
     return;
   }
   let guide = forecast(b, draft, targetStage);
+  if (
+    guide &&
+    stageContract[targetStage]?.pouch &&
+    !b.path.startsWith("pouchProcess.")
+  ) {
+    const pose = draft.pouchProcess.assemblyPose;
+    for (const f of Object.values(guide.features)) {
+      for (const k of ["point", "center"])
+        if (f[k]) f[k] = rigidPoint(f[k], pose);
+      if (f.normal) f.normal = rigidPoint(f.normal, pose, false);
+    }
+    if (guide.arc) guide.arc = guide.arc.map((p) => rigidPoint(p, pose));
+  }
   const refs = references(b, draft, targetStage);
+  if (!guide && refs && model?.features[refs.a.featureId]?.available) {
+    const a = model.features[refs.a.featureId],
+      other = model.features[refs.b.featureId];
+    if (other?.available)
+      guide = {
+        features: { "@a": a, "@b": other },
+        measurement: {
+          name: b.label,
+          mode: refs.mode,
+          a: { featureId: "@a" },
+          b: { featureId: "@b" },
+          offset: 8,
+          offsetAxis: "y",
+          visible: true,
+        },
+        arc: a.arc,
+        committed: true,
+      };
+  }
   if (
     guide &&
     !dirty &&
@@ -763,7 +833,7 @@ function addAnchor(a) {
     status(
       "이 면의 자유점은 미지원",
       "error",
-      "리드/적층체 상·하면 평탄부에서 선택하세요.",
+      "리드/적층체 평탄부, 포켓 바닥 또는 등록된 파우치 재료 패치에서 선택하세요.",
     );
     return;
   }
@@ -1086,6 +1156,10 @@ function renderMeasurements() {
     );
 }
 function tab(which) {
+  if (which === "measure") {
+    activePath = null;
+    viewer.setHighlight(null);
+  }
   $("design-pane").hidden = which !== "design";
   $("measure-pane").hidden = which !== "measure";
   $("design-tab").classList.toggle("active", which === "design");
@@ -1742,4 +1816,68 @@ $("anchor-create").onclick = () => {
   )
     return status("비율은 0~100% 범위여야 합니다", "error");
   addAnchor(a);
+};
+
+// Dedicated process entry is an explicit virtual model, never a legacy migration.
+$("pouch-example").onclick = () => {
+  request(clone(pouchDemo), { replace: true });
+};
+for (const [id, c] of Object.entries(stageContract))
+  if (![...$("stage").options].some((o) => o.value === id))
+    $("stage").append(new Option(c.label, id));
+function renderPouchResults() {
+  const el = $("pouch-results");
+  if (!el) return;
+  el.replaceChildren();
+  el.hidden = !model?.processMetrics;
+  $("pouch-section-control").hidden = el.hidden;
+  $("pouch-results-panel").hidden = el.hidden;
+  if (el.hidden) return;
+  const head = document.createElement("h3");
+  head.textContent = "파우치 계산 · 실제 CAD 기준";
+  el.append(head);
+  for (const m of model.processMetrics.filter((m) => m.kind === "calculated")) {
+    const dim = measurement(m.name, m.a, m.b, m.mode, state.stage, {
+        group: "파우치 계산 결과",
+      }),
+      v = evaluate(dim, model.features, state);
+    const button = document.createElement("button");
+    button.textContent =
+      m.name +
+      " · " +
+      (v.valid ? v.value.toFixed(3) + " mm" : v.error) +
+      (m.materialValue !== undefined
+        ? " / 재료 잔여 " + m.materialValue.toFixed(3) + " mm"
+        : "");
+    button.disabled = !v.valid || dirty || busy;
+    button.onclick = () => {
+      state.measurements.push(dim);
+      renderMeasurements();
+      refreshView();
+      status("계산 치수 추가 · " + m.name);
+    };
+    el.append(button);
+  }
+  const presets = $("pouch-section");
+  presets.replaceChildren(new Option("리드 통과부 단면 선택", ""));
+  for (const side of ["positive", "negative"]) {
+    const a = model.features[side + ".lead.widthMinus"]?.point,
+      b = model.features[side + ".lead.widthPlus"]?.point;
+    if (!a || !b) continue;
+    for (const [name, y] of [
+      ["중심", (a[1] + b[1]) / 2],
+      ["폭 −", a[1]],
+      ["폭 +", b[1]],
+      ["리드 바깥", b[1] + 1],
+    ])
+      presets.append(
+        new Option(side + " " + name + " · Y=" + y.toFixed(2), String(y)),
+      );
+  }
+}
+$("pouch-section").onchange = () => {
+  if ($("pouch-section").value === "") return;
+  $("section").value = "y";
+  $("section-position").value = $("pouch-section").value;
+  section();
 };

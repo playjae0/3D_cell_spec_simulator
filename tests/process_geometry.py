@@ -3,7 +3,7 @@ from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'cad'))
 import cadquery as cq
 from model import build,validate,ModelError,serialize
-from process import STAGES
+from process import LEGACY_STAGES as STAGES
 ROOT=Path(__file__).resolve().parents[1];P=json.loads((ROOT/'examples/demo.json').read_text())['product']
 def parts(m):return {p['id']:p for p in m['parts']}
 class ProcessGeometry(unittest.TestCase):

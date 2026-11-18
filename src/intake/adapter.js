@@ -1,3 +1,4 @@
+import { emptyPouchProcess } from "../data/pouch-fields.js";
 import {
   dictionaryFor,
   template,
@@ -41,6 +42,8 @@ export function productFromIntake(intake, stage) {
       tapes: [],
     },
   };
+  if (intake.parameters.some((f) => f.parameterId.startsWith("pouchProcess.")))
+    p.pouchProcess = emptyPouchProcess();
   for (const c of intake.componentInstances) {
     const section = COMPONENTS[c.kind].section;
     if (Array.isArray(p[c.polarity][section]))
@@ -52,6 +55,7 @@ export function productFromIntake(intake, stage) {
       });
   }
   for (const f of dictionaryFor(intake.componentInstances)) {
+    if (f.parameterId.startsWith("pouchProcess.") && !p.pouchProcess) continue;
     const path = fieldPath(p, f.parameterId),
       keys = path.split("."),
       key = keys.pop(),
@@ -200,28 +204,34 @@ export function intakeFromProject(project, identity = {}) {
           sourceRefs: refs,
         });
     }
-  x.parameters = dictionaryFor(x.componentInstances).map((f) => {
-    const path = fieldPath(project.product, f.parameterId);
-    let value = path?.split(".").reduce((o, k) => o?.[k], project.product);
-    if (f.parameterId.endsWith(".tab.gatheredLength")) {
-      const t = project.product[f.parameterId.split(".")[0]].tab;
-      value = t.rootLength - t.gatherDistance - t.axialShortening;
-    }
-    if (value === undefined && f.parameterId.endsWith(".enabled"))
-      value = false;
-    return {
-      parameterId: f.parameterId,
-      label: f.label,
-      value: value ?? null,
-      unit: f.unit,
-      status: value == null ? "missing" : "extracted",
-      reviewStatus: "reviewed",
-      sourceRefs: refs,
-      originalText: null,
-      conversion: null,
-      note: "기존 프로젝트에서 가져옴. 원문 검토는 별도.",
-    };
-  });
+  x.parameters = dictionaryFor(x.componentInstances)
+    .filter(
+      (f) =>
+        !f.parameterId.startsWith("pouchProcess.") ||
+        project.product.pouchProcess,
+    )
+    .map((f) => {
+      const path = fieldPath(project.product, f.parameterId);
+      let value = path?.split(".").reduce((o, k) => o?.[k], project.product);
+      if (f.parameterId.endsWith(".tab.gatheredLength")) {
+        const t = project.product[f.parameterId.split(".")[0]].tab;
+        value = t.rootLength - t.gatherDistance - t.axialShortening;
+      }
+      if (value === undefined && f.parameterId.endsWith(".enabled"))
+        value = false;
+      return {
+        parameterId: f.parameterId,
+        label: f.label,
+        value: value ?? null,
+        unit: f.unit,
+        status: value == null ? "missing" : "extracted",
+        reviewStatus: "reviewed",
+        sourceRefs: refs,
+        originalText: null,
+        conversion: null,
+        note: "기존 프로젝트에서 가져옴. 원문 검토는 별도.",
+      };
+    });
   x.inspectionDatums = clone(project.inspectionDatums || []);
   x.legacyDatum = clone(project.datumSet);
   x.inspectionItems = inspectionItems(project).map((m) => ({

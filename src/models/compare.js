@@ -191,7 +191,14 @@ export function partDifferences(models) {
         name: a?.name || b.name,
         states: [state(0, id), state(1, id)],
         delta,
+        surfaceChanged:
+          a?.meta?.surfaceSignature && b?.meta?.surfaceSignature
+            ? a.meta.surfaceSignature !== b.meta.surfaceSignature
+            : null,
         changed:
+          (a?.meta?.surfaceSignature &&
+            b?.meta?.surfaceSignature &&
+            a.meta.surfaceSignature !== b.meta.surfaceSignature) ||
           !delta ||
           [...delta.min, ...delta.max, delta.volume].some(
             (n) => Math.abs(n) > 1e-6,

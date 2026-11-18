@@ -1,0 +1,6 @@
+PASS pouch_formed
+PASS loaded
+PASS sealed
+PASS trimmed
+PASS folded
+PASS: pouch CAD / intake / inspection / revision / backup / failure recovery

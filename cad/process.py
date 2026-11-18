@@ -6,8 +6,12 @@ Editing a later-stage target adjusts shortening, never the S0 stock projection.
 """
 from copy import deepcopy
 import math
+import json
+from pathlib import Path
 
-STAGES = ('stacked', 'gathered', 'preweld', 'welded', 'assembly', 'packaged', 'finished')
+STAGE_CONTRACT = json.loads((Path(__file__).resolve().parents[1] / 'src/data/stages.json').read_text())
+STAGES = tuple(STAGE_CONTRACT)
+LEGACY_STAGES = ('stacked', 'gathered', 'preweld', 'welded', 'assembly', 'packaged', 'finished')
 
 class ModelError(ValueError):
     def __init__(self, errors):
@@ -25,12 +29,12 @@ def resolve_pole(source, stage='assembly'):
     t['rootWidth']=t['width']=t['foilWidth']
     if stage!='stacked':t['length']=t['rootLength']-t['gatherDistance']-t['axialShortening']
     p['_stage']=stage
-    p['_hasLead']=stage in STAGES[3:] or (stage=='preweld' and p['preweldLead']['included'])
+    p['_hasLead']=stage in LEGACY_STAGES[3:] or (stage=='preweld' and p['preweldLead']['included'])
     if stage=='preweld' and p['_hasLead']:p['lead']={k:v for k,v in p['preweldLead'].items() if k!='included'}
-    if stage not in STAGES[2:]:p['prewelds']=[]
-    if stage not in STAGES[3:]:p['joints']=[]
-    if stage not in STAGES[4:]:p['tapes']=[]
-    if stage not in STAGES[3:]:p['leadFilm']={'enabled':False}
+    if stage not in LEGACY_STAGES[2:]:p['prewelds']=[]
+    if stage not in LEGACY_STAGES[3:]:p['joints']=[]
+    if stage not in LEGACY_STAGES[4:]:p['tapes']=[]
+    if stage not in LEGACY_STAGES[3:]:p['leadFilm']={'enabled':False}
     elif p.get('leadFilm',{}).get('enabled') is None:
         if stage!='welded':raise ModelError(['leadFilm.enabled: 실런트 존재/부재와 입력 확인 필요'])
         # Legacy S3 compatibility only; no source mutation or inferred absence.

@@ -572,8 +572,12 @@ export class Viewer {
         }
         text(
           d.label,
-          (h.pending ? "예상 변경 · " : "기준 · ") +
-            g.value.toFixed(3) +
+          (h.pending
+            ? g.committed
+              ? "마지막 확정 · "
+              : "예상 변경 · "
+            : "기준 · ") +
+            (Number.isFinite(g.value) ? g.value : d.value).toFixed(3) +
             (g.mode === "angle" ? "°" : " mm") +
             " · " +
             h.label,

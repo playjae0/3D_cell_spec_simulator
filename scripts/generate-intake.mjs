@@ -4,8 +4,12 @@ import { initial } from "../src/data/project.js";
 import { intakeFromProject, projectFromIntake } from "../src/intake/adapter.js";
 const output = (name, value) =>
   fs.writeFileSync(name, JSON.stringify(value, null, 2) + "\n");
-output("examples/intake/template-1.1.json", template());
-output("docs/intake/required-fields.json", conditionsDocument());
+output("examples/intake/template-1.2.json", template());
+output("docs/intake/required-fields-1.2.json", conditionsDocument());
+const pouch = JSON.parse(fs.readFileSync("examples/pouch-process.json"));
+output("examples/intake/virtual-pouch-1.2.json", intakeFromProject(pouch));
+// Legacy fixtures are frozen compatibility evidence; generate them only explicitly.
+if (!process.argv.includes("--regenerate-legacy")) process.exit(0);
 const fixture = intakeFromProject(initial(), {
   modelId: "virtual-validation-001",
   modelName: "가상 검증 셀 · 실제 제품값 아님",

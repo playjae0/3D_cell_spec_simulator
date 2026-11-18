@@ -72,20 +72,27 @@ export function evaluate(
     return { valid: true, value: d[axis], a: a.point, b: b.point };
   let value;
   if (m.mode === "thickness") {
+    const world = sub(b.point, a.point),
+      length = Math.hypot(...world),
+      n = a.normal,
+      other = b.normal;
+    const dot = (x, y) => x.reduce((v, k, i) => v + k * y[i], 0);
     if (
       a.partId !== b.partId ||
       a.kind !== "face" ||
       b.kind !== "face" ||
-      Math.hypot(d[0], d[1]) > 1e-5 ||
-      Math.abs(d[2]) < 1e-8 ||
-      Math.abs(a.normal?.[2] || 0) !== 1 ||
-      a.normal[2] !== -b.normal?.[2]
+      !n ||
+      !other ||
+      length < 1e-8 ||
+      Math.abs(Math.hypot(...n) - 1) > 1e-6 ||
+      Math.abs(dot(n, other) + 1) > 1e-6 ||
+      Math.abs(Math.abs(dot(world, n)) - length) > 1e-6
     )
       return {
         valid: false,
-        error: "두께는 같은 부품의 Z 대응 면 중심을 선택하세요",
+        error: "두께는 같은 부품의 대응 면과 법선 방향을 선택하세요",
       };
-    value = Math.abs(d[2]);
+    value = length;
   } else
     value =
       m.mode === "distance"
@@ -107,7 +114,7 @@ export function dimensionLayout(m, features, datum) {
         ? "z"
         : m.mode,
   );
-  if (index >= 0) {
+  if (index >= 0 && m.mode !== "thickness") {
     const av = datumPoint(a, datum),
       bv = datumPoint(b, datum),
       v = [0, 0, 0];

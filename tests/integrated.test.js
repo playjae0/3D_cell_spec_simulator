@@ -169,7 +169,7 @@ test("new intake 1.1 requires S3 sealant review; legacy sparse S3 keeps null wit
   const p = projectFromIntake(x, "welded");
   assert.equal(p.product.positive.leadFilm.enabled, null);
   validateProject(p);
-  assert.equal(template({}, ["welded"]).formatVersion, "1.1");
+  assert.equal(template({}, ["welded"]).formatVersion, "1.2");
 });
 test("basic set only adds available CAD references, has no targets and is idempotent", () => {
   const p = initial();
