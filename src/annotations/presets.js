@@ -29,7 +29,10 @@ export function validateInspectionViews(views = []) {
       !["none", "x", "y", "z"].includes(p.view.section?.axis) ||
       !Number.isFinite(p.view.section.position) ||
       !Array.isArray(p.view.hidden) ||
-      !p.view.hidden.every((x) => typeof x === "string")
+      !p.view.hidden.every((x) => typeof x === "string") ||
+      ["showDimensions", "internalOnly"].some(
+        (k) => p.view[k] !== undefined && typeof p.view[k] !== "boolean",
+      )
     )
       throw Error("검사 보기 카메라/단면 형식 오류");
     if (

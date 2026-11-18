@@ -57,7 +57,7 @@ export function mountModels({ getProject, canOpen, onApply, onGuide, notify }) {
   const session = new PreviewSession(rebuild),
     dialog = document.createElement("dialog");
   dialog.id = "models-dialog";
-  dialog.innerHTML = `<div class="intake-header"><div><h2>모델 · 입력 양식 검토</h2><p>전체 CAD 프로그램 v1.4 · 임시 미리보기는 적용 전까지 현재 작업과 분리됩니다.</p></div><button id="intake-close">닫기 / 취소</button></div>
+  dialog.innerHTML = `<div class="intake-header"><div><h2>모델 · 입력 양식 검토</h2><p>전체 CAD 프로그램 v1.5 · 임시 미리보기는 적용 전까지 현재 작업과 분리됩니다.</p></div><button id="intake-close">닫기 / 취소</button></div>
  <div class="intake-toolbar"><button id="model-new">신규 모델</button><button id="model-revise">현재 모델 새 개정</button><button id="model-copy">다른 모델로 복사</button><button id="model-register">현재 작업 개정 저장</button><button id="library-save">전체 보관함 백업 내보내기</button><button id="intake-upload">입력 양식 / 보관함 가져오기</button><input hidden id="intake-file" type="file" accept=".json"></div>
  <p class="small">상단 ‘셀 JSON 저장’은 현재 셀 한 개입니다. ‘전체 보관함 백업’은 저장된 모든 모델·개정·초안·실측입니다. 미저장 작업은 먼저 개정 저장 또는 셀 JSON으로 보관하세요.</p>
  <section id="library-recovery" hidden><p id="storage-error" role="alert"></p><button id="storage-raw">손상 원본 파일로 백업</button><button id="storage-recover">원본을 별도 보존하고 빈 보관함 복구</button></section>

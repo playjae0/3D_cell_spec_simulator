@@ -17,7 +17,7 @@ export function mountInspection({
     z: "Z 투영 거리 (양수)",
     signed_coordinate: "검사 원점에서의 부호 좌표",
     signed_offset: "A→B 부호 오프셋",
-    thickness: "Z 대응 면 두께",
+    thickness: "대응 면 법선 두께",
     radius: "원호 반경",
   };
   function highlight(m, temporary = false) {

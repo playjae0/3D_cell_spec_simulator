@@ -1,0 +1,242 @@
+[
+  {
+    "fields": [
+      "pouchProcess.toolFaces.upper_xMinus.enabled",
+      "pouchProcess.toolFaces.upper_xMinus.start",
+      "pouchProcess.toolFaces.upper_xMinus.width",
+      "pouchProcess.toolFaces.upper_xMinus.length",
+      "pouchProcess.toolFaces.upper_xMinus.offset",
+      "pouchProcess.toolFaces.upper_xMinus.cornerR",
+      "pouchProcess.toolFaces.upper_xMinus.reliefLength",
+      "pouchProcess.toolFaces.upper_xMinus.reliefWidth",
+      "pouchProcess.toolFaces.upper_xMinus.reliefOffset",
+      "pouchProcess.toolFaces.upper_xMinus.reliefEnabled"
+    ],
+    "target": "tool.upper_xMinus"
+  },
+  {
+    "fields": [
+      "pouchProcess.toolFaces.upper_xMinus.enabled",
+      "pouchProcess.toolFaces.upper_xMinus.start",
+      "pouchProcess.toolFaces.upper_xMinus.width",
+      "pouchProcess.toolFaces.upper_xMinus.length",
+      "pouchProcess.toolFaces.upper_xMinus.offset",
+      "pouchProcess.toolFaces.upper_xMinus.cornerR",
+      "pouchProcess.toolFaces.upper_xMinus.reliefLength",
+      "pouchProcess.toolFaces.upper_xMinus.reliefWidth",
+      "pouchProcess.toolFaces.upper_xMinus.reliefOffset",
+      "pouchProcess.toolFaces.upper_xMinus.reliefEnabled"
+    ],
+    "target": "seal.upper_xMinus"
+  },
+  {
+    "fields": [
+      "pouchProcess.toolFaces.upper_xPlus.enabled",
+      "pouchProcess.toolFaces.upper_xPlus.start",
+      "pouchProcess.toolFaces.upper_xPlus.width",
+      "pouchProcess.toolFaces.upper_xPlus.length",
+      "pouchProcess.toolFaces.upper_xPlus.offset",
+      "pouchProcess.toolFaces.upper_xPlus.cornerR",
+      "pouchProcess.toolFaces.upper_xPlus.reliefLength",
+      "pouchProcess.toolFaces.upper_xPlus.reliefWidth",
+      "pouchProcess.toolFaces.upper_xPlus.reliefOffset",
+      "pouchProcess.toolFaces.upper_xPlus.reliefEnabled"
+    ],
+    "target": "tool.upper_xPlus"
+  },
+  {
+    "fields": [
+      "pouchProcess.toolFaces.upper_xPlus.enabled",
+      "pouchProcess.toolFaces.upper_xPlus.start",
+      "pouchProcess.toolFaces.upper_xPlus.width",
+      "pouchProcess.toolFaces.upper_xPlus.length",
+      "pouchProcess.toolFaces.upper_xPlus.offset",
+      "pouchProcess.toolFaces.upper_xPlus.cornerR",
+      "pouchProcess.toolFaces.upper_xPlus.reliefLength",
+      "pouchProcess.toolFaces.upper_xPlus.reliefWidth",
+      "pouchProcess.toolFaces.upper_xPlus.reliefOffset",
+      "pouchProcess.toolFaces.upper_xPlus.reliefEnabled"
+    ],
+    "target": "seal.upper_xPlus"
+  },
+  {
+    "fields": [
+      "pouchProcess.toolFaces.upper_yMinus.enabled",
+      "pouchProcess.toolFaces.upper_yMinus.start",
+      "pouchProcess.toolFaces.upper_yMinus.width",
+      "pouchProcess.toolFaces.upper_yMinus.length",
+      "pouchProcess.toolFaces.upper_yMinus.offset",
+      "pouchProcess.toolFaces.upper_yMinus.cornerR",
+      "pouchProcess.toolFaces.upper_yMinus.reliefLength",
+      "pouchProcess.toolFaces.upper_yMinus.reliefWidth",
+      "pouchProcess.toolFaces.upper_yMinus.reliefOffset",
+      "pouchProcess.toolFaces.upper_yMinus.reliefEnabled"
+    ],
+    "target": "tool.upper_yMinus"
+  },
+  {
+    "fields": [
+      "pouchProcess.toolFaces.upper_yMinus.enabled",
+      "pouchProcess.toolFaces.upper_yMinus.start",
+      "pouchProcess.toolFaces.upper_yMinus.width",
+      "pouchProcess.toolFaces.upper_yMinus.length",
+      "pouchProcess.toolFaces.upper_yMinus.offset",
+      "pouchProcess.toolFaces.upper_yMinus.cornerR",
+      "pouchProcess.toolFaces.upper_yMinus.reliefLength",
+      "pouchProcess.toolFaces.upper_yMinus.reliefWidth",
+      "pouchProcess.toolFaces.upper_yMinus.reliefOffset",
+      "pouchProcess.toolFaces.upper_yMinus.reliefEnabled"
+    ],
+    "target": "seal.upper_yMinus"
+  },
+  {
+    "fields": [
+      "pouchProcess.toolFaces.upper_yPlus.enabled",
+      "pouchProcess.toolFaces.upper_yPlus.start",
+      "pouchProcess.toolFaces.upper_yPlus.width",
+      "pouchProcess.toolFaces.upper_yPlus.length",
+      "pouchProcess.toolFaces.upper_yPlus.offset",
+      "pouchProcess.toolFaces.upper_yPlus.cornerR",
+      "pouchProcess.toolFaces.upper_yPlus.reliefLength",
+      "pouchProcess.toolFaces.upper_yPlus.reliefWidth",
+      "pouchProcess.toolFaces.upper_yPlus.reliefOffset",
+      "pouchProcess.toolFaces.upper_yPlus.reliefEnabled"
+    ],
+    "target": "tool.upper_yPlus"
+  },
+  {
+    "fields": [
+      "pouchProcess.toolFaces.upper_yPlus.enabled",
+      "pouchProcess.toolFaces.upper_yPlus.start",
+      "pouchProcess.toolFaces.upper_yPlus.width",
+      "pouchProcess.toolFaces.upper_yPlus.length",
+      "pouchProcess.toolFaces.upper_yPlus.offset",
+      "pouchProcess.toolFaces.upper_yPlus.cornerR",
+      "pouchProcess.toolFaces.upper_yPlus.reliefLength",
+      "pouchProcess.toolFaces.upper_yPlus.reliefWidth",
+      "pouchProcess.toolFaces.upper_yPlus.reliefOffset",
+      "pouchProcess.toolFaces.upper_yPlus.reliefEnabled"
+    ],
+    "target": "seal.upper_yPlus"
+  },
+  {
+    "fields": [
+      "pouchProcess.toolFaces.lower_xMinus.enabled",
+      "pouchProcess.toolFaces.lower_xMinus.start",
+      "pouchProcess.toolFaces.lower_xMinus.width",
+      "pouchProcess.toolFaces.lower_xMinus.length",
+      "pouchProcess.toolFaces.lower_xMinus.offset",
+      "pouchProcess.toolFaces.lower_xMinus.cornerR",
+      "pouchProcess.toolFaces.lower_xMinus.reliefLength",
+      "pouchProcess.toolFaces.lower_xMinus.reliefWidth",
+      "pouchProcess.toolFaces.lower_xMinus.reliefOffset",
+      "pouchProcess.toolFaces.lower_xMinus.reliefEnabled"
+    ],
+    "target": "tool.lower_xMinus"
+  },
+  {
+    "fields": [
+      "pouchProcess.toolFaces.lower_xMinus.enabled",
+      "pouchProcess.toolFaces.lower_xMinus.start",
+      "pouchProcess.toolFaces.lower_xMinus.width",
+      "pouchProcess.toolFaces.lower_xMinus.length",
+      "pouchProcess.toolFaces.lower_xMinus.offset",
+      "pouchProcess.toolFaces.lower_xMinus.cornerR",
+      "pouchProcess.toolFaces.lower_xMinus.reliefLength",
+      "pouchProcess.toolFaces.lower_xMinus.reliefWidth",
+      "pouchProcess.toolFaces.lower_xMinus.reliefOffset",
+      "pouchProcess.toolFaces.lower_xMinus.reliefEnabled"
+    ],
+    "target": "seal.lower_xMinus"
+  },
+  {
+    "fields": [
+      "pouchProcess.toolFaces.lower_xPlus.enabled",
+      "pouchProcess.toolFaces.lower_xPlus.start",
+      "pouchProcess.toolFaces.lower_xPlus.width",
+      "pouchProcess.toolFaces.lower_xPlus.length",
+      "pouchProcess.toolFaces.lower_xPlus.offset",
+      "pouchProcess.toolFaces.lower_xPlus.cornerR",
+      "pouchProcess.toolFaces.lower_xPlus.reliefLength",
+      "pouchProcess.toolFaces.lower_xPlus.reliefWidth",
+      "pouchProcess.toolFaces.lower_xPlus.reliefOffset",
+      "pouchProcess.toolFaces.lower_xPlus.reliefEnabled"
+    ],
+    "target": "tool.lower_xPlus"
+  },
+  {
+    "fields": [
+      "pouchProcess.toolFaces.lower_xPlus.enabled",
+      "pouchProcess.toolFaces.lower_xPlus.start",
+      "pouchProcess.toolFaces.lower_xPlus.width",
+      "pouchProcess.toolFaces.lower_xPlus.length",
+      "pouchProcess.toolFaces.lower_xPlus.offset",
+      "pouchProcess.toolFaces.lower_xPlus.cornerR",
+      "pouchProcess.toolFaces.lower_xPlus.reliefLength",
+      "pouchProcess.toolFaces.lower_xPlus.reliefWidth",
+      "pouchProcess.toolFaces.lower_xPlus.reliefOffset",
+      "pouchProcess.toolFaces.lower_xPlus.reliefEnabled"
+    ],
+    "target": "seal.lower_xPlus"
+  },
+  {
+    "fields": [
+      "pouchProcess.toolFaces.lower_yMinus.enabled",
+      "pouchProcess.toolFaces.lower_yMinus.start",
+      "pouchProcess.toolFaces.lower_yMinus.width",
+      "pouchProcess.toolFaces.lower_yMinus.length",
+      "pouchProcess.toolFaces.lower_yMinus.offset",
+      "pouchProcess.toolFaces.lower_yMinus.cornerR",
+      "pouchProcess.toolFaces.lower_yMinus.reliefLength",
+      "pouchProcess.toolFaces.lower_yMinus.reliefWidth",
+      "pouchProcess.toolFaces.lower_yMinus.reliefOffset",
+      "pouchProcess.toolFaces.lower_yMinus.reliefEnabled"
+    ],
+    "target": "tool.lower_yMinus"
+  },
+  {
+    "fields": [
+      "pouchProcess.toolFaces.lower_yMinus.enabled",
+      "pouchProcess.toolFaces.lower_yMinus.start",
+      "pouchProcess.toolFaces.lower_yMinus.width",
+      "pouchProcess.toolFaces.lower_yMinus.length",
+      "pouchProcess.toolFaces.lower_yMinus.offset",
+      "pouchProcess.toolFaces.lower_yMinus.cornerR",
+      "pouchProcess.toolFaces.lower_yMinus.reliefLength",
+      "pouchProcess.toolFaces.lower_yMinus.reliefWidth",
+      "pouchProcess.toolFaces.lower_yMinus.reliefOffset",
+      "pouchProcess.toolFaces.lower_yMinus.reliefEnabled"
+    ],
+    "target": "seal.lower_yMinus"
+  },
+  {
+    "fields": [
+      "pouchProcess.toolFaces.lower_yPlus.enabled",
+      "pouchProcess.toolFaces.lower_yPlus.start",
+      "pouchProcess.toolFaces.lower_yPlus.width",
+      "pouchProcess.toolFaces.lower_yPlus.length",
+      "pouchProcess.toolFaces.lower_yPlus.offset",
+      "pouchProcess.toolFaces.lower_yPlus.cornerR",
+      "pouchProcess.toolFaces.lower_yPlus.reliefLength",
+      "pouchProcess.toolFaces.lower_yPlus.reliefWidth",
+      "pouchProcess.toolFaces.lower_yPlus.reliefOffset",
+      "pouchProcess.toolFaces.lower_yPlus.reliefEnabled"
+    ],
+    "target": "tool.lower_yPlus"
+  },
+  {
+    "fields": [
+      "pouchProcess.toolFaces.lower_yPlus.enabled",
+      "pouchProcess.toolFaces.lower_yPlus.start",
+      "pouchProcess.toolFaces.lower_yPlus.width",
+      "pouchProcess.toolFaces.lower_yPlus.length",
+      "pouchProcess.toolFaces.lower_yPlus.offset",
+      "pouchProcess.toolFaces.lower_yPlus.cornerR",
+      "pouchProcess.toolFaces.lower_yPlus.reliefLength",
+      "pouchProcess.toolFaces.lower_yPlus.reliefWidth",
+      "pouchProcess.toolFaces.lower_yPlus.reliefOffset",
+      "pouchProcess.toolFaces.lower_yPlus.reliefEnabled"
+    ],
+    "target": "seal.lower_yPlus"
+  }
+]

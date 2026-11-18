@@ -1,3 +1,4 @@
+import { partAppearance, canPickPart } from "./presentation.js";
 import * as T from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { SoftwareRenderer } from "./software.js";
@@ -214,15 +215,13 @@ export class Viewer {
       );
       geo.setIndex(mesh.indices);
       geo.computeVertexNormals();
-      const transparent =
-        state.view.transparent && part.id.startsWith("pouch.");
+      const appearance = partAppearance(part, state.view);
       const material = new T.MeshStandardMaterial({
         color: part.color,
         metalness: 0.28,
         roughness: 0.55,
         side: T.DoubleSide,
-        transparent,
-        opacity: transparent ? 0.22 : 1,
+        ...appearance,
         polygonOffset: part.role === "region",
         polygonOffsetFactor: -1,
       });
@@ -281,7 +280,7 @@ export class Viewer {
           f.point[["x", "y", "z"].indexOf(this.state.view.section.axis)] <=
             this.state.view.section.position + 0.001) &&
         !this.state?.view.hidden.includes(f.partId) &&
-        (!this.through || !f.partId.startsWith("pouch.")),
+        canPickPart(f.partId, this.through),
     );
   }
   project(p) {
@@ -303,9 +302,7 @@ export class Viewer {
       pt,
       hits: this.ray.intersectObjects(
         this.meshes.filter(
-          (m) =>
-            m.visible &&
-            (!this.through || !m.userData.part.id.startsWith("pouch.")),
+          (m) => m.visible && canPickPart(m.userData.part.id, this.through),
         ),
       ),
     };
@@ -492,7 +489,13 @@ export class Viewer {
     }
     let shown = 0;
     for (const m of this.state?.measurements || []) {
-      if (!m.visible || m.stage !== this.state.stage || shown >= 200) continue;
+      if (
+        this.state.view.showDimensions === false ||
+        !m.visible ||
+        m.stage !== this.state.stage ||
+        shown >= 200
+      )
+        continue;
       const d = dimensionLayout(m, this.data.features, this.state);
       if (!d) continue;
       shown++;
@@ -526,7 +529,7 @@ export class Viewer {
       );
     }
     const h = this.highlight;
-    if (h?.guide) {
+    if (h?.guide && this.state.view.showDimensions !== false) {
       const g = h.guide,
         color = h.pending ? "#ca7c1c" : "#167d86",
         d = dimensionLayout(
