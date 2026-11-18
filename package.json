@@ -8,9 +8,11 @@
     "build": "vite build",
     "start": "node serve.mjs",
     "test": "node tests/run.js",
-    "test:cad": "python -m unittest discover -s tests -p \"*geometry*.py\" -v"
+    "test:cad": "python -m unittest discover -s tests -p \"*geometry*.py\" -v",
+    "build:preview": "node scripts/build-preview.mjs"
   },
   "dependencies": {
+    "@noble/hashes": "2.0.1",
     "ajv": "8.17.1",
     "three": "0.180.0"
   },

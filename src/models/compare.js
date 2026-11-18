@@ -26,8 +26,9 @@ export function comparisonSnapshot(source, stage) {
   return p;
 }
 export class ComparisonSession {
-  constructor(compute) {
+  constructor(compute, cacheKey = () => undefined) {
     this.compute = compute;
+    this.cacheKey = cacheKey;
     this.generation = 0;
     this.cache = new Map();
     this.pending = new Map();
@@ -40,7 +41,7 @@ export class ComparisonSession {
     this.result = null;
   }
   async model(project) {
-    const key = JSON.stringify(canonical([project.product, project.stage]));
+    const key = this.cacheKey(project) ?? JSON.stringify(canonical([project.product, project.stage]));
     if (this.cache.has(key)) return clone(this.cache.get(key));
     if (!this.pending.has(key)) {
       const task = this.tail

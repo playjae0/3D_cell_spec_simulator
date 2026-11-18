@@ -1,3 +1,5 @@
+import { rebuildRequest } from "./request.js";
+
 export async function engineHealth() {
   const response = await fetch("/api/health", { cache: "no-store" });
   if (!response.ok) throw Error("CAD 계산 서버에 연결할 수 없습니다.");
@@ -13,12 +15,8 @@ export async function engineHealth() {
   return data;
 }
 export async function rebuild(project, revision) {
-  const requestToken = crypto.randomUUID();
-  const response = await fetch("/api/rebuild", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ project, revision, requestToken }),
-  });
+  const { requestToken, options } = rebuildRequest(project, revision);
+  const response = await fetch("/api/rebuild", options);
   const data = await response.json();
   if (!response.ok) throw Error((data.errors || [data.error]).join("\n"));
   if (

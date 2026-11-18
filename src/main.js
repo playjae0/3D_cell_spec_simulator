@@ -8,7 +8,8 @@ import {
   fieldUnit,
 } from "./data/editor-targets.js";
 import { viewAvailability } from "./viewer/presentation.js";
-import pouchDemo from "../examples/pouch-process.json" with { type: "json" };
+import { previewExamples } from "./preview/examples.js";
+import { designIdentity } from "./preview/identity.js";
 import { stageContract, assemblyRank } from "./data/stages.js";
 import { rigidPoint } from "./geometry/material.js";
 import { mountComparison } from "./models/compare-panel.js";
@@ -42,8 +43,10 @@ import { inspectLegacy, migrateV2 } from "./data/migration.js";
 import { evaluate, inspection } from "./annotations/measure.js";
 import { rebuild, exportStep, engineHealth } from "./geometry/client.js";
 import { RebuildQueue } from "./geometry/queue.js";
+
 import { Viewer } from "./viewer/viewer.js";
 import { withAnchors, anchorPoint } from "./annotations/anchors.js";
+const previewBuild = import.meta.env.MODE === "recorded-preview";
 const $ = (id) => document.getElementById(id),
   esc = (x) =>
     String(x ?? "").replace(
@@ -65,6 +68,8 @@ let state = initial(),
   dirty = false,
   busy = false,
   live = false,
+  preview = null,
+  ready = false,
   selected = null,
   selectedFeature = null,
   activePath = null,
@@ -136,9 +141,12 @@ const inspectionTools = mountInspection({
 });
 let focusRestore = null;
 $("renderer-mode").textContent = viewer.mode;
+function previewLabel() {
+  return "읽기 전용 프리뷰 · 사전 계산 형상(" + preview.manifest.sourceCommit.slice(0, 7) + ")";
+}
 function status(message, type = "", details) {
   $("diagnostics").className = type;
-  $("status").textContent = message;
+  $("status").textContent = preview ? previewLabel() + " · " + message : message;
   $("revision").textContent = "REV " + appliedRevision;
   if (details !== undefined) $("messages").textContent = details;
 }
@@ -146,14 +154,22 @@ function setDirty(value) {
   dirty = value;
   const pending = dirty || busy || queue.pending;
   $("dirty-state").textContent = busy
-    ? "CAD 계산 중 · 화면은 마지막 확정 형상"
+    ? (preview ? "기록 조회 중" : "CAD 계산 중") + " · 화면은 마지막 확정 형상"
     : dirty
       ? "예상 변경 · 아직 CAD에 확정되지 않았습니다."
-      : "입력과 확정 CAD 형상이 일치합니다.";
+      : preview ? "기록 형상과 일치합니다." : "입력과 확정 CAD 형상이 일치합니다.";
   for (const id of ["save", "step"]) $(id).disabled = !live || !!pending;
-  $("apply").disabled = !live;
-  $("undo").disabled = !history.undoList.length && !dirty;
-  $("redo").disabled = !history.redoList.length;
+  for (const id of ["apply", "auto-rebuild", "edit-selection", "models"])
+    $(id).disabled = !live;
+  $("open").disabled = !ready || !!preview;
+  $("compare").disabled = !(live || preview);
+  $("stage").disabled = !ready;
+  $("pouch-example").disabled = !ready;
+  $("discard").disabled = !!preview;
+
+  $("undo").disabled = (!!preview && busy) || (!history.undoList.length && !dirty);
+  $("redo").disabled = (!!preview && busy) || !history.redoList.length;
+  $("r4-example").disabled = !ready;
 }
 function startEdit(path) {
   if (!editGroup || editGroup.path !== path)
@@ -167,24 +183,28 @@ function nextProject() {
     stage: targetStage,
   });
 }
+async function compute(p, revision) {
+  validateProject(p);
+  if (live) return rebuild(p, revision);
+  if (preview) return preview.model(p);
+  throw Error("읽기 전용 · 실시간 CAD 서버 연결 필요");
+}
 const queue = new RebuildQueue({
-  compute: async (p, revision) => {
-    validateProject(p);
-    return rebuild(p, revision);
-  },
+  compute,
   onStart: () => {
     busy = true;
-    setDirty(true);
+    setDirty(!preview);
     status(
-      "실시간 CAD 계산 중…",
+      preview ? "기록 조회 중…" : "실시간 CAD 계산 중…",
       "busy",
-      "화면은 마지막 확정 형상입니다. 주황 치수는 예상 변경입니다.",
+      preview ? "화면은 마지막 확정 형상입니다." : "화면은 마지막 확정 형상입니다. 주황 치수는 예상 변경입니다.",
     );
   },
   onAccept: (result, job) => {
     toolingPreview = false;
     const meta = job.meta,
       changedStage = state.stage !== job.payload.stage;
+    if (meta.historyAction) history[meta.historyAction](meta.before);
     if (meta.record !== false && meta.group !== lastHistoryGroup) {
       history.push(meta.before || state);
       lastHistoryGroup = meta.group;
@@ -217,15 +237,24 @@ const queue = new RebuildQueue({
     updateHighlight();
     toolingTools.refresh();
     status(
-      "CAD 확정 · " + stages[state.stage],
+      (preview ? "기록 확정 · " : "CAD 확정 · ") + stages[state.stage],
       "",
       model.diagnostics.map((x) => x.message).join("\n"),
     );
   },
   onError: (error, job) => {
     busy = false;
-    setDirty(true);
-    showFieldError(job.meta.path, error.message);
+    if (preview) {
+      replacement = null;
+      draft = clone(state.product);
+      targetStage = state.stage;
+      setDirty(false);
+      renderFields();
+      syncUI();
+    } else {
+      setDirty(true);
+      showFieldError(job.meta.path, error.message);
+    }
     status("입력 미적용 · 마지막 확정 형상 유지", "error", error.message);
     updateHighlight();
   },
@@ -236,7 +265,7 @@ const queue = new RebuildQueue({
 });
 function request(next, meta = {}, immediate = true) {
   next = reconcileProject(next);
-  if (!live) {
+  if (!live && !preview) {
     status("읽기 전용 · 실시간 CAD 서버 연결 필요", "error");
     return;
   }
@@ -244,7 +273,7 @@ function request(next, meta = {}, immediate = true) {
   draft = clone(next.product);
   targetStage = next.stage;
   if (meta.replace) renderFields();
-  setDirty(true);
+  setDirty(!preview);
   const group = meta.group || "action-" + ++editCounter;
   queue.schedule(
     next,
@@ -260,6 +289,7 @@ function request(next, meta = {}, immediate = true) {
   if (immediate) queue.flush();
 }
 function changeField(path, value) {
+  if (!live) return;
   startEdit(path);
   writeField(draft, path, value);
   activePath = path;
@@ -280,7 +310,7 @@ function changeField(path, value) {
   );
 }
 function syncUI() {
-  for (const o of $("stage").options) if (stageContract[o.value]?.r4) o.disabled = !state.product.processTooling;
+  for (const o of $("stage").options) if (stageContract[o.value]?.r4) o.disabled = !preview && !state.product.processTooling;
   renderPouchResults();
   $("data-origin").textContent = state.demo
     ? "DEMO · 예시값"
@@ -606,6 +636,7 @@ function renderFields() {
         }
       else controls.append(input);
       input.onfocus = () => {
+        if (!live) return;
         startEdit(b.path);
         activePath = b.path;
         updateHighlight();
@@ -633,6 +664,7 @@ function renderFields() {
         }
       };
       input.onkeydown = (e) => {
+        if (!live) return;
         if (e.key === "Enter") {
           e.preventDefault();
           queue.flush();
@@ -663,7 +695,9 @@ function renderFields() {
       remove.textContent = state.intake
         ? "이 영역 제외 · 부재로 기록"
         : "이 영역 삭제";
+      remove.disabled = !live;
       remove.onclick = () => {
+        if (!live) return;
         if (state.intake)
           draft[side][first.section].find(
             (x) => x.id === first.itemId,
@@ -689,6 +723,7 @@ function renderFields() {
       if (assemblyRank(targetStage) >= min) {
         const add = document.createElement("button");
         add.textContent = title + " 추가";
+        add.disabled = !live;
         add.onclick = () => {
           if (state.intake) {
             status(
@@ -746,7 +781,7 @@ function renderCalculated() {
       " · " +
       (v.valid ? v.value.toFixed(3) + " mm" : "현재 상태 없음") +
       " ↗";
-    button.disabled = !v.valid;
+    button.disabled = !live || !v.valid;
     button.onclick = () => openDirect({ measurement: m });
     box.append(button);
   }
@@ -1236,6 +1271,7 @@ function renderMeasurements() {
     ]) {
       const b = document.createElement("button");
       b.textContent = text;
+      if (text === "원인 입력 편집") b.disabled = !live;
       b.onclick = fn;
       actions.append(b);
     }
@@ -1308,6 +1344,7 @@ $("editor").onchange = () => {
   updateHighlight();
 };
 $("apply").onclick = () => {
+  if (!live) return;
   if (queue.pending) {
     queue.pending.meta.automatic = true;
     queue.flush();
@@ -1568,7 +1605,7 @@ function download(blob, name) {
   setTimeout(() => URL.revokeObjectURL(url), 1500);
 }
 $("save").onclick = () => {
-  if (dirty || busy) return;
+  if (!live || dirty || busy) return;
   try {
     state = reconcileProject(state);
     state.view.camera = viewer.getCamera();
@@ -1582,8 +1619,9 @@ $("save").onclick = () => {
     status("저장 실패", "error", e.message);
   }
 };
-$("open").onclick = () => $("file").click();
+$("open").onclick = () => { if (ready && !preview) $("file").click(); };
 $("file").onchange = async (e) => {
+  if (preview || !ready) return;
   const file = e.target.files[0];
   if (!file) return;
   try {
@@ -1615,22 +1653,22 @@ $("step").onclick = async () => {
     setDirty(dirty);
   }
 };
-$("undo").onclick = () => {
-  queue.invalidate();
-  const next = history.undo(state);
-  if (next) {
-    editGroup = null;
-    request(next, { record: false, replace: true });
-  } else discard();
-};
-$("redo").onclick = () => {
-  queue.invalidate();
-  const next = history.redo(state);
-  if (next) {
-    editGroup = null;
-    request(next, { record: false, replace: true });
+function replayHistory(action) {
+  if (preview) {
+    const entries = action === "undo" ? history.undoList : history.redoList;
+    const next = entries.at(-1);
+    if (next) request(clone(next), { record: false, replace: true, historyAction: action });
+    return;
   }
-};
+  queue.invalidate();
+  const next = history[action](state);
+  if (next) {
+    editGroup = null;
+    request(next, { record: false, replace: true });
+  } else if (action === "undo") discard();
+}
+$("undo").onclick = () => replayHistory("undo");
+$("redo").onclick = () => replayHistory("redo");
 let directContext = null;
 function openDirect(context) {
   if (!model || !live) return;
@@ -1727,6 +1765,7 @@ function setDirectField() {
 }
 $("direct-field").onchange = setDirectField;
 $("direct-value").oninput = () => {
+  if (!live) return;
   const path = $("direct-field").value,
     b = bindingFor(draft, targetStage, path),
     value =
@@ -1767,6 +1806,7 @@ $("direct-editor").addEventListener("click", (e) => {
 });
 $("direct-form").onsubmit = (e) => {
   e.preventDefault();
+  if (!live) return;
   const path = $("direct-field").value,
     raw = $("direct-value").value,
     value = Number(raw);
@@ -1841,22 +1881,40 @@ $("migration-apply").onclick = () => {
   }
 };
 async function boot() {
+  setDirty(false);
+  let failure;
   try {
     const engine = await engineHealth();
     live = true;
     $("engine-state").textContent =
       "실시간 CadQuery " + engine.version + " · /api/rebuild 연결 확인";
-    renderFields();
-    request(state, { record: false, replace: true, fit: true });
   } catch (error) {
-    live = false;
+    failure = error;
+    if (previewBuild) {
+      try {
+        const { loadPreview } = await import("./preview/records.js");
+        preview = await loadPreview(new URL("./preview/", document.baseURI));
+        $("engine-state").textContent = previewLabel();
+        $("compare").textContent = "기록 형상 비교";
+        $("preview-demo").hidden = false;
+      } catch (loadError) {
+        failure = loadError;
+      }
+    }
+  }
+  ready = true;
+  if (!preview) models = createModels();
+  renderFields();
+  setDirty(false);
+  if (live || preview) {
+    request(state, { record: false, replace: true, fit: true });
+  } else {
     $("engine-state").textContent = "읽기 전용 · CAD 서버 없음";
-    status("계산 서버 연결 필요", "error", error.message);
-    renderFields();
-    setDirty(false);
+    status("계산 서버 연결 필요", "error", failure.message);
   }
 }
-const models = mountModels({
+let models;
+const createModels = () => mountModels({
   getProject: () => clone(state),
   canOpen: () => live && !dirty && !busy && !queue.pending,
   notify: (message) => status(message),
@@ -1897,15 +1955,21 @@ const models = mountModels({
     );
   },
 });
-$("models").onclick = () => models.open();
+$("models").onclick = () => { if (live) models.open(); };
 const comparison = mountComparison({
   getProject: () => state,
-  getLibrary: () => models.library(),
-  canOpen: () => live && !dirty && !busy && !queue.pending,
+  getLibrary: () => models?.library(),
+  canOpen: () => !!(live || preview) && !!model && !dirty && !busy && !queue.pending,
+  compute,
+  isPreview: () => !!preview,
+  getRecordedSources: () => preview.manifest.designs.map(design => ({
+    label: design.modelId + (design.modelRevision ? " / " + design.modelRevision : ""),
+    project: previewExamples[design.name](),
+  })),
+  cacheKey: p => preview ? designIdentity(p) + ":" + p.stage : undefined,
   notify: status,
 });
 $("compare").onclick = () => comparison.open();
-boot();
 
 function previewInspection() {
   if (!model) return;
@@ -1955,7 +2019,7 @@ $("anchor-create").onclick = () => {
 
 // Dedicated process entry is an explicit virtual model, never a legacy migration.
 $("pouch-example").onclick = () => {
-  request(clone(pouchDemo), { replace: true });
+  request(previewExamples["pouch-process"](), { replace: true });
 };
 for (const [id, c] of Object.entries(stageContract))
   if (![...$("stage").options].some((o) => o.value === id))
@@ -2019,10 +2083,31 @@ $("pouch-section").onchange = () => {
 
 const toolingTools = mountTooling({
   project: () => state, model: () => model, stageLabel: s => stages[s] || s,
+  editable: () => live,
+  recorded: () => !!preview,
+  openExample: () => request(previewExamples["process-tooling-r4"](), { replace: true, fit: true }),
+  openStage: stage => request({ ...state, stage }),
   lock: v => setDirty(v),
-  preview: async p => { const next = reconcileProject(p); validateProject(next); return rebuild(next, 1000000 + ++editCounter); },
+  preview: async p => {
+    if (!live) throw Error("로컬 CAD 서버에서 편집하세요.");
+    return compute(reconcileProject(p), 1000000 + ++editCounter);
+  },
   showPreview: (m,p) => { toolingPreview = true; viewer.setModel(m,p); viewer.fit(); status("R4 미리보기 · 적용 전 · " + stages[p.stage]); },
   restore: () => { toolingPreview = false; if(model) {viewer.setModel(model,state); viewer.fit();} },
-  apply: (p,replace=false) => request(p,{replace:true,fit:true}),
+  apply: p => { if (live) request(p, { replace: true, fit: true }); },
 });
 $("tooling-tab").onclick = () => tab("tooling");
+
+if (previewBuild) {
+  const button = document.createElement("button");
+  button.id = "preview-demo";
+  button.hidden = true;
+  button.textContent = "기본 가상 예제 열기";
+  button.onclick = () => {
+    const next = previewExamples.demo();
+    next.measurements = demoMeasurements(next.stage);
+    request(next, { replace: true, fit: true });
+  };
+  $("pouch-example").before(button);
+}
+boot();

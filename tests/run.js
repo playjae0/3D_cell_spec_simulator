@@ -11,3 +11,5 @@ import "./pouch.test.js";
 import "./ui-state.test.js";
 
 import "./tooling.test.js";
+
+import "./preview.test.js";
