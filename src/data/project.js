@@ -39,6 +39,10 @@ export function validateProject(p) {
     !Array.isArray(p.view.hidden) ||
     !p.view.hidden.every((x) => typeof x === "string") ||
     typeof p.view.transparent !== "boolean" ||
+    (p.view.showDimensions !== undefined &&
+      typeof p.view.showDimensions !== "boolean") ||
+    (p.view.internalOnly !== undefined &&
+      typeof p.view.internalOnly !== "boolean") ||
     typeof p.view.datums !== "boolean" ||
     !["none", "x", "y", "z"].includes(p.view.section?.axis) ||
     !Number.isFinite(p.view.section.position)

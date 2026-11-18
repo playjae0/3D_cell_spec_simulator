@@ -1,3 +1,12 @@
+import {
+  editorGroup,
+  fieldOwner,
+  editorTargets,
+  fieldsForTarget,
+  fieldIdentity,
+  fieldUnit,
+} from "./data/editor-targets.js";
+import { viewAvailability } from "./viewer/presentation.js";
 import pouchDemo from "../examples/pouch-process.json" with { type: "json" };
 import { stageContract, assemblyRank } from "./data/stages.js";
 import { rigidPoint } from "./geometry/material.js";
@@ -107,6 +116,17 @@ const inspectionTools = mountInspection({
   onView: (p, part) => {
     state = p;
     selected = part;
+    selectedFeature = activePath = null;
+    viewer.selectedFeature = null;
+    viewer.setHighlight(null);
+    syncTargets();
+    viewer.select(selected);
+    if (selected && [...$("editor").options].some((o) => o.value === selected))
+      $("editor").value = selected;
+    $("selection-info").textContent = selected
+      ? model.parts.find((p) => p.id === selected)?.name || selected
+      : "현재 공정의 부품을 선택하세요.";
+    renderFields();
     syncUI();
     refreshView();
     viewer.restore(state.view.camera);
@@ -186,7 +206,7 @@ const queue = new RebuildQueue({
     viewer.setModel(model, state);
     if (meta.replace && state.view.camera) viewer.restore(state.view.camera);
     if (meta.fit) viewer.fit();
-    if (changedStage || meta.replace) renderFields();
+    if (syncTargets() || changedStage || meta.replace) renderFields();
     else syncFieldValues();
     syncUI();
     renderCalculated();
@@ -270,6 +290,7 @@ function syncUI() {
         state.modelIdentity.revision
       : "");
   $("transparent").checked = state.view.transparent;
+  $("dimensions-visible").checked = state.view.showDimensions !== false;
   $("datums").checked = state.view.datums;
   $("section").value = state.view.section.axis;
   $("section-position").value = state.view.section.position;
@@ -302,6 +323,26 @@ function syncFieldValues() {
 }
 function renderParts() {
   if (!model) return;
+  const availability = viewAvailability(model.parts, state.view.hidden);
+  const hasShell = availability.transparent;
+  $("transparent").disabled = !hasShell;
+  $("transparent").parentElement.title = hasShell
+    ? "파우치 외장을 반투명으로 표시"
+    : "현재 화면에 표시된 파우치 외장이 없습니다";
+  $("through").disabled = !availability.internalOnly;
+  $("through").checked = state.view.internalOnly === true;
+  $("through").parentElement.title = availability.internalOnly
+    ? "3D 선택에서 외장·제품 실링·공구를 제외합니다"
+    : "표시된 외부 대상과 내부 부품이 함께 있을 때 사용할 수 있습니다";
+  viewer.through =
+    state.view.internalOnly === true && availability.internalOnly;
+  $("joint-view").disabled = !model.parts.some((p) => p.id === "positive.tab");
+  const tapes = model.parts.filter((p) => p.id.includes(".tape."));
+  $("tape-toggle").disabled = !tapes.length;
+  $("tape-toggle").textContent =
+    tapes.length && tapes.every((p) => state.view.hidden.includes(p.id))
+      ? "테이프 다시 표시"
+      : "테이프 숨기기";
   $("parts").replaceChildren();
   for (const group of [
     "stack",
@@ -353,11 +394,10 @@ function selectPart(id, feature) {
   viewer.select(id);
   viewer.selectedFeature = selectedFeature;
   renderParts();
-  $("editor").value = /^(pouch|seal|tool)\./.test(id)
-    ? "pouch"
-    : id === "stack"
-      ? "stack"
-      : id.split(".")[0];
+  const editor = $("editor");
+  editor.value = [...editor.options].some((o) => o.value === id)
+    ? id
+    : editorGroup(id);
   tab("design");
   renderFields();
   const candidates = driversForFeature(
@@ -365,8 +405,15 @@ function selectPart(id, feature) {
     state.product,
     state.stage,
   ).filter((path) => bindingFor(draft, targetStage, path)?.available);
-  const path = candidates[0];
+  const path =
+    candidates.find(
+      (path) => bindingFor(draft, targetStage, path)?.partId === fieldOwner(id),
+    ) || (feature ? candidates[0] : null);
   if (path) focusField(path, false);
+  else {
+    activePath = null;
+    updateHighlight();
+  }
   inspectionTools.related(id);
   const p = model.parts.find((x) => x.id === id);
   $("selection-info").textContent =
@@ -405,17 +452,48 @@ const sectionNames = {
   toolFaces: "실링바 작업면 · 상하/변 독립",
   folds: "재료 접힘 작업",
 };
+function syncTargets() {
+  if (!model) return false;
+  const editor = $("editor"),
+    old = editor.value;
+  const options = editorTargets(state.product, state.stage, model.parts).map(
+    (o) => new Option(o.label, o.value),
+  );
+  const changed =
+    JSON.stringify([...editor.options].map((o) => [o.value, o.text])) !==
+    JSON.stringify(options.map((o) => [o.value, o.text]));
+  if (changed) {
+    editor.replaceChildren(...options);
+    if (options.some((o) => o.value === old)) editor.value = old;
+    else if (options.some((o) => o.value === editorGroup(old)))
+      editor.value = editorGroup(old);
+  }
+  if (selected && !model.parts.some((p) => p.id === selected)) {
+    selected = selectedFeature = activePath = null;
+    viewer.select(null);
+    viewer.selectedFeature = null;
+    $("selection-info").textContent = "현재 공정의 부품을 선택하세요.";
+    inspectionTools.related(null);
+  }
+  if (selectedFeature && model.features[selectedFeature]?.available !== true) {
+    selectedFeature = null;
+    viewer.selectedFeature = null;
+  }
+  if (activePath && !bindingFor(draft, targetStage, activePath)?.available)
+    activePath = null;
+  return changed;
+}
 function renderFields() {
-  const side = $("editor").value,
-    all = fieldsFor(draft, targetStage).filter(
-      (b) => b.side === side && b.available,
-    ),
+  const target = $("editor").value,
+    side = editorGroup(target),
+    all = fieldsForTarget(draft, targetStage, target),
     container = $("fields");
   container.replaceChildren();
   if (!all.length) {
     const p = document.createElement("p");
-    p.textContent =
-      "이 부품은 현재 상태에 없습니다. 패키징 상태부터 편집할 수 있습니다.";
+    p.textContent = model?.parts.some((p) => p.id === target)
+      ? "계산 대상입니다. 독립 입력은 원인 작업면 또는 부품에서 편집하세요."
+      : "현재 공정에 편집할 대상이 없습니다.";
     container.append(p);
     return;
   }
@@ -479,8 +557,12 @@ function renderFields() {
         ((processHost.enabled === false && b.key !== "enabled") ||
           (/^relief(Length|Width|Offset)$/.test(b.key) &&
             !processHost.reliefEnabled));
+      const absentOptional =
+        (item && item.enabled === false) ||
+        (b.section === "leadFilm" && draft[side].leadFilm.enabled !== true);
       const disabled =
         processDisabled ||
+        (absentOptional && b.key !== "enabled") ||
         (b.section === "tapes" &&
           ((item.path === "top_edges" &&
             ["width", "offsetY"].includes(b.key)) ||
@@ -593,7 +675,7 @@ function renderFields() {
     }
     container.append(details);
   }
-  if (["positive", "negative"].includes(side)) {
+  if (target === side && ["positive", "negative"].includes(side)) {
     for (const [key, min, title] of [
       ["prewelds", 2, "가용접 영역"],
       ["joints", 3, "메인 용접 영역"],
@@ -635,7 +717,7 @@ function renderFields() {
 function renderCalculated() {
   const box = $("derived-values");
   if (!box || !model) return;
-  const side = $("editor").value;
+  const side = editorGroup($("editor").value);
   if (!["positive", "negative"].includes(side)) return;
   box.replaceChildren();
   const title = document.createElement("summary");
@@ -667,7 +749,17 @@ function renderCalculated() {
 function focusField(path, focus = true) {
   const b = bindingFor(draft, targetStage, path);
   if (!b) return;
-  $("editor").value = b.side;
+  const editor = $("editor");
+  const next =
+    fieldOwner(editor.value) === b.partId
+      ? editor.value
+      : [...editor.options].some((o) => o.value === b.partId)
+        ? b.partId
+        : b.side;
+  if (editor.value !== next) {
+    editor.value = next;
+    renderFields();
+  }
   tab("design");
   if (
     ![...document.querySelectorAll("[data-field]")].some(
@@ -692,6 +784,9 @@ function updateHighlight() {
     row.classList.toggle("active-field", row.dataset.path === activePath);
   if (!b || !b.available) {
     viewer.setHighlight(null);
+    $("field-guide").textContent =
+      "입력 항목에 포커스하면 부품·경로·기준을 표시합니다.";
+    $("field-to-dim").disabled = true;
     return;
   }
   let guide = forecast(b, draft, targetStage);
@@ -756,8 +851,15 @@ function updateHighlight() {
     label: b.label,
     path: b.path,
   });
+  const parameterId = fieldIdentity(b);
   $("field-guide").textContent =
     b.label +
+    "\n부품 ID · " +
+    b.partId +
+    "\n항목 경로 · " +
+    parameterId +
+    "\n단위 · " +
+    fieldUnit(b) +
     "\n기준: " +
     b.upstream +
     "\n고정/방향: " +
@@ -1181,6 +1283,17 @@ $("design-tab").onclick = () => tab("design");
 $("measure-tab").onclick = () => tab("measure");
 $("editor").onchange = () => {
   activePath = null;
+  const target = $("editor").value;
+  if (model?.parts.some((p) => p.id === target)) {
+    selectPart(target);
+    return;
+  }
+  selected = selectedFeature = null;
+  viewer.select(null);
+  viewer.selectedFeature = null;
+  $("selection-info").textContent = $("editor").selectedOptions[0].text;
+  inspectionTools.related(null);
+  renderParts();
   renderFields();
   updateHighlight();
 };
@@ -1217,8 +1330,13 @@ for (const [id, key] of [
     state.view[key] = $(id).checked;
     refreshView();
   };
+$("dimensions-visible").onchange = () => {
+  state.view.showDimensions = $("dimensions-visible").checked;
+  viewer.draw();
+};
 $("through").onchange = () => {
-  viewer.through = $("through").checked;
+  state.view.internalOnly = $("through").checked;
+  renderParts();
   viewer.draw();
 };
 function section() {
@@ -1251,7 +1369,13 @@ $("clear-focus").onclick = () => {
   }
   selected = null;
   selectedFeature = null;
+  activePath = null;
   viewer.select(null);
+  viewer.selectedFeature = null;
+  $("selection-info").textContent = "현재 공정의 부품을 선택하세요.";
+  inspectionTools.related(null);
+  renderParts();
+  updateHighlight();
   viewer.fit();
 };
 $("fullscreen").onclick = () => {
@@ -1441,7 +1565,7 @@ $("save").onclick = () => {
     validateProject(state);
     download(
       new Blob([JSON.stringify(state, null, 2)], { type: "application/json" }),
-      (state.modelIdentity?.modelId || "pouch-cell") + "-v1.4.json",
+      (state.modelIdentity?.modelId || "pouch-cell") + "-v1.5.json",
     );
     status("JSON 저장 · 입력/공정/기준/스펙/카메라 포함");
   } catch (e) {
@@ -1751,6 +1875,7 @@ const models = mountModels({
     if (state.view.camera) viewer.restore(state.view.camera);
     else viewer.fit();
     setDirty(false);
+    syncTargets();
     renderFields();
     syncUI();
     renderCalculated();

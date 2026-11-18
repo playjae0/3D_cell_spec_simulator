@@ -10,6 +10,8 @@
 
 [명세·가정·미지원](docs/spec-pouch-v1.5.md) · [검증 기록](docs/validation-pouch-v1.5.md) · [출처 적용/제외](docs/evidence-pouch-v1.5.md) · [가상 프로젝트](examples/pouch-process.json) · [입력 예제 1.2](examples/intake/virtual-pouch-1.2.json) · [빈 입력 양식 1.2](examples/intake/template-1.2.json).
 
+공정별 부품을 선택하면 해당 입력만 열립니다. **모델 치수 표시**는 개별 치수의 표시 설정을 유지하면서 화면의 치수선을 일괄 숨깁니다. **내부만 선택**은 외장·제품 실링·공구를 통과하여 내부 조립체를 선택합니다. 사내 용어 연결은 [명칭 가이드](docs/intake/internal-names-guide-v15.md)와 [명칭 매핑표 CSV](docs/intake/name-map-v15.csv)를 사용하세요. [UI 검증 결과](docs/validation-ui-v1.5.md)에 실제 조작 범위와 제한을 기록합니다.
+
 모든 수치는 가상입니다. 실링 영역은 작업면의 공칭 영역이며 압착/융착 품질 예측이 아닙니다. 예제의 리드 통과부 간섭은 숨기지 않고 진단으로 표시합니다. 입력한 치수를 자동 축소하지 않습니다. 현재 분리 두 장·이중 컵·수직 벽 및 평행 긴 변 접힘을 지원하며 다른 조합은 명시적으로 거부합니다.
 
 ## v1.4 검사·비교·복원
