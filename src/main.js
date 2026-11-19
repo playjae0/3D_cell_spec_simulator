@@ -1,3 +1,6 @@
+import { mountComponentScenes, populateComponentCards } from "./components/workbench.js";
+import { placementField } from "./components/contract.js";
+import { fieldsForObject, get as getToolField, set as setToolField } from "./tooling/contract.js";
 import { components, mountComponents, mountModelChoices, ownerForPath } from "./overview/catalog.js";
 import { createPartTree } from "./overview/part-tree.js";
 import { drawThumbnail, overviewFrame } from "./overview/thumbnail.js";
@@ -117,7 +120,7 @@ const viewer = new Viewer($("viewport"), {
 });
 const tree = createPartTree($("parts"));
 let selectedGroup = null;
-let pageName = "product", component = "seal", componentSide = "positive", drawingGeneration = 0;
+let pageName = "parts", component = "welded", componentSide = "positive", drawingGeneration = 0;
 const pageViews = { product:"overview", parts:"overview" };
 const inComponent = () => pageName === "parts" && pageViews.parts === "detail";
 const basicComponent = () => ["tab","lead","tapes","leadFilm"].includes(component) ||
@@ -525,7 +528,9 @@ function renderFields() {
   const standalone = inComponent() && basicComponent();
   const target = standalone && ownerTarget ? ownerTarget : $("editor").value,
     side = editorGroup(target),
-    all = fieldsForTarget(draft, standalone ? ownerStage() : targetStage, target),
+    all = (standalone && component==='lead' ?
+      [...fieldsForTarget(draft,ownerStage(),componentSide+'.lead'),...fieldsForTarget(draft,ownerStage(),componentSide+'.leadFilm')] :
+      fieldsForTarget(draft, standalone ? ownerStage() : targetStage, target)).filter(b=>!standalone || !placementField(b.path)),
     container = $("fields");
   container.replaceChildren();
   if (!all.length) {
@@ -557,7 +562,7 @@ function renderFields() {
     details.append(summary);
     for (const b of bs) {
       const owner = ownerForPath(b.path);
-      if (owner && !inComponent()) {
+      if (owner && !inComponent() && !placementField(b.path)) {
         const link = document.createElement("button");
         link.className="owner-ref";link.dataset.ownerPath=b.path;
         link.textContent=b.label+" · "+(b.value ?? "미정")+"  ↗ "+components[owner];
@@ -766,6 +771,16 @@ function renderFields() {
       renderCalculated();
     }
   }
+  if(!inComponent() && draft.processTooling) {
+    const box=document.createElement('details'),summary=document.createElement('summary');summary.textContent='공구 조립 배치 · 제품 기준';box.append(summary);
+    for(const f of fieldsForObject(draft.processTooling,'processTooling').filter(f=>placementField(f.path))){
+      const row=document.createElement('label');row.className='field';row.textContent=f.path;
+      const input=document.createElement('input');input.type='number';input.step='any';input.value=f.value;input.dataset.assemblyField=f.path;input.disabled=!live;
+      input.onchange=()=>{if(live)changeField(f.path,input.valueAsNumber);};row.append(input);box.append(row);
+    }
+    container.append(box);
+  }
+
 }
 function renderCalculated() {
   const box = $("derived-values");
@@ -2137,7 +2152,16 @@ function inspectTabSeal(side) {
   viewer.restore({position:[x,y,400],target:[x,y,0],up:[0,1,0],zoom:Math.min(2.9, 2.4*aspect)});
 }
 
+const componentScenes=mountComponentScenes({
+  project:()=>state, editable:()=>live, reference:referenceModel,
+  stageLabel:s=>stages[s]||s, title:()=>components[component],
+  fieldValue:path=>toolingTools.fieldValue(path), edit:(path,v)=>toolingTools.edit(path,v),
+  selectField:path=>{const el=document.querySelector(`[data-r4-field="${path}"]`);document.querySelectorAll('.chosen-field').forEach(x=>x.classList.remove('chosen-field'));if(el)el.closest('label').classList.add('chosen-field');},
+  pending:()=>dirty,
+});
 const toolingTools = mountTooling({
+  component: (m,selection)=>componentScenes.show(m,selection),
+  componentMode:()=>inComponent(),
   project: () => state, model: () => model, stageLabel: s => stages[s] || s,
   editable: () => live,
   recorded: () => !!preview,
@@ -2172,6 +2196,7 @@ const overview = mountOverview({
   },
 });
 function ownerStage() {
+  if(component==="lead" && state.product[componentSide].leadFilm.enabled==null)return "welded";
   if (component==="pouch") return state.product.pouchProcess ? "pouch_formed" : "packaged";
   if (component==="lead" && state.stage==="preweld" && state.product[componentSide].preweldLead.included)
     return "preweld";
@@ -2238,6 +2263,7 @@ function applicationState() {
 }
 function matchesComponent(id) {
   if(component==="pouch")return id.startsWith("pouch.");
+  if(component==="lead")return id===componentSide+".lead"||id===componentSide+".leadFilm";
   if(component==="tapes")return id.startsWith(componentSide+".tape.");
   return id===componentSide+"."+component;
 }
@@ -2249,9 +2275,10 @@ function openOwner(key,b) {
   if(field){const details=field.closest("details");if(details)details.open=true;field.scrollIntoView({block:"nearest"});if(!field.disabled)field.focus();}
   activePath=b.path;updateHighlight();
 }
-function openComponent(key, side=componentSide, fromSeal=false) {
+function openComponent(key, side=componentSide, fromSeal=false, kind) {
   if(!canNavigate())return;
-  component=key; componentSide=side;
+  component=key==="leadFilm"?"lead":key; componentSide=side;
+  if(kind)toolingTools.kind(kind);
   if(fromSeal || (key==="seal" && ["positive","negative"].includes(sealLocation)))sealLocation=side;
   navigate("parts","detail");
 }
@@ -2290,17 +2317,18 @@ function drawPartDetail() {
       if(token!==drawingGeneration || !inComponent())return;
       const parts=m.parts.filter(p=>matchesComponent(p.id));
       if(!parts.length){drawing.textContent="단품 CAD 기록에 해당 부품 없음";return;}
-      const label=document.createElement("p");label.textContent=stageCode(refStage)+" 단품 CAD · "+(preview?"사전 계산 기록":"확정 형상");
-      drawing.append(label);
-      // Use the complete sheet assembly for the open pouch and individual solids for pole components.
-      if(component==="pouch"){
-        const canvas=document.createElement("canvas");canvas.width=550;canvas.height=370;
-        drawThumbnail(canvas,{parts},{...overviewFrame,centerY:-46});drawing.append(canvas);
-      }else for(const p of parts){
-        const btn=document.createElement("button"), img=new Image();img.alt="";img.src=detailImage(p);
-        btn.append(img,document.createTextNode(p.name));btn.onclick=()=>{
-          ownerTarget=p.id;renderFields();if(model.parts.some(x=>x.id===p.id))selectPart(p.id);
-        };drawing.append(btn);
+      componentScenes.show(m,{part:component,side:componentSide},{reset:true});
+      if(component==='lead'){
+       const pole=state.product[componentSide],note=document.createElement('p');
+       note.textContent=pole.leadFilm.enabled===true?'실런트 상대 시작 = '+(pole.leadFilm.start-pole.lead.start).toFixed(3)+' mm · 기존 형상 보존. 폭 = 리드 폭 + 2 × 돌출량':pole.leadFilm.enabled===false?'실런트 부재 · 원본 설정 유지':'실런트 미확정 · 원본 설정 유지';drawing.append(note);
+       if(pole.leadFilm.enabled===true){
+        const label=document.createElement('label');label.textContent='리드 시작 대비 실런트 시작 · 단품 내 상대 거리 (mm)';
+        const input=document.createElement('input');input.type='number';input.step='any';input.dataset.relativeFilmStart=componentSide;
+        input.value=pole.leadFilm.start-pole.lead.start;input.disabled=!live;
+        input.onchange=()=>changeField(componentSide+'.leadFilm.start',Number(input.value)+draft[componentSide].lead.start);
+        label.append(input);drawing.append(label);
+       }
+
       }
     }).catch(e=>{if(token===drawingGeneration)drawing.textContent=e.message;});
   }
@@ -2318,6 +2346,7 @@ function updateReview(afterAccept=false) {
   $("page-overview").setAttribute("aria-pressed",String(overviewMode));
   $("page-detail").setAttribute("aria-pressed",String(!overviewMode));
   if(afterAccept && inComponent())drawPartDetail();
+  if(afterAccept && pageName==='parts' && pageViews.parts==='overview')populateComponentCards($('component-list'),{project:()=>state,reference:referenceModel});
   applicationState();
 }
 function navigate(page,view) {
@@ -2325,6 +2354,9 @@ function navigate(page,view) {
   pageName=page;pageViews[page]=view;
   const isPart=page==="parts",full=view==="overview";
   $("component-overview").hidden=!(isPart && full);
+  $("component-scenes").hidden=!(isPart&&!full);
+  if(!(isPart&&!full))componentScenes.clear();
+  if(isPart&&full&&model)populateComponentCards($("component-list"),{project:()=>state,reference:referenceModel});
   $("component-workbench").hidden=!(isPart && !full);
   document.body.classList.toggle("component-detail",isPart&&!full);
   document.body.classList.remove("tooling-open");
@@ -2351,7 +2383,7 @@ function initReview() {
   $("choose-model").onclick=()=>{if(canNavigate())$("model-picker").showModal();};
   $("close-model-picker").onclick=()=>$("model-picker").close();
   for(const [key,title] of Object.entries(components))$("component-choice").append(new Option(title,key));
-  mountComponents($("component-list"),key=>openComponent(key));
+  mountComponents($("component-list"),(key,side,kind)=>openComponent(key,side,false,kind));
   $("component-choice").onchange=e=>openComponent(e.target.value);
   $("component-side").onchange=e=>openComponent(component,e.target.value);
   $("page-product").onclick=()=>navigate("product",pageViews.product);
@@ -2359,7 +2391,7 @@ function initReview() {
   $("page-overview").onclick=()=>navigate(pageName,"overview");
   $("page-detail").onclick=()=>navigate(pageName,"detail");
   $("open-seal").onclick=()=>openComponent("seal");
-  navigate("product","overview");
+  navigate("parts","overview");
 }
 
 initReview();

@@ -12,7 +12,7 @@ export const modelImages = {
 
 const cache = new WeakMap();
 
-function renderParts(parts, width, height) {
+export function renderParts(parts, width, height, bottom=false) {
   const scene = new T.Scene();
   for (const part of parts) {
     const geometry = new T.BufferGeometry();
@@ -26,7 +26,7 @@ function renderParts(parts, width, height) {
   const distance = Math.max(1, box.getSize(new T.Vector3()).length());
   const camera = new T.OrthographicCamera(-1, 1, 1, -1, 0.01, 3 * distance);
   camera.up.set(0, 0, 1);
-  camera.position.copy(center).addScaledVector(new T.Vector3(.35, -1, 1.4).normalize(), 2 * distance);
+  camera.position.copy(center).addScaledVector(new T.Vector3(.35, -1, bottom?-1.4:1.4).normalize(), 2 * distance);
   camera.lookAt(center);
   camera.updateMatrixWorld();
 

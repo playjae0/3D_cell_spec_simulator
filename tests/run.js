@@ -13,3 +13,5 @@ import "./ui-state.test.js";
 import "./tooling.test.js";
 
 import "./preview.test.js";
+
+import "./component.test.js";

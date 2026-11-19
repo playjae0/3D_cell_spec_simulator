@@ -14,7 +14,7 @@ const sv = (tag, attrs = {}, text) => {
   return e;
 };
 export class Viewer {
-  constructor(host, { onSelect, onPick, onAnchor, onCamera, onHover, onEdit }) {
+  constructor(host, { onSelect, onPick, onAnchor, onCamera, onHover, onEdit, onDimensionSelect }) {
     this.onHover = onHover;
     this.onEdit = onEdit;
     this.selectionMode = "part";
@@ -118,6 +118,10 @@ export class Viewer {
       }
       down = null;
       const { hits, pt } = this.hit(e);
+      if (onDimensionSelect && !this.picking) {
+        const dim=this.dimensionHits.map(d=>({...d,distance:segmentDistance(pt,d.a,d.b)})).sort((a,b)=>a.distance-b.distance)[0];
+        if(dim?.distance<14) {onDimensionSelect(dim.measurement);return;}
+      }
       if (this.picking) {
         if (this.pickKind === "surface") {
           const hit = hits[0];

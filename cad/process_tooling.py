@@ -53,7 +53,7 @@ def validate_config(p):
                 check(0<=f['cornerR']<min(f['length'],f['width'])/2,pre+': 외곽 R 범위 오류')
                 check(f['knurlLength']<=f['length'] and f['knurlWidth']<=f['width'],pre+': 너링 범위가 외곽보다 큽니다')
                 check(f['tooth'] in ['pyramid','ridge'],pre+': 치형 미지원')
-                check(f['knurlLength']/f['pitchU']*f['knurlWidth']/f['pitchV']<5000,pre+': 한 작업면의 표시 너링은 5000개 미만으로 설정하세요')
+                check(f['pitchU']>0 and f['pitchV']>0 and f['knurlLength']/f['pitchU']*f['knurlWidth']/f['pitchV']<5000,pre+': 한 작업면의 표시 너링은 5000개 미만으로 설정하세요')
         l=d['laser'];check(l['diameter']>0 and l['pitchX']>0 and l['pitchY']>0,side+': 레이저 직경/피치 양수 필요')
         check(all(isinstance(l[k],int) and 1<=l[k]<=50 for k in ['rows','columns']),side+': 행열 1–50 정수 필요')
         ids=[s['id'] for s in l['spots']];check(len(ids)==len(set(ids)) and len(ids)<=2500,side+': 스팟 ID 중복 또는 개수 초과')
@@ -70,6 +70,8 @@ def validate_config(p):
             check(3 <= len(f['vertices']) <= 100, f['id'] + ': 윤곽점 3–100개 필요')
         check(f['extra']['length']>0 and f['extra']['width']>0,f['id']+': 추가 타격 치수 양수 필요')
         check(f['relief']['length']>0 and f['relief']['depth']>=0,f['id']+': 상세 홈 치수 오류')
+    pose_value=p.get('pouchProcess',{}).get('assemblyPose',{})
+    check(not any(pose_value.values()), 'R4 한 장 필름: 수납 조립체는 셀 A/B/C 고정입니다. 비영 조립 배치는 아직 지원하지 않습니다.')
     a=q['packaging'];check(a['bridgeInnerR']>0,'브리지 R > 0 필요')
     check(q['sealBars']['final_upper']['v']<a['cutY']<q['sealBars']['gas_upper']['v'],'최종 실링선 < 절단선 < 가스방 외곽선 필요')
     check(a['foldR']>0 and 0<=a['foldAngle']<=120,'폴딩 R/각도 범위 오류')
@@ -123,6 +125,41 @@ def welding(m,p,source,stage):
                     add_part(m,part,side+' '+kind+' 공칭 접촉 (접합/압흔 아님)',real,'#559ed0' if kind=='horn' else '#b467a5')
                     m['parts'][-1]['displayShape']=real.translate((0,0,top-toolZ+.012+(.002 if kind=='horn' else 0)))
                     c=hit.Center();feature(m,part+'.center',part,xyz(c.x,c.y,toolZ),kind='face')
+                from tool_teeth import generate
+                relief, centers = generate(f, kind)
+                relief=pose(relief,f).translate((entry,t['gatherY'],toolZ))
+                tooth_id=id+'.teeth'
+                a=math.radians(f['rotation']);c,s=math.cos(a),math.sin(a)
+                to_world=lambda u,v,w: xyz(f['x']+u*c-v*s,f['y']+u*s+v*c,toolZ+w)
+                root=f['height'] if kind=='horn' else -f['height']
+                origin=to_world(0,0,0)
+                dims={}
+                d=math.radians(f['direction']);dc,ds=math.cos(d),math.sin(d)
+                endpoints={
+                    'pitchU':((0,0,0),(f['pitchU']*dc,f['pitchU']*ds,0)),
+                    'pitchV':((0,0,0),(-f['pitchV']*ds,f['pitchV']*dc,0)),
+                    'height':((0,0,0),(0,0,root)),
+                    'length':((-f['length']/2,0,root),(f['length']/2,0,root)),
+                    'width':((0,-f['width']/2,root),(0,f['width']/2,root)),
+                    'knurlLength':((-f['knurlLength']/2,0,root),(f['knurlLength']/2,0,root)),
+                    'knurlWidth':((0,-f['knurlWidth']/2,root),(0,f['knurlWidth']/2,root)),
+                }
+                for key,(aa,bb) in endpoints.items():
+                    fid=tooth_id+'.'+key
+                    for suffix,v in [('a',aa),('b',bb)]:feature(m,fid+'.'+suffix,tooth_id,to_world(*v),kind='edge')
+                    dims[key]={'a':fid+'.a','b':fid+'.b','value':f[key],
+                               'field':'processTooling.poles.'+side+'.tools.'+wstage+'.'+kind+'.'+key}
+                meta={'dimensions':dims,'datum':{'name':'공칭 접촉 / 치끝 면','origin':origin,
+                    'parent':side+('.lead.' if rank>=3 and ((kind=='horn' and lead['contactSide']=='above') or (kind=='anvil' and lead['contactSide']=='below')) else '.tab.')+('top' if kind=='horn' else 'bottom'),
+                    'axisU':[e*c,s,0],'axisV':[-e*s,c,0],'normal':[0,0,1 if kind=='horn' else -1],
+                    'fixed':'치끝 접촉면 고정; 치근은 제품 반대 방향으로 높이만큼 이동',
+                    'rootZ':toolZ+root,'tipZ':toolZ},'toothCount':len(centers),
+                    'centers':[to_world(*v) for v in centers],
+                    'scope':'접촉부 요철만 · 바디 미정 · 압흔/압착 해석 아님',
+                    'arrayPolicy':'중심 정수 격자 · 전 피치 폭의 치근 · 완전한 치만 유지 · 치근 경계 접촉 허용',
+                    'revision':f['revision']}
+                add_part(m,tooth_id,side+' '+kind+' 실제 치형',place(relief,e,L),
+                         '#5b86db' if kind=='horn' else '#be79c8',meta=meta)
                 plans['tools'][kind]={'outer':paths(outer),'knurl':paths(knurl),'contact':paths(hit),'contactArea':hit.Area(),'surfaceZ':toolZ,'center':[hit.Center().x,hit.Center().y] if hit.Area()>1e-7 else None,'definition':deepcopy(f)}
         else:
             laser=cfg['laser'];r=laser['diameter']/2;rot=math.radians(laser['rotation']);co=math.cos(rot);si=math.sin(rot)
@@ -225,6 +262,18 @@ def packaging(m,p,stage):
             bb=union.BoundingBox();working=union.cut(rect(relief['length'],bb.ylen+2,relief['u'],(bb.ymax+bb.ymin)/2))
         projected=seal_transform(working,f,p);seals[key]=projected
         reports['seals'][key]={'base':seal_paths(base),'union':seal_paths(union),'working':seal_paths(working),'projected':seal_paths(projected),'projectionArea':projected.Area(),'baseArea':base.Area(),'definition':deepcopy(f),'active':step>=required}
+        bb=union.BoundingBox()
+        center=f.get('tabProfile',{}).get('centerOffset',(bb.xmin+bb.xmax)/2)
+        section_points=[('central',center),('outside-left',bb.xmin+1),('outside-right',bb.xmax-1),('relief',relief['u'])]
+        sections=[]
+        for label,u in section_points:
+            intervals=line_intervals(slab(union),(u,0,.05),(0,1,0))
+            depth=relief['depth'] if relief['enabled'] and abs(u-relief['u'])<relief['length']/2 else 0
+            sections.append({'id':label,'u':u,'direction':[0,1,0],'intervals':intervals,
+                'profile':[[[a,depth],[b,depth]] for a,b in intervals],
+                'width':sum(b-a for a,b in intervals),'recessDepth':depth,
+                'scope':'공칭 작업면 단면 · 가상 예시 · 공구 바디/제품 압착 결과 아님'})
+        reports['seals'][key]['crossSections']=sections
         if key in tab_edges:
             reports['seals'][key]['tabDimensions'] = {
                 name: edge_info(edge) for name, edge in tab_edges[key].items()

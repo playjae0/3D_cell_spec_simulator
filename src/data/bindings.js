@@ -25,6 +25,10 @@ export function readField(p, path) {
   return get(p, path);
 }
 export function writeField(p, path, value) {
+  if(/^(positive|negative)\.lead\.start$/.test(path)) {
+    const pole=p[path.split('.')[0]];
+    if(Number.isFinite(pole.leadFilm?.start))pole.leadFilm.start+=value-pole.lead.start;
+  }
   if (path.endsWith(".tab.gatheredLength")) {
     const t = p[path.split(".")[0]].tab;
     t.axialShortening = t.rootLength - t.gatherDistance - value;

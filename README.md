@@ -143,3 +143,21 @@ node scripts/check_integrated_api.mjs
 [검증 기록과 이미지](docs/validation-v1.2.md) · [출처별 적용/제외](docs/evidence-decisions.md) · [오프라인 인계](docs/offline-handoff.md) · [Copilot 작업 지침](.github/copilot-instructions.md)
 
 기존 v0.4와 v1.1은 Git 이력에 보존했습니다. v0.4 JSON은 기준 정의가 달라 자동 변환하지 않습니다. 사용자 원본 사진/특허 패키지는 공개 저장소와 v1.2 소스 ZIP에 재배포하지 않습니다. 기존 개인 검토 자료를 별도로 보관하세요.
+
+### 부품·요소기술 설계 검토 v2
+
+첫 화면은 **부품·요소기술 전체보기**다. 양극/음극의 가용접·메인 혼/엔빌 카드를 고르면 왼쪽 내재 사양, 오른쪽 단품 3D, 아래 같은 모델·개정의 완성 셀이 열린다. `U 피치` 또는 `치높이` 치수선을 더블클릭하거나, 터치로 치수를 선택한 뒤 `선택 치수 편집`을 누른다. 로컬 CAD에서 미리보기 → 적용/취소하며, 정적 프리뷰는 기록 선택만 가능하다. 제품 배치는 **제품 공정도 → 상세보기 → 설계 치수 → 공구 조립 배치**에서 편집한다. 리드와 실런트는 한 단품이며 내부 상대 시작은 기존 집속 기준 값을 변환해 표시한다.
+
+```sh
+npm test
+python -m unittest discover -s tests -p '*geometry*.py'
+npm run build
+# scripts/start.sh 또는 Windows scripts/start.ps1로 기존 로컬 CAD 앱 실행
+python scripts/check_component_browser.py --url http://127.0.0.1:8765
+npm run build:preview
+# dist-preview/를 정적 호스트에 그대로 업로드 (CAD 서버 없음)
+```
+
+실행 의존성은 기존 Node.js 22.12+ / Python 3.12 / CadQuery 2.7 환경을 재사용한다. 런타임 CDN이나 외부 API는 필요 없다. Playwright와 Chromium은 개발 검증에만 사용한다. Docker나 실행파일은 필요 없다.
+
+혼·엔빌은 치끝이 기존 공칭 접촉면을 유지하고 치근이 제품 반대쪽으로 이동하는 **접촉부 요철**이다. 바디 치수와 제품 압흔을 추정하지 않는다. R4 한 장 필름의 비영 조립체 수납 배치는 지원하지 않으므로 명시 거부한다. 구 P1–P4 강체 수납 배치는 유지한다. 실링 단면은 기록된 공칭 작업면/홈이며 제품 압착 결과가 아니다. 상세한 범위와 후공정 연결은 [데이텀 대응표](docs/component-v2/DATUM_MAP.md), 검증 상태는 [12항목 보고서](docs/component-v2/REPORT.md)를 참조한다.
