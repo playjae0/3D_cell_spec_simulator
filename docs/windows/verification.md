@@ -10,6 +10,7 @@
 
 - 요소기술 병합 기준선: `e3af45a02045111c79ec38d3172785ce7631a277` (PR #11).
 - 실행판·입력키트의 실제 소스: **`b2f8a3694e19399dfe08708169a3cae68c2f6125`**.
+- 구현은 [PR #12](https://github.com/playjae0/3D_cell_spec_simulator/pull/12)로 main `3c9b6fa9656057333b55bd4662a2f19bb3dbcd6a`에 병합되어 있다. 추가 검증 보고서는 별도 문서 PR이다.
 - 작업 브랜치: `feat/windows-trial`. 이 보고서는 위 실행판 생성 후 추가한 문서이며 실행판 소스를 바꾸지 않는다.
 - [수동 Windows 빌드 및 별도 실행 검증 — 성공](https://github.com/playjae0/3D_cell_spec_simulator/actions/runs/44490018962).
 - [실행 ZIP 다운로드](https://github.com/playjae0/3D_cell_spec_simulator/actions/runs/44490018962/artifacts/14512566774).
@@ -64,12 +65,12 @@ Windows 실제 응답에서 치끝 접촉면 `Z=0.3 mm`, 치근 `Z=0.5 mm`는 �
 
 ## 다음 버전과 현업 마지막 시험
 
-수동 실행 진입점은 Actions **Core and intake regression**이다. 병합 전에는 CLI로 실행한다. `target_ref`를 다음 버전의 브랜치·태그·커밋으로 바꾸면 실제 체크아웃 SHA가 두 ZIP에 들어간다.
+수동 실행 진입점은 Actions **Core and intake regression → Run workflow**다. 구현의 main 병합을 확인했으므로 웹에서 수동 실행할 수 있다. `target_ref`를 다음 버전의 브랜치·태그·커밋으로 바꾸면 실제 체크아웃 SHA가 두 ZIP에 들어간다.
 
 ```sh
-gh workflow run validation.yml --ref feat/windows-trial -f target_ref=b2f8a3694e19399dfe08708169a3cae68c2f6125
+gh workflow run validation.yml --ref main -f target_ref=b2f8a3694e19399dfe08708169a3cae68c2f6125
 ```
 
-main 병합 후 `--ref main` 및 GitHub 웹의 **Run workflow**를 사용한다. 일반 커밋은 Linux 회귀만 실행하며 Windows 빌드를 자동 생성하지 않는다. [전체 재현 명령](build-and-test.md).
+다음 최신 main을 만들려면 `-f target_ref=main`을 사용한다. 일반 커밋은 Linux 회귀만 실행하며 Windows 빌드를 자동 생성하지 않는다. [전체 재현 명령](build-and-test.md).
 
 현업 담당자는 [한 장 사용 안내](user-guide.txt)에 따라 외부 네트워크가 끊긴 사내 Windows x64에서 같은 가상 입력 → 혼 깊이 3→4 mm → 저장 → 종료/재실행 → 셀 파일 복원을 확인한다. 새 버전은 별도 폴더에 풀고 기존 셀 파일의 복사본으로 호환성을 확인한다. PC/OS/브라우저/실행 정책/오류와 결과를 사내에 기록한다. 실제 회사 문서는 외부로 업로드하지 않는다.
