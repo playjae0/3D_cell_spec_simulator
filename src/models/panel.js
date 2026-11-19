@@ -1,4 +1,6 @@
 import { planLibraryMerge } from "./merge.js";
+import {reviewCsv} from '../intake/review-csv.js';
+import {addToolingIntake} from '../intake/tooling-fields.js';
 import { LibraryStorage } from "./storage.js";
 import { assertSampleBasis } from "../annotations/semantics.js";
 import {
@@ -65,7 +67,7 @@ export function mountModels({ getProject, canOpen, onApply, onGuide, notify }) {
  <section id="library-merge" hidden><h3>보관함 병합 검토</h3><pre id="merge-summary"></pre><div id="merge-conflicts"></div><button id="merge-apply" disabled>검토한 병합 적용 · 기존 내용 유지</button><button id="merge-cancel">병합 취소</button></section>
  <details><summary>저장된 모델·개정 / 미완성 초안</summary><div id="model-list"></div></details>
  <p id="intake-message" role="status"></p><div id="intake-work" hidden>
- <div class="intake-toolbar"><label>생성 공정<select id="intake-stage"></select></label><button id="intake-template">현재 공정 빈 양식</button><button id="intake-template-all">전체 빈 양식</button><button id="intake-draft">초안 저장·다운로드</button><button id="intake-preview">임시 CAD 생성</button><button id="intake-apply" disabled>새 모델/개정 적용</button></div>
+ <div class="intake-toolbar"><label>생성 공정<select id="intake-stage"></select></label><button id="intake-template">현재 공정 빈 양식</button><button id="intake-template-all">전체 빈 양식</button><button id="intake-draft">초안 저장·다운로드</button><button id="intake-csv">현재 JSON 검토 CSV</button><button id="intake-preview">임시 CAD 생성</button><button id="intake-apply" disabled>새 모델/개정 적용</button></div>
  <details><summary>입력 JSON 수정 · 모델 ID/개정/출처 포함</summary><textarea id="intake-json" spellcheck="false" rows="12"></textarea><button id="intake-json-apply">JSON 수정 반영 · 재검증</button></details>
  <div class="intake-grid"><div><div class="intake-toolbar"><label><input type="checkbox" id="intake-required" checked> 현재 공정 필수 항목만</label><input id="intake-search" placeholder="이름 / parameterId 검색"></div><div id="intake-errors"></div><div class="intake-table"><table><thead><tr><th>항목 · ID</th><th>원문값 / 단위</th><th>정규화</th><th>상태</th></tr></thead><tbody id="intake-rows"></tbody></table></div><pre id="intake-detail">항목을 선택하면 기준·출처와 3D 가이드를 표시합니다.</pre><button id="intake-review">선택 항목을 사용자 검토 완료로 기록</button><details><summary>기준 개정과 입력·검사·출처·표시 차이</summary><pre id="intake-diff"></pre></details></div>
  <div><p id="intake-preview-label">임시 CAD 미생성</p><div id="intake-viewport"></div><div class="intake-toolbar"><button data-intake-view="front">정면</button><button data-intake-view="side">측면</button><button data-intake-view="iso">입체</button><button id="intake-section">Y 단면</button></div><p class="small">사내 실물 검증 전입니다. 형상 해석과 부품 연결은 기존 CAD 엔진을 사용합니다.</p></div></div></div>
@@ -447,17 +449,15 @@ export function mountModels({ getProject, canOpen, onApply, onGuide, notify }) {
       say(e.message);
     }
   };
+  $('intake-csv').onclick=()=>{try{downloadText(reviewCsv(intake),(intake.model?.modelId||'unnamed')+'-review.csv');}catch(e){say(e.message);}};
   for (const [id, scope] of [
     ["intake-template", false],
     ["intake-template-all", true],
   ])
-    $(id).onclick = () =>
-      download(
-        template(intake.model, scope ? STAGES : [$("intake-stage").value]),
-        scope
-          ? "cell-intake-" + VERSION + "-all.json"
-          : "cell-intake-" + VERSION + "-" + $("intake-stage").value + ".json",
-      );
+    $(id).onclick = () => {
+      const blank=addToolingIntake(template(intake.model, scope ? STAGES : [$("intake-stage").value]),getProject().product,true);
+      download(blank,'cell-intake-'+blank.formatVersion+'-'+(scope?'all':$("intake-stage").value)+'.json');
+    };
   $("intake-preview").onclick = async () => {
     try {
       const project = projectFromIntake(intake, $("intake-stage").value);
@@ -546,14 +546,14 @@ export function mountModels({ getProject, canOpen, onApply, onGuide, notify }) {
   }
   $("model-new").onclick = () =>
     openIntake(
-      template(
+      addToolingIntake(template(
         {
           modelId: "model-" + Date.now(),
           modelName: "새 셀 모델",
           revision: "1",
         },
         [getProject().stage],
-      ),
+      ),getProject().product,true),
     );
   $("model-revise").onclick = () => openIntake(currentIntake(), getProject());
   $("model-copy").onclick = () => openIntake(currentIntake(true), getProject());

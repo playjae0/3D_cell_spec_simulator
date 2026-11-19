@@ -15,3 +15,4 @@ import "./tooling.test.js";
 import "./preview.test.js";
 
 import "./component.test.js";
+import "./trial-intake.test.js";

@@ -9,7 +9,9 @@
     "start": "node serve.mjs",
     "test": "node tests/run.js",
     "test:cad": "python -m unittest discover -s tests -p \"*geometry*.py\" -v",
-    "build:preview": "node scripts/build-preview.mjs"
+    "build:preview": "node scripts/build-preview.mjs",
+    "build:intake-kit": "node scripts/build-intake-kit.mjs",
+    "build:windows": "python scripts/windows/package.py"
   },
   "dependencies": {
     "@noble/hashes": "2.0.1",

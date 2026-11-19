@@ -6,6 +6,7 @@ import {
 } from "../data/stages.js";
 import { pouchFieldDefinitions } from "../data/pouch-fields.js";
 import dictionary from "./dictionary.json" with { type: "json" };
+import { toolingFields } from './tooling-fields.js';
 export const STAGES = stageIds;
 export const VERSION = "1.2",
   DICTIONARY = "cell-intake-1.2";
@@ -23,6 +24,9 @@ export const COMPONENTS = {
   preweldLead: { section: "preweldLead", id: "preweldLead", min: 2, max: 2 },
 };
 export const clone = (x) => structuredClone(x);
+export function intakeFields(intake) {
+  return [...dictionaryFor(intake.componentInstances), ...(intake.formatVersion === '1.4' ? toolingFields(intake.processTooling) : [])];
+}
 export function dictionaryFor(instances = []) {
   const fields = dictionary.parameters.filter(
     (f) => !/^\w+\.(prewelds|joints|tapes)\./.test(f.parameterId),
@@ -71,6 +75,7 @@ export function legacyUnknownSealant(intake, side, stage) {
   return (!c || c.existenceStatus === "unknown") && enabled == null;
 }
 export function requiredField(f, intake, stage) {
+  if (f.tooling) return true;
   if (f.parameterId.startsWith("pouchProcess.")) {
     if (!f.activeStages.includes(stage)) return false;
     const pre = f.parameterId.slice(0, f.parameterId.lastIndexOf("."));

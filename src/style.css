@@ -985,7 +985,8 @@ body.tooling-open main {grid-template-columns:190px minmax(320px,1fr) minmax(430
 
 /* CAD process overview. Cards are fixed images and only detail mounts an interactive view. */
 #process-detail[hidden], #process-overview[hidden] { display: none !important; }
-body.overview-open .header-actions { display: none; }
+body.overview-open .header-actions { display: flex; }
+body.overview-open .header-actions > :not(#models):not(#open) { display: none; }
 #process-overview { max-width: 1480px; margin: 0 auto; padding: 24px clamp(16px, 4vw, 50px) 30px; }
 .overview-heading { position: relative; padding-bottom: 8px; }
 .overview-heading h1 { margin: 0 0 8px; font-size: clamp(24px, 3vw, 34px); }

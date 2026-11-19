@@ -1,7 +1,9 @@
 import { syncTooling, validateTooling } from "../tooling/contract.js";
+import { toolingFromParameters, toolingLayout, toolingFields } from './tooling-fields.js';
 import { emptyPouchProcess } from "../data/pouch-fields.js";
 import {
   dictionaryFor,
+  intakeFields,
   template,
   clone,
   GENERATOR,
@@ -74,7 +76,10 @@ export function productFromIntake(intake, stage) {
       : null;
     delete t.gatheredLength;
   }
-  if (intake.processTooling) { validateTooling(intake.processTooling); p.processTooling = clone(intake.processTooling); }
+  if (intake.processTooling) {
+    p.processTooling = intake.formatVersion === '1.4' ? toolingFromParameters(intake,report.normalized) : clone(intake.processTooling);
+    validateTooling(p.processTooling);
+  }
   return p;
 }
 export function projectFromIntake(intake, stage) {
@@ -88,7 +93,7 @@ export function projectFromIntake(intake, stage) {
     modelIdentity: {
       ...intake.model,
       intakeVersion: intake.formatVersion,
-      generator: GENERATOR,
+      generator: intake.generator || GENERATOR,
     },
     intake: clone(intake),
     product: productFromIntake(intake, stage),
@@ -249,8 +254,15 @@ export function reconcileProject(project) {
   if (!project.intake) return project;
   const x = clone(project),
     sourceId = "manual-edits";
-  for (const f of dictionaryFor(x.intake.componentInstances)) {
-    const path = fieldPath(x.product, f.parameterId);
+  if(x.intake.formatVersion==='1.4' && x.product.processTooling){
+    const layout=toolingLayout(x.product.processTooling),ids=new Set(toolingFields(layout).map(f=>f.parameterId));
+    for(const p of x.intake.parameters.filter(p=>p.parameterId.startsWith('processTooling.')&&!ids.has(p.parameterId)))
+      (x.intake.reviewLog??=[]).push({parameterId:p.parameterId,action:'user-removed '+JSON.stringify({previous:p}),at:new Date().toISOString()});
+    x.intake.parameters=x.intake.parameters.filter(p=>!p.parameterId.startsWith('processTooling.')||ids.has(p.parameterId));
+    x.intake.processTooling=layout;
+  }
+  for (const f of intakeFields(x.intake)) {
+    const path = f.tooling ? f.adapterPath : fieldPath(x.product, f.parameterId);
     let value = path?.split(".").reduce((o, k) => o?.[k], x.product);
     if (f.parameterId.endsWith(".tab.gatheredLength")) {
       const t = x.product[f.parameterId.split(".")[0]].tab;
@@ -287,6 +299,8 @@ export function reconcileProject(project) {
       reviewStatus: "reviewed",
       sourceRefs: [{ sourceId, locator: f.parameterId }],
       originalText: null,
+      originalValue: value,
+      originalUnit: f.unit,
       conversion: null,
       note: "이전 출처는 모델 개정/검토 기록에 보존",
     };

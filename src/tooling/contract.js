@@ -27,7 +27,13 @@ export function validateTooling(c){
  for(const f of fieldsForObject(c,'processTooling'))if(typeof f.value==='number'&&!Number.isFinite(f.value))throw Error(f.id+': 유한수 필요');
 }
 export function syncTooling(intake,product){
- if(product.processTooling){intake.processTooling=clone(product.processTooling);intake.formatVersion='1.3';intake.dictionaryVersion='cell-intake-1.3';}
+ if(product.processTooling){
+  intake.processTooling=clone(product.processTooling);
+  if(intake.formatVersion==='1.4') {
+   function clear(o){for(const [k,v] of Object.entries(o)){if(v&&typeof v==='object')clear(v);else if(!['id','version'].includes(k))o[k]=null;}}
+   clear(intake.processTooling);delete intake.processTooling.example;
+  } else {intake.formatVersion='1.3';intake.dictionaryVersion='cell-intake-1.3';}
+ }
  else delete intake.processTooling;
  return intake;
 }

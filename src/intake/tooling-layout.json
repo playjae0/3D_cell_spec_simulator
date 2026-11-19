@@ -1,0 +1,639 @@
+{
+  "version": 1,
+  "revision": null,
+  "packaging": {
+    "bridgeInnerR": null,
+    "cutY": null,
+    "foldLineY": null,
+    "foldAngle": null,
+    "foldR": null,
+    "cups": {
+      "upper": {
+        "x": null,
+        "y": null
+      },
+      "lower": {
+        "x": null,
+        "y": null
+      }
+    }
+  },
+  "poles": {
+    "positive": {
+      "gathering": {
+        "topDatumZ": null,
+        "bottomZ": null,
+        "depth": null
+      },
+      "method": null,
+      "tools": {
+        "preweld": {
+          "horn": {
+            "id": "positive-preweld-horn",
+            "revision": null,
+            "x": null,
+            "y": null,
+            "rotation": null,
+            "length": null,
+            "width": null,
+            "cornerR": null,
+            "knurlLength": null,
+            "knurlWidth": null,
+            "pitchU": null,
+            "pitchV": null,
+            "direction": null,
+            "height": null,
+            "tooth": null,
+            "bodyDepth": null
+          },
+          "anvil": {
+            "id": "positive-preweld-anvil",
+            "revision": null,
+            "x": null,
+            "y": null,
+            "rotation": null,
+            "length": null,
+            "width": null,
+            "cornerR": null,
+            "knurlLength": null,
+            "knurlWidth": null,
+            "pitchU": null,
+            "pitchV": null,
+            "direction": null,
+            "height": null,
+            "tooth": null,
+            "bodyDepth": null
+          }
+        },
+        "welded": {
+          "horn": {
+            "id": "positive-welded-horn",
+            "revision": null,
+            "x": null,
+            "y": null,
+            "rotation": null,
+            "length": null,
+            "width": null,
+            "cornerR": null,
+            "knurlLength": null,
+            "knurlWidth": null,
+            "pitchU": null,
+            "pitchV": null,
+            "direction": null,
+            "height": null,
+            "tooth": null,
+            "bodyDepth": null
+          },
+          "anvil": {
+            "id": "positive-welded-anvil",
+            "revision": null,
+            "x": null,
+            "y": null,
+            "rotation": null,
+            "length": null,
+            "width": null,
+            "cornerR": null,
+            "knurlLength": null,
+            "knurlWidth": null,
+            "pitchU": null,
+            "pitchV": null,
+            "direction": null,
+            "height": null,
+            "tooth": null,
+            "bodyDepth": null
+          }
+        }
+      },
+      "laser": {
+        "id": "positive-laser",
+        "revision": null,
+        "x": null,
+        "y": null,
+        "diameter": null,
+        "rows": null,
+        "columns": null,
+        "pitchX": null,
+        "pitchY": null,
+        "rotation": null,
+        "spots": [
+          {
+            "id": "spot-1",
+            "row": null,
+            "column": null,
+            "dx": null,
+            "dy": null
+          },
+          {
+            "id": "spot-2",
+            "row": null,
+            "column": null,
+            "dx": null,
+            "dy": null
+          },
+          {
+            "id": "spot-3",
+            "row": null,
+            "column": null,
+            "dx": null,
+            "dy": null
+          },
+          {
+            "id": "spot-4",
+            "row": null,
+            "column": null,
+            "dx": null,
+            "dy": null
+          },
+          {
+            "id": "spot-5",
+            "row": null,
+            "column": null,
+            "dx": null,
+            "dy": null
+          },
+          {
+            "id": "spot-6",
+            "row": null,
+            "column": null,
+            "dx": null,
+            "dy": null
+          }
+        ]
+      },
+      "foilCut": {
+        "removedLength": null
+      }
+    },
+    "negative": {
+      "gathering": {
+        "topDatumZ": null,
+        "bottomZ": null,
+        "depth": null
+      },
+      "method": null,
+      "tools": {
+        "preweld": {
+          "horn": {
+            "id": "negative-preweld-horn",
+            "revision": null,
+            "x": null,
+            "y": null,
+            "rotation": null,
+            "length": null,
+            "width": null,
+            "cornerR": null,
+            "knurlLength": null,
+            "knurlWidth": null,
+            "pitchU": null,
+            "pitchV": null,
+            "direction": null,
+            "height": null,
+            "tooth": null,
+            "bodyDepth": null
+          },
+          "anvil": {
+            "id": "negative-preweld-anvil",
+            "revision": null,
+            "x": null,
+            "y": null,
+            "rotation": null,
+            "length": null,
+            "width": null,
+            "cornerR": null,
+            "knurlLength": null,
+            "knurlWidth": null,
+            "pitchU": null,
+            "pitchV": null,
+            "direction": null,
+            "height": null,
+            "tooth": null,
+            "bodyDepth": null
+          }
+        },
+        "welded": {
+          "horn": {
+            "id": "negative-welded-horn",
+            "revision": null,
+            "x": null,
+            "y": null,
+            "rotation": null,
+            "length": null,
+            "width": null,
+            "cornerR": null,
+            "knurlLength": null,
+            "knurlWidth": null,
+            "pitchU": null,
+            "pitchV": null,
+            "direction": null,
+            "height": null,
+            "tooth": null,
+            "bodyDepth": null
+          },
+          "anvil": {
+            "id": "negative-welded-anvil",
+            "revision": null,
+            "x": null,
+            "y": null,
+            "rotation": null,
+            "length": null,
+            "width": null,
+            "cornerR": null,
+            "knurlLength": null,
+            "knurlWidth": null,
+            "pitchU": null,
+            "pitchV": null,
+            "direction": null,
+            "height": null,
+            "tooth": null,
+            "bodyDepth": null
+          }
+        }
+      },
+      "laser": {
+        "id": "negative-laser",
+        "revision": null,
+        "x": null,
+        "y": null,
+        "diameter": null,
+        "rows": null,
+        "columns": null,
+        "pitchX": null,
+        "pitchY": null,
+        "rotation": null,
+        "spots": [
+          {
+            "id": "spot-1",
+            "row": null,
+            "column": null,
+            "dx": null,
+            "dy": null
+          },
+          {
+            "id": "spot-2",
+            "row": null,
+            "column": null,
+            "dx": null,
+            "dy": null
+          },
+          {
+            "id": "spot-3",
+            "row": null,
+            "column": null,
+            "dx": null,
+            "dy": null
+          },
+          {
+            "id": "spot-4",
+            "row": null,
+            "column": null,
+            "dx": null,
+            "dy": null
+          },
+          {
+            "id": "spot-5",
+            "row": null,
+            "column": null,
+            "dx": null,
+            "dy": null
+          },
+          {
+            "id": "spot-6",
+            "row": null,
+            "column": null,
+            "dx": null,
+            "dy": null
+          }
+        ]
+      },
+      "foilCut": {
+        "removedLength": null
+      }
+    }
+  },
+  "sealBars": {
+    "positive_upper": {
+      "id": "positive-upper",
+      "revision": null,
+      "location": null,
+      "half": null,
+      "u": null,
+      "v": null,
+      "rotation": null,
+      "extra": {
+        "enabled": null,
+        "u": null,
+        "v": null,
+        "length": null,
+        "width": null
+      },
+      "relief": {
+        "enabled": null,
+        "u": null,
+        "length": null,
+        "depth": null
+      },
+      "tabProfile": {
+        "centerLength": null,
+        "transitionR": null,
+        "centerWidth": null,
+        "outerWidth": null,
+        "startU": null,
+        "endU": null,
+        "centerOffset": null
+      }
+    },
+    "positive_lower": {
+      "id": "positive-lower",
+      "revision": null,
+      "location": null,
+      "half": null,
+      "u": null,
+      "v": null,
+      "rotation": null,
+      "extra": {
+        "enabled": null,
+        "u": null,
+        "v": null,
+        "length": null,
+        "width": null
+      },
+      "relief": {
+        "enabled": null,
+        "u": null,
+        "length": null,
+        "depth": null
+      },
+      "tabProfile": {
+        "centerLength": null,
+        "transitionR": null,
+        "centerWidth": null,
+        "outerWidth": null,
+        "startU": null,
+        "endU": null,
+        "centerOffset": null
+      }
+    },
+    "negative_upper": {
+      "id": "negative-upper",
+      "revision": null,
+      "location": null,
+      "half": null,
+      "u": null,
+      "v": null,
+      "rotation": null,
+      "extra": {
+        "enabled": null,
+        "u": null,
+        "v": null,
+        "length": null,
+        "width": null
+      },
+      "relief": {
+        "enabled": null,
+        "u": null,
+        "length": null,
+        "depth": null
+      },
+      "tabProfile": {
+        "centerLength": null,
+        "transitionR": null,
+        "centerWidth": null,
+        "outerWidth": null,
+        "startU": null,
+        "endU": null,
+        "centerOffset": null
+      }
+    },
+    "negative_lower": {
+      "id": "negative-lower",
+      "revision": null,
+      "location": null,
+      "half": null,
+      "u": null,
+      "v": null,
+      "rotation": null,
+      "extra": {
+        "enabled": null,
+        "u": null,
+        "v": null,
+        "length": null,
+        "width": null
+      },
+      "relief": {
+        "enabled": null,
+        "u": null,
+        "length": null,
+        "depth": null
+      },
+      "tabProfile": {
+        "centerLength": null,
+        "transitionR": null,
+        "centerWidth": null,
+        "outerWidth": null,
+        "startU": null,
+        "endU": null,
+        "centerOffset": null
+      }
+    },
+    "gas_upper": {
+      "id": "gas-upper",
+      "revision": null,
+      "location": null,
+      "half": null,
+      "u": null,
+      "v": null,
+      "rotation": null,
+      "vertices": [
+        {
+          "id": "inner-start",
+          "u": null,
+          "v": null
+        },
+        {
+          "id": "inner-shoulder",
+          "u": null,
+          "v": null,
+          "arc": null
+        },
+        {
+          "id": "inner-end",
+          "u": null,
+          "v": null
+        },
+        {
+          "id": "outer-end",
+          "u": null,
+          "v": null
+        },
+        {
+          "id": "outer-start",
+          "u": null,
+          "v": null
+        }
+      ],
+      "extra": {
+        "enabled": null,
+        "u": null,
+        "v": null,
+        "length": null,
+        "width": null
+      },
+      "relief": {
+        "enabled": null,
+        "u": null,
+        "length": null,
+        "depth": null
+      }
+    },
+    "gas_lower": {
+      "id": "gas-lower",
+      "revision": null,
+      "location": null,
+      "half": null,
+      "u": null,
+      "v": null,
+      "rotation": null,
+      "vertices": [
+        {
+          "id": "inner-start",
+          "u": null,
+          "v": null
+        },
+        {
+          "id": "inner-shoulder",
+          "u": null,
+          "v": null,
+          "arc": null
+        },
+        {
+          "id": "inner-end",
+          "u": null,
+          "v": null
+        },
+        {
+          "id": "outer-end",
+          "u": null,
+          "v": null
+        },
+        {
+          "id": "outer-start",
+          "u": null,
+          "v": null
+        }
+      ],
+      "extra": {
+        "enabled": null,
+        "u": null,
+        "v": null,
+        "length": null,
+        "width": null
+      },
+      "relief": {
+        "enabled": null,
+        "u": null,
+        "length": null,
+        "depth": null
+      }
+    },
+    "final_upper": {
+      "id": "final-upper",
+      "revision": null,
+      "location": null,
+      "half": null,
+      "u": null,
+      "v": null,
+      "rotation": null,
+      "vertices": [
+        {
+          "id": "inner-start",
+          "u": null,
+          "v": null
+        },
+        {
+          "id": "inner-shoulder",
+          "u": null,
+          "v": null,
+          "arc": null
+        },
+        {
+          "id": "inner-end",
+          "u": null,
+          "v": null
+        },
+        {
+          "id": "outer-end",
+          "u": null,
+          "v": null
+        },
+        {
+          "id": "outer-start",
+          "u": null,
+          "v": null
+        }
+      ],
+      "extra": {
+        "enabled": null,
+        "u": null,
+        "v": null,
+        "length": null,
+        "width": null
+      },
+      "relief": {
+        "enabled": null,
+        "u": null,
+        "length": null,
+        "depth": null
+      }
+    },
+    "final_lower": {
+      "id": "final-lower",
+      "revision": null,
+      "location": null,
+      "half": null,
+      "u": null,
+      "v": null,
+      "rotation": null,
+      "vertices": [
+        {
+          "id": "inner-start",
+          "u": null,
+          "v": null
+        },
+        {
+          "id": "inner-shoulder",
+          "u": null,
+          "v": null,
+          "arc": null
+        },
+        {
+          "id": "inner-end",
+          "u": null,
+          "v": null
+        },
+        {
+          "id": "outer-end",
+          "u": null,
+          "v": null
+        },
+        {
+          "id": "outer-start",
+          "u": null,
+          "v": null
+        }
+      ],
+      "extra": {
+        "enabled": null,
+        "u": null,
+        "v": null,
+        "length": null,
+        "width": null
+      },
+      "relief": {
+        "enabled": null,
+        "u": null,
+        "length": null,
+        "depth": null
+      }
+    }
+  }
+}

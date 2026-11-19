@@ -5,6 +5,7 @@ import Ajv from "ajv/dist/2020.js";
 import schema from "./schema.json" with { type: "json" };
 import {
   dictionaryFor,
+  intakeFields,
   requiredField,
   legacyUnknownSealant,
   componentFor,
@@ -42,9 +43,16 @@ export function validateIntake(input, stage = "stacked") {
   } catch (e) {
     issue("/inspectionViews", e.message);
   }
-  try { validateTooling(input.processTooling); } catch (e) { issue("/processTooling", e.message); }
+  if(input.formatVersion !== '1.4') {
+    try { validateTooling(input.processTooling); } catch (e) { issue("/processTooling", e.message); }
+    if(input.processTooling) issue('/processTooling','1.3 공구 스냅샷 호환: 개별 필드의 원문 단위·출처 검토는 1.4 입력키트에서 보강하세요.',null,false);
+  }
+  let allFields;
+  try { allFields=intakeFields(input); } catch(e) {
+    issue('/processTooling',e.message);return {valid:false,ready:false,issues,rows,normalized};
+  }
   const d = input,
-    fields = dictionaryFor(d.componentInstances),
+    fields = allFields,
     byId = new Map(fields.map((f) => [f.parameterId, f])),
     params = new Map(),
     sources = new Set(),
