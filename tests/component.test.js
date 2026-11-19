@@ -32,3 +32,10 @@ test('component section centers use tool datum or cup opening, not visual boundi
  const m={parts:[{id:'tool.horn',meta:{datum:{origin:[-136,-1,.3]}}},{id:'pouch.lower.pocket',bounds:{min:[-100,-500,-5]}}],features:{'pouch.lower.pocket.opening':{point:[0,2,-1]}}};
  assert.deepEqual(sectionCenter(m,'tool.horn'),[-136,-1,.3]);assert.deepEqual(sectionCenter(m,'pouch.lower.pocket'),[0,2,-1]);
 });
+
+import {ownerForPath} from '../src/overview/catalog.js';
+test('product dimension links route gathering inputs to the gathered foil component',()=>{
+ assert.equal(ownerForPath('positive.tab.rootLength'),'tab');
+ assert.equal(ownerForPath('positive.tab.gatheredLength'),'tab_preweld');
+ assert.equal(ownerForPath('negative.tab.edgeR'),'tab_preweld');
+});

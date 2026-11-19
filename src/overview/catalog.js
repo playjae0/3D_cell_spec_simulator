@@ -15,7 +15,8 @@ export const modelChoices = {
 };
 export function ownerForPath(path) {
   if (path.startsWith("pouchProcess.sheets.")) return "pouch";
-  const [, section] = path.split(".");
+  const [, section, key] = path.split(".");
+  if(section==="tab")return ["foilWidth","rootLength","rootSpread","rootY","rootZ"].includes(key)?"tab":"tab_preweld";
   return ({tab:"tab", lead:"lead",preweldLead:"lead",leadFilm:"lead",tapes:"tapes"})[section];
 }
 export function mountModelChoices(host, choose) {
