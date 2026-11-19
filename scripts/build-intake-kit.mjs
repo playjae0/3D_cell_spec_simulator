@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {pathToFileURL} from 'node:url';
 import {execFileSync} from 'node:child_process';
 import {intakeFromProject,projectFromIntake} from '../src/intake/adapter.js';
 import {template,intakeFields,STAGES} from '../src/intake/contract.js';
@@ -27,7 +28,6 @@ export function kitData(commit) {
   const restored=projectFromIntake(filled,'welded');
   if(JSON.stringify(restored.product.processTooling)!==JSON.stringify(p.product.processTooling)){
     // Property order is irrelevant here; the CAD/preview byte codec is unchanged.
-    const canonical=x=>JSON.stringify(x, Object.keys(x||{}).sort());
     for(const f of fields.filter(x=>x.tooling)){
       const read=o=>f.adapterPath.split('.').reduce((a,k)=>a[k],o);
       if(read(restored.product)!==read(p.product))throw Error('공구 왕복 불일치 '+f.parameterId);
@@ -35,7 +35,7 @@ export function kitData(commit) {
   }
   return {filled,blank,fields,source};
 }
-if(import.meta.url === new URL('file:'+process.argv[1].replaceAll('\\','/')).href || process.argv[1]?.endsWith('build-intake-kit.mjs')) {
+if(process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
   const commit=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
   const out=process.argv[2]||path.join('build/windows','CellStudio-IntakeKit-'+commit.slice(0,12));
   fs.mkdirSync(out,{recursive:true});const {filled,blank,fields,source}=kitData(commit);

@@ -110,9 +110,10 @@ jobs:
           $app = (Get-ChildItem $env:TRIAL_ROOT -Directory -Filter 'CellStudio-win-x64-*').FullName
           $kit = (Get-ChildItem $env:TRIAL_ROOT -Directory -Filter 'CellStudio-IntakeKit-*').FullName
           $rule = 'CellStudioTrialOffline-' + $env:GITHUB_RUN_ID
-          $ranges = @('0.0.0.0-126.255.255.255','128.0.0.0-255.255.255.255','::/0')
+          @{ sourceCommit='${{ needs.windows-package.outputs.sha }}'; startedAt=(Get-Date).ToString('o') } | ConvertTo-Json | Set-Content -Encoding utf8 trial-evidence/environment.json
           try {
-            New-NetFirewallRule -DisplayName $rule -Direction Outbound -Action Block -RemoteAddress $ranges -Profile Any | Out-Null
+            # Windows Defender Firewall exempts same-host loopback; block all external destinations.
+            New-NetFirewallRule -DisplayName $rule -Direction Outbound -Action Block -RemoteAddress Any -Profile Any | Out-Null
             $blocked = $false
             try { Invoke-WebRequest https://www.python.org -TimeoutSec 5 | Out-Null } catch { $blocked = $true }
             if (-not $blocked) { throw 'External network was not blocked' }

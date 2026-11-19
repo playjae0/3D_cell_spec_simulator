@@ -33,7 +33,11 @@ def main():
     result={'environment':'extracted Windows ZIP' if a.bundle else 'Linux development build','offlineFirewall':a.offline,'errors':[],'externalRequests':[]}
     try:
         if a.bundle:
-            v=json.loads((a.bundle/'VERSION.json').read_text(encoding='utf-8'));result['sourceCommit']=v['sourceCommit'];state=start();url=state['url'];result['launcher']=state
+            v=json.loads((a.bundle/'VERSION.json').read_text(encoding='utf-8'));result['sourceCommit']=v['sourceCommit']
+            probe=subprocess.check_output([str(a.bundle/'runtime/python.exe'),'-I','-X','utf8','-c','import json,sys,cadquery,OCP; print(json.dumps(dict(executable=sys.executable,cadquery=cadquery.__file__,ocp=OCP.__file__,path=sys.path)))'],cwd=a.bundle)
+            result['runtimeProvenance']=json.loads(probe)
+            for k in ['executable','cadquery','ocp']:assert Path(result['runtimeProvenance'][k]).is_relative_to(a.bundle/'runtime')
+            state=start();url=state['url'];result['launcher']=state
             kitVersion=json.loads((a.intake.parent/'VERSION.json').read_text(encoding='utf-8'));assert kitVersion['sourceCommit']==v['sourceCommit']
             conflict=subprocess.run([str(a.bundle/'CellStudio.exe'),'--no-browser','--port','18765'],cwd=a.bundle,capture_output=True,timeout=30)
             assert conflict.returncode!=0 and '사용 중' in conflict.stderr.decode('utf-8')
@@ -52,7 +56,9 @@ def main():
             responses=[]
             def response(r):
                 if r.url.endswith('/api/rebuild'):
-                    try:responses.append({'status':r.status,'request':r.request.post_data_json,'data':r.json()})
+                    try:
+                        data=r.json();responses.append({'status':r.status,'request':r.request.post_data_json,'data':data})
+                        print('CAD',r.status,data.get('stage'),data.get('errors',''),flush=True)
                     except Exception:pass
             page.on('response',response)
             def shot(n):page.screenshot(path=str(a.out/(n+'.png')),full_page=True)
@@ -63,11 +69,21 @@ def main():
                 field=next(v for v in page.locator('#component-dimension option').evaluate_all('(els)=>els.map(e=>e.value)') if v.endswith('.bodyDepth'))
                 page.locator('#component-dimension').select_option(field);return field
             page.goto(url);expect(page.locator('#component-overview')).to_be_visible()
+            expect(page.locator('#status')).to_contain_text('CAD 확정',timeout=240000)
+            print('Initial CAD ready',flush=True)
             page.locator('#models').click();page.locator('#intake-file').set_input_files(str(a.intake))
             expect(page.locator('#intake-preview')).to_be_enabled()
             expect(page.locator('#intake-message')).to_contain_text('trial-1')
-            page.locator('#intake-preview').click();expect(page.locator('#intake-apply')).to_be_enabled(timeout=240000)
-            shot('01-intake-cad');page.locator('#intake-apply').click()
+            with page.expect_download() as csv:page.locator('#intake-csv').click()
+            csv.value.save_as(str(a.out/'review.csv'))
+            assert (a.out/'review.csv').read_text(encoding='utf-8')==(a.intake.parent/'05_Review.csv').read_text(encoding='utf-8')
+            result['reviewCsvMatchesIntakeKit']=True
+            shot('00-intake-imported');print('Intake uploaded',flush=True)
+            page.locator('#intake-preview').click()
+            try:expect(page.locator('#intake-apply')).to_be_enabled(timeout=240000)
+            except Exception:
+                shot('failure-intake');result['intakeError']=page.locator('#intake-message').inner_text();raise
+            shot('01-intake-cad');print('Intake CAD ready',flush=True);page.locator('#intake-apply').click()
             field=tool();shot('02-before-3mm')
             before=next(r['data'] for r in reversed(responses) if r['status']==200 and any(x['id']=='tool.positive.welded.horn.body' for x in r['data']['parts']))
             page.locator('#component-edit').click();page.locator('#component-edit-value').fill('4');page.locator('#component-edit-submit').click()
@@ -93,6 +109,7 @@ def main():
             ctx=browser.new_context(viewport={'width':1440,'height':1080},accept_downloads=True)
             page=ctx.new_page();page.set_default_timeout(180000);page.on('response',response);page.on('pageerror',lambda e:result['errors'].append(str(e)))
             page.goto(url);expect(page.locator('#component-overview')).to_be_visible()
+            expect(page.locator('#status')).to_contain_text('CAD 확정',timeout=240000)
             assert page.evaluate('localStorage.getItem("pouch-model-library-v1")') is None
             page.locator('#file').set_input_files(str(saved));expect(page.locator('#status')).to_contain_text('CAD 확정',timeout=240000)
             tool();expect(page.locator('#component-dimension option:checked')).to_contain_text('4 mm')

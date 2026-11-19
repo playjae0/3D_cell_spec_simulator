@@ -34,7 +34,11 @@ export function toolingFields(q) {
   return toolingDictionary({processTooling:q}).filter(f=>!/[.](id|version)$/.test(f.path)).map(f=>{
     const t=types[f.adapterPath.replace(/\.(spots|vertices)\.\d+\./g,'.$1.*.')];
     if(!t)throw Error(f.id+': 지원하지 않는 공구 필드');
-    return {...t,parameterId:f.id,adapterPath:f.adapterPath,partId:f.id.slice(0,f.id.lastIndexOf('.')),polarity:f.polarity,kind:'design',basis:basis(f),activeStages:stageIds,requiredRule:'1.4 시험판은 공구 구성 전체를 명시적으로 검토',tooling:true};
+    const p=f.path.split('.');let partId=f.id.slice(0,f.id.lastIndexOf('.'));
+    if(p[1]==='poles' && p[3]==='tools')partId=`tool.${p[2]}.${p[4]}.${p[5]}.`+(p.at(-1)==='bodyDepth'?'body':'teeth');
+    else if(p[1]==='poles' && ['gathering','foilCut'].includes(p[3]))partId=p[2]+'.tab';
+    else if(p[1]==='sealBars')partId='tool.seal.'+p[2];
+    return {...t,parameterId:f.id,adapterPath:f.adapterPath,partId,polarity:f.polarity,kind:'design',basis:basis(f),activeStages:stageIds,processScope:p.includes('foilCut')?'foil_trimmed → downstream':f.stage,requiredRule:'1.4 시험판은 공구 구성 전체를 명시적으로 검토',tooling:true};
   });
 }
 export function addToolingIntake(intake, product, blank=false) {
