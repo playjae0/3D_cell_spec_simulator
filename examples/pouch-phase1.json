@@ -409,7 +409,7 @@
     "processTooling": {
       "version": 1,
       "example": true,
-      "revision": "phase1-1",
+      "revision": "phase1-2",
       "packaging": {
         "bridgeInnerR": 0.4,
         "cutY": 50,
@@ -439,7 +439,7 @@
             "preweld": {
               "horn": {
                 "id": "positive-preweld-horn",
-                "revision": "example-1",
+                "revision": "example-2-block",
                 "x": 1.5,
                 "y": 0,
                 "rotation": 0,
@@ -457,7 +457,7 @@
               },
               "anvil": {
                 "id": "positive-preweld-anvil",
-                "revision": "example-1",
+                "revision": "example-2-block",
                 "x": 1.5,
                 "y": 0,
                 "rotation": 0,
@@ -477,7 +477,7 @@
             "welded": {
               "horn": {
                 "id": "positive-welded-horn",
-                "revision": "example-1",
+                "revision": "example-2-block",
                 "x": 6,
                 "y": 0,
                 "rotation": 0,
@@ -495,7 +495,7 @@
               },
               "anvil": {
                 "id": "positive-welded-anvil",
-                "revision": "example-1",
+                "revision": "example-2-block",
                 "x": 6,
                 "y": 0,
                 "rotation": 0,
@@ -584,7 +584,7 @@
             "preweld": {
               "horn": {
                 "id": "negative-preweld-horn",
-                "revision": "example-1",
+                "revision": "example-2-block",
                 "x": 1.5,
                 "y": 0,
                 "rotation": 0,
@@ -602,7 +602,7 @@
               },
               "anvil": {
                 "id": "negative-preweld-anvil",
-                "revision": "example-1",
+                "revision": "example-2-block",
                 "x": 1.5,
                 "y": 0,
                 "rotation": 0,
@@ -622,7 +622,7 @@
             "welded": {
               "horn": {
                 "id": "negative-welded-horn",
-                "revision": "example-1",
+                "revision": "example-2-block",
                 "x": 6,
                 "y": 0,
                 "rotation": 0,
@@ -640,7 +640,7 @@
               },
               "anvil": {
                 "id": "negative-welded-anvil",
-                "revision": "example-1",
+                "revision": "example-2-block",
                 "x": 6,
                 "y": 0,
                 "rotation": 0,
@@ -1086,6 +1086,6 @@
   },
   "modelIdentity": {
     "modelId": "virtual-pouch-phase1",
-    "revision": "phase1-1"
+    "revision": "phase1-2"
   }
 }

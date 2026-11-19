@@ -2303,7 +2303,7 @@ function drawPartDetail() {
     $("tooling-pane").hidden=true;drawing.textContent="현재 모델에 이 공구의 설계·CAD 기록이 없습니다.";return;
   }
   const refStage=basic?ownerStage():"film_formed";
-  if(basic || component==="pouch"){
+  if(basic){
     const target=model?.parts.find(p=>matchesComponent(p.id));
     ownerTarget=component==="pouch"?"pouch":target?.id ||
       (component==="tapes"?componentSide+".tape."+state.product[componentSide].tapes[0]?.id:componentSide+"."+(component.startsWith("tab")?"tab":component));
