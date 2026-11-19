@@ -14,6 +14,8 @@ gh run download <RUN_ID> --dir downloaded
 
 기본 브랜치 병합 후에는 `--ref main`을 쓴다. 과거 커밋에 패키징 코드가 없으면 그 커밋은 패키징할 수 없으며 성공한 산출물로 표시하지 않는다. Actions 산출물의 보존 기간은 30일이다. 승인된 공유 경로에 동일 ZIP을 복사할 수 있다. 공개 Release 게시와 사내 자료 업로드는 하지 않는다.
 
+이 작업 브랜치가 main에 병합되기 전에는 위 `gh workflow run` 명령으로 실행한다. GitHub 웹의 Run workflow 버튼은 기본 브랜치에 workflow_dispatch가 반영된 후 사용한다. Actions에서 받은 바깥 산출물 ZIP 안에 커밋 이름의 배포 ZIP이 들어 있으므로 안쪽 ZIP도 풀어야 한다.
+
 Windows 개발 PC에서 수동 재현할 때는 Node 22, Python 3.12.10 x64, Git을 사용한다. 작업 트리가 깨끗한 커밋에서 `npm ci`, `npm test`, `npm run build`, `python -m pip install pyinstaller==6.16.0`, `npm run build:windows` 순서로 실행한다. 재빌드는 새 checkout/작업 폴더를 사용한다. 입력키트만 다시 만들 때는 `npm run build:intake-kit`을 사용한다. 일반 `scripts/start.*`와 `dist/`, 정적 프리뷰 빌드는 그대로다.
 
 ## 구성과 크기

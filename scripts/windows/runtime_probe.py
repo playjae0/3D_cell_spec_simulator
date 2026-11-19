@@ -14,9 +14,11 @@ kernel.K32GetModuleFileNameExW.argtypes=[wintypes.HANDLE,wintypes.HMODULE,wintyp
 process=kernel.GetCurrentProcess();modules=(wintypes.HMODULE*4096)();size=wintypes.DWORD()
 if not kernel.K32EnumProcessModules(process,modules,ctypes.sizeof(modules),ctypes.byref(size)):raise ctypes.WinError(ctypes.get_last_error())
 if size.value>ctypes.sizeof(modules):raise RuntimeError('Module inventory overflow')
-crt=[]
+crt=[];windows_runtime=[]
 for module in modules[:size.value//ctypes.sizeof(wintypes.HMODULE)]:
     buf=ctypes.create_unicode_buffer(32768)
     if not kernel.K32GetModuleFileNameExW(process,module,buf,len(buf)):raise ctypes.WinError(ctypes.get_last_error())
-    if Path(buf.value).name.lower().startswith(('msvcp','vcruntime','concrt')):crt.append(buf.value)
-print(json.dumps(dict(executable=sys.executable,cadquery=cadquery.__file__,ocp=OCP.__file__,path=sys.path,msvcModules=crt)))
+    name=Path(buf.value).name.lower()
+    if name in ('msvcp_win.dll','ucrtbase.dll'):windows_runtime.append(buf.value)
+    elif name.startswith(('msvcp','vcruntime','concrt')):crt.append(buf.value)
+print(json.dumps(dict(executable=sys.executable,cadquery=cadquery.__file__,ocp=OCP.__file__,path=sys.path,msvcModules=crt,windowsSystemRuntime=windows_runtime)))
