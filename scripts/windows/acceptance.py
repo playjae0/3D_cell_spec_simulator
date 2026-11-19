@@ -30,13 +30,18 @@ def main():
             process.terminate();process.wait(timeout=30)
         process=None
         if log:log.close();log=None
-    result={'environment':'extracted Windows ZIP' if a.bundle else 'Linux development build','offlineFirewall':a.offline,'errors':[],'externalRequests':[]}
+    result={'environment':'extracted Windows ZIP' if a.bundle else 'Linux development build','offlineFirewall':a.offline,'offlineScope':'application/runtime/browser; runner control channel stays online' if a.offline else 'none','errors':[],'externalRequests':[]}
     try:
         if a.bundle:
             v=json.loads((a.bundle/'VERSION.json').read_text(encoding='utf-8'));result['sourceCommit']=v['sourceCommit']
             probe=subprocess.check_output([str(a.bundle/'runtime/python.exe'),'-I','-X','utf8','-c','import json,sys,cadquery,OCP; print(json.dumps(dict(executable=sys.executable,cadquery=cadquery.__file__,ocp=OCP.__file__,path=sys.path)))'],cwd=a.bundle)
             result['runtimeProvenance']=json.loads(probe)
             for k in ['executable','cadquery','ocp']:assert Path(result['runtimeProvenance'][k]).is_relative_to(a.bundle/'runtime')
+            if a.offline:
+                code="import urllib.request,sys\ntry:\n urllib.request.build_opener(urllib.request.ProxyHandler({})).open('https://www.python.org',timeout=5);sys.exit(9)\nexcept OSError:\n print('external HTTPS blocked')"
+                blocked=subprocess.run([str(a.bundle/'runtime/python.exe'),'-I','-X','utf8','-c',code],capture_output=True,timeout=15)
+                assert blocked.returncode==0 and b'blocked' in blocked.stdout
+                result['runtimeExternalHttpsBlocked']=True
             state=start();url=state['url'];result['launcher']=state
             kitVersion=json.loads((a.intake.parent/'VERSION.json').read_text(encoding='utf-8'));assert kitVersion['sourceCommit']==v['sourceCommit']
             conflict=subprocess.run([str(a.bundle/'CellStudio.exe'),'--no-browser','--port','18765'],cwd=a.bundle,capture_output=True,timeout=30)
@@ -50,6 +55,12 @@ def main():
             else:launch['executable_path']='/usr/bin/chromium'
             browser=pw.chromium.launch(**launch)
             ctx=browser.new_context(viewport={'width':1440,'height':1080},accept_downloads=True)
+            if a.offline:
+                probe=ctx.new_page();blocked=False
+                try:probe.goto('https://www.python.org',timeout=8000)
+                except Exception:blocked=True
+                finally:probe.close()
+                assert blocked,'browser external network was not blocked';result['browserExternalHttpsBlocked']=True
             page=ctx.new_page();page.set_default_timeout(180000)
             page.on('pageerror',lambda e:result['errors'].append(str(e)))
             page.on('request',lambda r:result['externalRequests'].append(r.url) if urlparse(r.url).scheme in ['http','https'] and urlparse(r.url).hostname not in ['127.0.0.1','localhost'] else None)
@@ -111,7 +122,10 @@ def main():
             page.goto(url);expect(page.locator('#component-overview')).to_be_visible()
             expect(page.locator('#status')).to_contain_text('CAD 확정',timeout=240000)
             assert page.evaluate('localStorage.getItem("pouch-model-library-v1")') is None
-            page.locator('#file').set_input_files(str(saved));expect(page.locator('#status')).to_contain_text('CAD 확정',timeout=240000)
+            with page.expect_response(lambda r:r.url.endswith('/api/rebuild') and r.request.post_data_json['project']['product']['id']=='trial-virtual-cell',timeout=240000):
+                page.locator('#file').set_input_files(str(saved))
+            expect(page.locator('#current-model')).to_contain_text('trial-virtual-cell',timeout=240000)
+            expect(page.locator('#status')).to_contain_text('CAD 확정',timeout=240000)
             tool();expect(page.locator('#component-dimension option:checked')).to_contain_text('4 mm')
             reopened=next(r['data'] for r in reversed(responses) if r['status']==200 and r['request']['project']['product']['id']=='trial-virtual-cell' and r['request']['project']['product']['processTooling']['poles']['positive']['tools']['welded']['horn']['bodyDepth']==4)
             assert body(reopened)==body(after);shot('04-reopened')

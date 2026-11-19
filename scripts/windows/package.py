@@ -35,8 +35,10 @@ def main():
     (runtime/'python312._pth').write_text('python312.zip\n.\nLib/site-packages\n../app/cad\nimport site\n',encoding='utf-8')
     site=runtime/'Lib/site-packages'
     call(sys.executable,'-m','pip','install','--disable-pip-version-check','--only-binary=:all:','--no-compile','--target',site,'-r','cad/requirements.lock.txt')
-    call(sys.executable,'-m','PyInstaller','--noconfirm','--clean','--onefile','--console','--name','CellStudio','--distpath',OUT/'launcher','--workpath',OUT/'pyinstaller-work','--specpath',OUT,'scripts/windows/launcher.py')
-    shutil.copy2(OUT/'launcher/CellStudio.exe',dest/'CellStudio.exe')
+    # One-directory launcher avoids a temporary-extraction parent process and
+    # keeps EXE termination tied to the Windows Job Object that owns CAD.
+    call(sys.executable,'-m','PyInstaller','--noconfirm','--clean','--onedir','--console','--name','CellStudio','--distpath',OUT/'launcher','--workpath',OUT/'pyinstaller-work','--specpath',OUT,'scripts/windows/launcher.py')
+    shutil.copytree(OUT/'launcher/CellStudio',dest,dirs_exist_ok=True)
     app=dest/'app';(app/'cad').mkdir(parents=True);(app/'src/data').mkdir(parents=True)
     # Explicit app resources only. No repository docs, examples, snapshots or caches.
     for file in sorted((ROOT/'cad').glob('*.py')):shutil.copy2(file,app/'cad'/file.name)

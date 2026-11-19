@@ -112,16 +112,19 @@ jobs:
           $rule = 'CellStudioTrialOffline-' + $env:GITHUB_RUN_ID
           @{ sourceCommit='${{ needs.windows-package.outputs.sha }}'; startedAt=(Get-Date).ToString('o') } | ConvertTo-Json | Set-Content -Encoding utf8 trial-evidence/environment.json
           try {
-            # Windows Defender Firewall exempts same-host loopback; block all external destinations.
-            New-NetFirewallRule -DisplayName $rule -Direction Outbound -Action Block -RemoteAddress Any -Profile Any | Out-Null
-            $blocked = $false
-            try { Invoke-WebRequest https://www.python.org -TimeoutSec 5 | Out-Null } catch { $blocked = $true }
-            if (-not $blocked) { throw 'External network was not blocked' }
-            @{ externalHttpsBlocked=$blocked; policy='all outbound non-loopback addresses'; hostname=$env:COMPUTERNAME; image=$env:ImageOS; appPythonInstalled=$false; note='GitHub hosted runner has developer tools; application PATH is isolated, test harness uses host Python' } | ConvertTo-Json | Set-Content -Encoding utf8 trial-evidence/network.json
+            # Keep the Actions control channel online. Application/runtime/browser cannot leave loopback.
+            $edge = Join-Path ${env:ProgramFiles(x86)} 'Microsoft/Edge/Application/msedge.exe'
+            if (-not (Test-Path $edge)) { throw 'Test browser not found' }
+            $programs = @("$app/CellStudio.exe", "$app/runtime/python.exe", $edge)
+            foreach ($program in $programs) {
+              New-NetFirewallRule -DisplayName $rule -Direction Outbound -Action Block -RemoteAddress Any -Program ([IO.Path]::GetFullPath($program)) -Profile Any | Out-Null
+            }
+            @{ policy='application/runtime/browser outbound blocked; Actions control channel online'; programs=$programs; hostname=$env:COMPUTERNAME; image=$env:ImageOS; appPythonInstalled=$false; note='Hosted runner has developer tools; application PATH isolated. This is not a clean/offline Windows PC certification.' } | ConvertTo-Json | Set-Content -Encoding utf8 trial-evidence/network.json
             python scripts/windows/acceptance.py --bundle "$app" --intake "$kit/04_Filled_Virtual_Intake.json" --out "$PWD/trial-evidence" --offline
             if ($LASTEXITCODE -ne 0) { throw 'Extracted EXE acceptance failed' }
           } finally {
             Get-NetFirewallRule -DisplayName $rule -ErrorAction SilentlyContinue | Remove-NetFirewallRule
+            if (Test-Path "$env:LOCALAPPDATA/CellStudio/logs") { Copy-Item "$env:LOCALAPPDATA/CellStudio/logs" trial-evidence/cad-logs -Recurse -Force }
           }
       - uses: actions/upload-artifact@v4
         if: always()
