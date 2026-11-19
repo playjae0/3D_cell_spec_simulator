@@ -1,0 +1,19 @@
+{
+  "url": "https://pouch-cell-phase1.goodlycurio3.chatgpt.site/",
+  "sourceCommit": "db1411c0a24366cb75007ab65c1c2fb6d8c0e287",
+  "browser": "shared Chrome via cua_repl",
+  "model": "virtual-pouch-phase1",
+  "modelRevision": "phase1-1",
+  "initialPage": "component overview",
+  "verified": [
+    "CAD component cards",
+    "horn pitch 0.8, tip 0 root 0.2, 115 teeth",
+    "anvil height 0.15, tip 0 root -0.15, 69 teeth",
+    "read-only editing/save/STEP locked",
+    "product overview -> S2 detail -> sealbar -> product overview",
+    "seal widths 3 and 5 mm"
+  ],
+  "finalPage": "component overview",
+  "tabMarkedDeliverable": true,
+  "scope": "deployed interactive smoke; full 43-stage matrix was checked on identical local static distribution"
+}

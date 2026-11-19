@@ -13,6 +13,7 @@ from geometry_metrics import exact_bounds
 from process import ModelError, STAGES, STAGE_CONTRACT, resolve_product, resolve_pole
 
 def validate(p,stage='assembly'):
+    if stage=='foil_trimmed':return validate(p,'preweld')
     if STAGE_CONTRACT.get(stage,{}).get('pouch'):
         from pouch_process import validate as validate_pouch
         return validate_pouch(p.get('pouchProcess'),stage)
@@ -329,6 +330,10 @@ def build(p,stage='assembly'):
     if p.get('processTooling'):
         from process_tooling import build_r4
         return build_r4(p,stage,build)
+    if stage=='foil_trimmed':
+        m=build(p,'preweld');m['stage']=stage
+        m['diagnostics'].append({'level':'warning','message':'포일 절단량 미지정: 기존 모델의 절단량 0 유지'})
+        return m
     if STAGE_CONTRACT.get(stage,{}).get('pouch'):
         from pouch_process import build_process
         return build_process(p,stage,build)

@@ -1,0 +1,57 @@
+{
+  "commit": "ec14562ff50f51155fbf3359840b59f8f8b8a092",
+  "stats": [
+    {
+      "name": "demo",
+      "rawBytes": 2164328,
+      "normalizedBytes": 2163553,
+      "packedBytes": 1135887,
+      "rawGzipBytes": 384328,
+      "packedGzipBytes": 175407,
+      "uniqueParts": 27,
+      "successes": 8,
+      "rejections": 13
+    },
+    {
+      "name": "pouch-process",
+      "rawBytes": 5473037,
+      "normalizedBytes": 5471973,
+      "packedBytes": 2520060,
+      "rawGzipBytes": 926954,
+      "packedGzipBytes": 362180,
+      "uniqueParts": 78,
+      "successes": 13,
+      "rejections": 8
+    },
+    {
+      "name": "process-tooling-r4",
+      "rawBytes": 11301584,
+      "normalizedBytes": 11300234,
+      "packedBytes": 5993999,
+      "rawGzipBytes": 1782286,
+      "packedGzipBytes": 771494,
+      "uniqueParts": 123,
+      "successes": 18,
+      "rejections": 3
+    },
+    {
+      "name": "pouch-phase1",
+      "rawBytes": 10930953,
+      "normalizedBytes": 10929588,
+      "packedBytes": 5617523,
+      "rawGzipBytes": 1779659,
+      "packedGzipBytes": 768793,
+      "uniqueParts": 123,
+      "successes": 18,
+      "rejections": 3
+    }
+  ],
+  "deployment": {
+    "files": 13,
+    "bytes": 16344278,
+    "max": {
+      "path": "preview/process-tooling-r4.json",
+      "bytes": 5993999
+    }
+  }
+}

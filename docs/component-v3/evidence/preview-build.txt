@@ -1,0 +1,178 @@
+
+> cell-spec-simulator@1.5.0 build:preview
+> node scripts/build-preview.mjs
+
+Recording ec14562ff50f51155fbf3359840b59f8f8b8a092 · CadQuery 2.7.0
+record demo / stacked: HTTP 200
+record demo / gathered: HTTP 200
+record demo / preweld: HTTP 200
+record demo / foil_trimmed: HTTP 200
+record demo / welded: HTTP 200
+record demo / assembly: HTTP 200
+record demo / packaged: HTTP 200
+record demo / finished: HTTP 200
+record demo / pouch_formed: HTTP 422
+record demo / loaded: HTTP 422
+record demo / sealed: HTTP 422
+record demo / trimmed: HTTP 422
+record demo / folded: HTTP 422
+record demo / film_formed: HTTP 422
+record demo / assembly_loaded_open: HTTP 422
+record demo / package_closed: HTTP 422
+record demo / tab_sealed: HTTP 422
+record demo / gas_sealed: HTTP 422
+record demo / final_sealed: HTTP 422
+record demo / package_trimmed: HTTP 422
+record demo / package_folded: HTTP 422
+verified demo: 21 live byte comparisons
+record pouch-process / stacked: HTTP 200
+record pouch-process / gathered: HTTP 200
+record pouch-process / preweld: HTTP 200
+record pouch-process / foil_trimmed: HTTP 200
+record pouch-process / welded: HTTP 200
+record pouch-process / assembly: HTTP 200
+record pouch-process / packaged: HTTP 200
+record pouch-process / finished: HTTP 200
+record pouch-process / pouch_formed: HTTP 200
+record pouch-process / loaded: HTTP 200
+record pouch-process / sealed: HTTP 200
+record pouch-process / trimmed: HTTP 200
+record pouch-process / folded: HTTP 200
+record pouch-process / film_formed: HTTP 422
+record pouch-process / assembly_loaded_open: HTTP 422
+record pouch-process / package_closed: HTTP 422
+record pouch-process / tab_sealed: HTTP 422
+record pouch-process / gas_sealed: HTTP 422
+record pouch-process / final_sealed: HTTP 422
+record pouch-process / package_trimmed: HTTP 422
+record pouch-process / package_folded: HTTP 422
+verified pouch-process: 21 live byte comparisons
+record process-tooling-r4 / stacked: HTTP 200
+record process-tooling-r4 / gathered: HTTP 200
+record process-tooling-r4 / preweld: HTTP 200
+record process-tooling-r4 / foil_trimmed: HTTP 200
+record process-tooling-r4 / welded: HTTP 200
+record process-tooling-r4 / assembly: HTTP 200
+record process-tooling-r4 / packaged: HTTP 200
+record process-tooling-r4 / finished: HTTP 200
+record process-tooling-r4 / pouch_formed: HTTP 200
+record process-tooling-r4 / loaded: HTTP 200
+record process-tooling-r4 / sealed: HTTP 422
+record process-tooling-r4 / trimmed: HTTP 422
+record process-tooling-r4 / folded: HTTP 422
+record process-tooling-r4 / film_formed: HTTP 200
+record process-tooling-r4 / assembly_loaded_open: HTTP 200
+record process-tooling-r4 / package_closed: HTTP 200
+record process-tooling-r4 / tab_sealed: HTTP 200
+record process-tooling-r4 / gas_sealed: HTTP 200
+record process-tooling-r4 / final_sealed: HTTP 200
+record process-tooling-r4 / package_trimmed: HTTP 200
+record process-tooling-r4 / package_folded: HTTP 200
+verified process-tooling-r4: 21 live byte comparisons
+record pouch-phase1 / stacked: HTTP 200
+record pouch-phase1 / gathered: HTTP 200
+record pouch-phase1 / preweld: HTTP 200
+record pouch-phase1 / foil_trimmed: HTTP 200
+record pouch-phase1 / welded: HTTP 200
+record pouch-phase1 / assembly: HTTP 200
+record pouch-phase1 / packaged: HTTP 200
+record pouch-phase1 / finished: HTTP 200
+record pouch-phase1 / pouch_formed: HTTP 200
+record pouch-phase1 / loaded: HTTP 200
+record pouch-phase1 / sealed: HTTP 422
+record pouch-phase1 / trimmed: HTTP 422
+record pouch-phase1 / folded: HTTP 422
+record pouch-phase1 / film_formed: HTTP 200
+record pouch-phase1 / assembly_loaded_open: HTTP 200
+record pouch-phase1 / package_closed: HTTP 200
+record pouch-phase1 / tab_sealed: HTTP 200
+record pouch-phase1 / gas_sealed: HTTP 200
+record pouch-phase1 / final_sealed: HTTP 200
+record pouch-phase1 / package_trimmed: HTTP 200
+record pouch-phase1 / package_folded: HTTP 200
+verified pouch-phase1: 21 live byte comparisons
+┌─────────┬──────────────────────┬──────────┬─────────────────┬─────────────┬──────────────┬─────────────────┬─────────────┬───────────┬────────────┐
+│ (index) │ name                 │ rawBytes │ normalizedBytes │ packedBytes │ rawGzipBytes │ packedGzipBytes │ uniqueParts │ successes │ rejections │
+├─────────┼──────────────────────┼──────────┼─────────────────┼─────────────┼──────────────┼─────────────────┼─────────────┼───────────┼────────────┤
+│ 0       │ 'demo'               │ 2164328  │ 2163553         │ 1135887     │ 384328       │ 175407          │ 27          │ 8         │ 13         │
+│ 1       │ 'pouch-process'      │ 5473037  │ 5471973         │ 2520060     │ 926954       │ 362180          │ 78          │ 13        │ 8          │
+│ 2       │ 'process-tooling-r4' │ 11301584 │ 11300234        │ 5993999     │ 1782286      │ 771494          │ 123         │ 18        │ 3          │
+│ 3       │ 'pouch-phase1'       │ 10930953 │ 10929588        │ 5617523     │ 1779659      │ 768793          │ 123         │ 18        │ 3          │
+└─────────┴──────────────────────┴──────────┴─────────────────┴─────────────┴──────────────┴─────────────────┴─────────────┴───────────┴────────────┘
+vite v7.2.2 building client environment for recorded-preview...
+transforming...
+✓ 243 modules transformed.
+rendering chunks...
+computing gzip size...
+.preview-build-RIVSDz/site/assets/pouch-process-Cq6DgPMU.png         7.58 kB
+.preview-build-RIVSDz/site/assets/demo-C05FfxtI.png                 10.10 kB
+.preview-build-RIVSDz/site/assets/pouch-phase1-DT1iKBna.png         12.54 kB
+.preview-build-RIVSDz/site/assets/process-tooling-r4-CEKDXu7j.png   13.26 kB
+.preview-build-RIVSDz/site/index.html                               19.47 kB │ gzip:   5.84 kB
+.preview-build-RIVSDz/site/assets/index-COjEtVPF.css                26.45 kB │ gzip:   6.69 kB
+.preview-build-RIVSDz/site/assets/records-PrxMDBgW.js                2.88 kB │ gzip:   1.43 kB
+.preview-build-RIVSDz/site/assets/index-CaHllwas.js                981.85 kB │ gzip: 265.58 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 2.97s
+{
+  "commit": "ec14562ff50f51155fbf3359840b59f8f8b8a092",
+  "stats": [
+    {
+      "name": "demo",
+      "rawBytes": 2164328,
+      "normalizedBytes": 2163553,
+      "packedBytes": 1135887,
+      "rawGzipBytes": 384328,
+      "packedGzipBytes": 175407,
+      "uniqueParts": 27,
+      "successes": 8,
+      "rejections": 13
+    },
+    {
+      "name": "pouch-process",
+      "rawBytes": 5473037,
+      "normalizedBytes": 5471973,
+      "packedBytes": 2520060,
+      "rawGzipBytes": 926954,
+      "packedGzipBytes": 362180,
+      "uniqueParts": 78,
+      "successes": 13,
+      "rejections": 8
+    },
+    {
+      "name": "process-tooling-r4",
+      "rawBytes": 11301584,
+      "normalizedBytes": 11300234,
+      "packedBytes": 5993999,
+      "rawGzipBytes": 1782286,
+      "packedGzipBytes": 771494,
+      "uniqueParts": 123,
+      "successes": 18,
+      "rejections": 3
+    },
+    {
+      "name": "pouch-phase1",
+      "rawBytes": 10930953,
+      "normalizedBytes": 10929588,
+      "packedBytes": 5617523,
+      "rawGzipBytes": 1779659,
+      "packedGzipBytes": 768793,
+      "uniqueParts": 123,
+      "successes": 18,
+      "rejections": 3
+    }
+  ],
+  "deployment": {
+    "files": 13,
+    "bytes": 16344278,
+    "max": {
+      "path": "preview/process-tooling-r4.json",
+      "bytes": 5993999
+    }
+  }
+}
+Verified static preview: dist-preview/

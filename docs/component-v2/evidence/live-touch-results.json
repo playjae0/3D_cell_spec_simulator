@@ -1,0 +1,25 @@
+{
+  "actions": [
+    {
+      "field": "processTooling.poles.positive.tools.welded.horn.pitchU",
+      "before": "0.8",
+      "after": "1",
+      "datum": "공칭 접촉 / 치끝 면 · 치끝 0.000 / 치근 0.200 mm · 69개 · 접촉부 요철만 · 바디 미정 · 압흔/압착 해석 아님"
+    },
+    {
+      "field": "processTooling.poles.positive.tools.welded.anvil.height",
+      "before": "0.15",
+      "after": "0.3",
+      "datum": "공칭 접촉 / 치끝 면 · 치끝 0.000 / 치근 -0.300 mm · 69개 · 접촉부 요철만 · 바디 미정 · 압흔/압착 해석 아님"
+    }
+  ],
+  "viewport": [
+    1194,
+    834
+  ],
+  "narrow": [
+    600,
+    900
+  ],
+  "errors": []
+}

@@ -1,0 +1,35 @@
+{
+  "appCommit": "ec14562ff50f51155fbf3359840b59f8f8b8a092",
+  "version": {
+    "id": "appgprj_6afe452d626881918331588ca0133c4a~appgver_279bc62b7eac8191b74e1e5614c56df1",
+    "project_id": "appgprj_6afe452d626881918331588ca0133c4a",
+    "version_number": 5,
+    "source": {
+      "commit_sha": "1fdac287924ffde764cdb851ee920c8c957bb8bd"
+    },
+    "archive_storage": {
+      "archive_format": "tar",
+      "sediment_file_id": "file_000000008c5c821181d2bd0cf1e5412a",
+      "content_hash": "sha256:ad434440d8b3688edada131a779b9f745e9df74ceb8b34aeeda4b0e1077f60ca",
+      "size_bytes": 16363520,
+      "file_count": 14
+    },
+    "screenshot_url": null,
+    "deployment_id": null
+  },
+  "deployment": {
+    "id": "appgdep_6afea7662a748191b5667b35e41ff182",
+    "project_id": "appgprj_6afe452d626881918331588ca0133c4a",
+    "title": "파우치 셀 · 공정 한눈에 보기",
+    "version_id": "appgprj_6afe452d626881918331588ca0133c4a~appgver_279bc62b7eac8191b74e1e5614c56df1",
+    "type": "publish",
+    "status": "succeeded",
+    "url": "https://pouch-cell-phase1.goodlycurio3.chatgpt.site",
+    "has_mcp": false,
+    "screenshot_asset_pointer": null,
+    "provider_deployment_id": "release---6afe475fed208191808e61b47e79b182",
+    "failure_message": null,
+    "env_set_revision": 0,
+    "updated_at": "2026-11-19T07:38:29.651307+00:00"
+  }
+}

@@ -12,10 +12,13 @@ import {
   productFromIntake,
   reconcileProject,
 } from "../intake/adapter.js";
+import { canReviewStage } from "../data/stages.js";
 import { validateProject } from "../data/project.js";
 const clone = (x) => structuredClone(x);
 export function comparisonSnapshot(source, stage) {
   const p = reconcileProject(clone(source));
+  if (!canReviewStage(p.product, stage))
+    throw Error("이 모델의 파우치 공정은 열린 두 컵부터 이어집니다. 두 장 필름 공정은 기존 파우치 예제를 사용하세요.");
   p.stage = stage;
   if (p.intake) {
     if (!p.intake.requestedStages.includes(stage))
@@ -26,8 +29,9 @@ export function comparisonSnapshot(source, stage) {
   return p;
 }
 export class ComparisonSession {
-  constructor(compute) {
+  constructor(compute, cacheKey = () => undefined) {
     this.compute = compute;
+    this.cacheKey = cacheKey;
     this.generation = 0;
     this.cache = new Map();
     this.pending = new Map();
@@ -40,7 +44,7 @@ export class ComparisonSession {
     this.result = null;
   }
   async model(project) {
-    const key = JSON.stringify(canonical([project.product, project.stage]));
+    const key = this.cacheKey(project) ?? JSON.stringify(canonical([project.product, project.stage]));
     if (this.cache.has(key)) return clone(this.cache.get(key));
     if (!this.pending.has(key)) {
       const task = this.tail

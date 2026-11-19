@@ -1,3 +1,11 @@
+import { mountComponentScenes, populateComponentCards } from "./components/workbench.js";
+import { placementField } from "./components/contract.js";
+import { fieldsForObject, get as getToolField, set as setToolField } from "./tooling/contract.js";
+import { components, mountComponents, mountModelChoices, ownerForPath } from "./overview/catalog.js";
+import { createPartTree } from "./overview/part-tree.js";
+import { drawThumbnail, overviewFrame } from "./overview/thumbnail.js";
+import { detailImage } from "./overview/part-images.js";
+import { stageCode, stageGroups, mountOverview } from "./overview/panel.js";
 import { mountTooling } from "./tooling/panel.js";
 import {
   editorGroup,
@@ -8,8 +16,9 @@ import {
   fieldUnit,
 } from "./data/editor-targets.js";
 import { viewAvailability } from "./viewer/presentation.js";
-import pouchDemo from "../examples/pouch-process.json" with { type: "json" };
-import { stageContract, assemblyRank } from "./data/stages.js";
+import { previewExamples } from "./preview/examples.js";
+import { designIdentity } from "./preview/identity.js";
+import { stageContract, assemblyRank, canReviewStage } from "./data/stages.js";
 import { rigidPoint } from "./geometry/material.js";
 import { mountComparison } from "./models/compare-panel.js";
 import { basicMeasurements } from "./annotations/sets.js";
@@ -19,7 +28,6 @@ import { reconcileProject, productFromIntake } from "./intake/adapter.js";
 import { stableId } from "./intake/contract.js";
 import "./style.css";
 import {
-  initial,
   clone,
   stages,
   parseProject,
@@ -42,8 +50,10 @@ import { inspectLegacy, migrateV2 } from "./data/migration.js";
 import { evaluate, inspection } from "./annotations/measure.js";
 import { rebuild, exportStep, engineHealth } from "./geometry/client.js";
 import { RebuildQueue } from "./geometry/queue.js";
+
 import { Viewer } from "./viewer/viewer.js";
 import { withAnchors, anchorPoint } from "./annotations/anchors.js";
+const previewBuild = import.meta.env.MODE === "recorded-preview";
 const $ = (id) => document.getElementById(id),
   esc = (x) =>
     String(x ?? "").replace(
@@ -58,13 +68,15 @@ const $ = (id) => document.getElementById(id),
         })[c],
     );
 let toolingPreview = false;
-let state = initial(),
+let state = previewExamples["pouch-phase1"](),
   draft = clone(state.product),
   targetStage = state.stage,
   model = null,
   dirty = false,
   busy = false,
   live = false,
+  preview = null,
+  ready = false,
   selected = null,
   selectedFeature = null,
   activePath = null,
@@ -76,7 +88,7 @@ let state = initial(),
   editGroup = null,
   lastHistoryGroup = null,
   replacement = null;
-state.measurements = demoMeasurements(state.stage);
+state.measurements = demoMeasurements(state.stage, state.product);
 const history = new History();
 const viewer = new Viewer($("viewport"), {
   onSelect: (...hit) => { if (!toolingPreview) selectPart(...hit); },
@@ -106,6 +118,14 @@ const viewer = new Viewer($("viewport"), {
   },
   onEdit: hit => { if (!toolingPreview) openDirect(hit); },
 });
+const tree = createPartTree($("parts"));
+let selectedGroup = null;
+let pageName = "parts", component = "welded", componentSide = "positive", drawingGeneration = 0;
+const pageViews = { product:"overview", parts:"overview" };
+const inComponent = () => pageName === "parts" && pageViews.parts === "detail";
+const basicComponent = () => ["tab","tab_preweld","tab_trimmed","lead","tapes","leadFilm"].includes(component) ||
+  (component==="pouch" && !state.product.processTooling);
+let ownerTarget = null;
 const inspectionTools = mountInspection({
   getProject: () => state,
   getModel: () => model,
@@ -136,9 +156,12 @@ const inspectionTools = mountInspection({
 });
 let focusRestore = null;
 $("renderer-mode").textContent = viewer.mode;
+function previewLabel() {
+  return "읽기 전용 프리뷰 · 사전 계산 형상(" + preview.manifest.sourceCommit.slice(0, 7) + ")";
+}
 function status(message, type = "", details) {
   $("diagnostics").className = type;
-  $("status").textContent = message;
+  $("status").textContent = preview ? previewLabel() + " · " + message : message;
   $("revision").textContent = "REV " + appliedRevision;
   if (details !== undefined) $("messages").textContent = details;
 }
@@ -146,14 +169,21 @@ function setDirty(value) {
   dirty = value;
   const pending = dirty || busy || queue.pending;
   $("dirty-state").textContent = busy
-    ? "CAD 계산 중 · 화면은 마지막 확정 형상"
+    ? (preview ? "기록 조회 중" : "CAD 계산 중") + " · 화면은 마지막 확정 형상"
     : dirty
       ? "예상 변경 · 아직 CAD에 확정되지 않았습니다."
-      : "입력과 확정 CAD 형상이 일치합니다.";
+      : preview ? "기록 형상과 일치합니다." : "입력과 확정 CAD 형상이 일치합니다.";
   for (const id of ["save", "step"]) $(id).disabled = !live || !!pending;
-  $("apply").disabled = !live;
-  $("undo").disabled = !history.undoList.length && !dirty;
-  $("redo").disabled = !history.redoList.length;
+  for (const id of ["apply", "auto-rebuild", "edit-selection", "models"])
+    $(id).disabled = !live;
+  $("open").disabled = !ready || !!preview;
+  $("compare").disabled = !(live || preview);
+  $("stage").disabled = !ready;
+  $("discard").disabled = !!preview;
+
+  $("undo").disabled = (!!preview && busy) || (!history.undoList.length && !dirty);
+  $("redo").disabled = (!!preview && busy) || !history.redoList.length;
+  $("choose-model").disabled = !(live || preview) || busy || dirty;
 }
 function startEdit(path) {
   if (!editGroup || editGroup.path !== path)
@@ -167,24 +197,32 @@ function nextProject() {
     stage: targetStage,
   });
 }
+async function compute(p, revision, meta) {
+  validateProject(p);
+  if (meta?.overviewCard) {
+    const result = overview.acceptedResult(p);
+    if (result) return result;
+  }
+  if (live) return rebuild(p, revision);
+  if (preview) return preview.model(p);
+  throw Error("읽기 전용 · 실시간 CAD 서버 연결 필요");
+}
 const queue = new RebuildQueue({
-  compute: async (p, revision) => {
-    validateProject(p);
-    return rebuild(p, revision);
-  },
+  compute,
   onStart: () => {
     busy = true;
-    setDirty(true);
+    setDirty(!preview);
     status(
-      "실시간 CAD 계산 중…",
+      preview ? "기록 조회 중…" : "실시간 CAD 계산 중…",
       "busy",
-      "화면은 마지막 확정 형상입니다. 주황 치수는 예상 변경입니다.",
+      preview ? "화면은 마지막 확정 형상입니다." : "화면은 마지막 확정 형상입니다. 주황 치수는 예상 변경입니다.",
     );
   },
   onAccept: (result, job) => {
     toolingPreview = false;
     const meta = job.meta,
       changedStage = state.stage !== job.payload.stage;
+    if (meta.historyAction) history[meta.historyAction](meta.before);
     if (meta.record !== false && meta.group !== lastHistoryGroup) {
       history.push(meta.before || state);
       lastHistoryGroup = meta.group;
@@ -203,29 +241,47 @@ const queue = new RebuildQueue({
     targetStage = state.stage;
     draft = clone(state.product);
     model = withAnchors(result, state.anchors);
+    if (meta.replace) selectedGroup=null;
+    const closedGroups=Object.keys(state.view.groupHidden || {});
+    for(const part of model.parts){
+      if(closedGroups.includes(part.id.split(".")[0]) && !state.view.hidden.includes(part.id)) state.view.hidden.push(part.id);
+    }
+    if(selectedGroup)viewer.select(null,model.parts.filter(p=>p.id.split(".")[0]===selectedGroup).map(p=>p.id));
+    else if(meta.replace)viewer.select(selected);
     appliedRevision = job.revision;
     busy = false;
     setDirty(false);
     viewer.setModel(model, state);
     if (meta.replace && state.view.camera) viewer.restore(state.view.camera);
-    if (meta.fit) viewer.fit();
+    if (meta.fit && !$("process-detail").hidden) viewer.fit();
     if (syncTargets() || changedStage || meta.replace) renderFields();
     else syncFieldValues();
     syncUI();
     renderCalculated();
     clearErrors();
     updateHighlight();
-    toolingTools.refresh();
+    if (!inComponent()) toolingTools.refresh();
+    overview.refresh(state, result);
+    updateReview(true);
     status(
-      "CAD 확정 · " + stages[state.stage],
+      (preview ? "기록 확정 · " : "CAD 확정 · ") + stages[state.stage],
       "",
       model.diagnostics.map((x) => x.message).join("\n"),
     );
   },
   onError: (error, job) => {
     busy = false;
-    setDirty(true);
-    showFieldError(job.meta.path, error.message);
+    if (preview) {
+      replacement = null;
+      draft = clone(state.product);
+      targetStage = state.stage;
+      setDirty(false);
+      renderFields();
+      syncUI();
+    } else {
+      setDirty(true);
+      showFieldError(job.meta.path, error.message);
+    }
     status("입력 미적용 · 마지막 확정 형상 유지", "error", error.message);
     updateHighlight();
   },
@@ -236,7 +292,7 @@ const queue = new RebuildQueue({
 });
 function request(next, meta = {}, immediate = true) {
   next = reconcileProject(next);
-  if (!live) {
+  if (!live && !preview) {
     status("읽기 전용 · 실시간 CAD 서버 연결 필요", "error");
     return;
   }
@@ -244,7 +300,7 @@ function request(next, meta = {}, immediate = true) {
   draft = clone(next.product);
   targetStage = next.stage;
   if (meta.replace) renderFields();
-  setDirty(true);
+  setDirty(!preview);
   const group = meta.group || "action-" + ++editCounter;
   queue.schedule(
     next,
@@ -260,6 +316,7 @@ function request(next, meta = {}, immediate = true) {
   if (immediate) queue.flush();
 }
 function changeField(path, value) {
+  if (!live) return;
   startEdit(path);
   writeField(draft, path, value);
   activePath = path;
@@ -280,12 +337,20 @@ function changeField(path, value) {
   );
 }
 function syncUI() {
-  for (const o of $("stage").options) if (stageContract[o.value]?.r4) o.disabled = !state.product.processTooling;
+  const modern = !!state.product.processTooling;
+  for (const option of $("stage").options) {
+    const contract = stageContract[option.value];
+    // An already saved R4 project at a compatibility stage remains reopenable.
+    const incompatible = !canReviewStage(state.product, option.value);
+    option.hidden = incompatible && option.value !== state.stage;
+    option.disabled = option.hidden || (!!contract.r4 && !preview && !modern);
+  }
   renderPouchResults();
   $("data-origin").textContent = state.demo
     ? "DEMO · 예시값"
     : "입력 모델 · 출처 확인";
   $("stage").value = state.stage;
+  renderStageNav();
   $("scene-title").textContent =
     stages[state.stage] +
     (state.modelIdentity
@@ -348,57 +413,28 @@ function renderParts() {
     tapes.length && tapes.every((p) => state.view.hidden.includes(p.id))
       ? "테이프 다시 표시"
       : "테이프 숨기기";
-  $("parts").replaceChildren();
-  for (const group of [
-    "stack",
-    "positive",
-    "negative",
-    "pouch",
-    "seal",
-    "tool",
-  ]) {
-    const ps = model.parts.filter((p) => p.id.split(".")[0] === group);
-    if (!ps.length) continue;
-    const head = document.createElement("div");
-    head.className = "part-group";
-    head.textContent = {
-      stack: "ASSEMBLY / 적층체",
-      positive: "POSITIVE / 양극 독립 변수",
-      negative: "NEGATIVE / 음극 독립 변수",
-      pouch: "POUCH / 외장과 경계",
-      seal: "SEAL / 제품 공칭 실링 영역",
-      tool: "TOOL / 공구 작업면",
-    }[group];
-    $("parts").append(head);
-    for (const p of ps) {
-      const row = document.createElement("div");
-      row.className = "part-row" + (p.id === selected ? " selected" : "");
-      const check = document.createElement("input");
-      check.type = "checkbox";
-      check.checked = !state.view.hidden.includes(p.id);
-      check.setAttribute("aria-label", p.name + " 표시");
-      check.onchange = () => {
-        state.view.hidden = state.view.hidden.filter((x) => x !== p.id);
-        if (!check.checked) state.view.hidden.push(p.id);
-        refreshView();
-      };
-      const swatch = document.createElement("span");
-      swatch.className = "swatch";
-      swatch.style.background = p.color;
-      const button = document.createElement("button");
-      button.textContent = p.name.replace(/^(양극|음극) · /, "");
-      button.onclick = () => selectPart(p.id);
-      row.append(check, swatch, button);
-      $("parts").append(row);
+  tree.render({ parts:model.parts, view:state.view, selected, selectedGroup, select:selectPart,
+    refresh:refreshView, redraw:renderParts, selectGroup(group) {
+      selectedGroup=group; selected=selectedFeature=activePath=null;
+      viewer.selectedFeature=null; viewer.setHighlight(null);
+      const ids=model.parts.filter(p=>p.id.split(".")[0]===group).map(p=>p.id);
+      viewer.select(null,ids);
+      $("selection-info").textContent=$("parts").querySelector(`[data-group="${group}"]`).textContent+" · "+ids.length+"개 부품";
+      renderParts();
     }
-  }
+  });
 }
 function selectPart(id, feature) {
+  selectedGroup = null;
+  tree.reveal(id);
   selected = id;
   selectedFeature = feature || null;
   viewer.select(id);
   viewer.selectedFeature = selectedFeature;
   renderParts();
+  const picked = model.parts.find(p => p.id === id);
+  $("selection-info").textContent = picked?.name || id;
+  if(inComponent()) {inspectionTools.related(id);return;}
   const editor = $("editor");
   editor.value = [...editor.options].some((o) => o.value === id)
     ? id
@@ -489,9 +525,12 @@ function syncTargets() {
   return changed;
 }
 function renderFields() {
-  const target = $("editor").value,
+  const standalone = inComponent() && basicComponent();
+  const target = standalone && ownerTarget ? ownerTarget : $("editor").value,
     side = editorGroup(target),
-    all = fieldsForTarget(draft, targetStage, target),
+    all = (standalone && component==='lead' ?
+      [...fieldsForTarget(draft,ownerStage(),componentSide+'.lead'),...fieldsForTarget(draft,ownerStage(),componentSide+'.leadFilm')] :
+      fieldsForTarget(draft, standalone ? ownerStage() : targetStage, target)).filter(b=>!standalone || !placementField(b.path)),
     container = $("fields");
   container.replaceChildren();
   if (!all.length) {
@@ -522,11 +561,19 @@ function renderFields() {
     if (first.itemId) summary.textContent += " / " + first.itemId;
     details.append(summary);
     for (const b of bs) {
+      const owner = ownerForPath(b.path);
+      if (owner && !inComponent() && !placementField(b.path)) {
+        const link = document.createElement("button");
+        link.className="owner-ref";link.dataset.ownerPath=b.path;
+        link.textContent=b.label+" · "+(b.value ?? "미정")+"  ↗ "+components[owner];
+        link.onclick=()=>openOwner(owner,b);
+        details.append(link);continue;
+      }
       const row = document.createElement("div");
       row.className = "field";
       row.dataset.path = b.path;
       const label = document.createElement("label");
-      label.textContent = b.label;
+      label.textContent = b.label + (standalone && component==="tab_trimmed" && b.key==="gatheredLength" ? " · 절단 전" : "");
       const input = document.createElement(b.options ? "select" : "input");
       input.dataset.field = b.path;
       input.id = "field-" + b.path;
@@ -605,7 +652,9 @@ function renderFields() {
           }
         }
       else controls.append(input);
+      row.onclick = () => { activePath=b.path; updateHighlight(); };
       input.onfocus = () => {
+        if (!live) return;
         startEdit(b.path);
         activePath = b.path;
         updateHighlight();
@@ -633,6 +682,7 @@ function renderFields() {
         }
       };
       input.onkeydown = (e) => {
+        if (!live) return;
         if (e.key === "Enter") {
           e.preventDefault();
           queue.flush();
@@ -663,7 +713,9 @@ function renderFields() {
       remove.textContent = state.intake
         ? "이 영역 제외 · 부재로 기록"
         : "이 영역 삭제";
+      remove.disabled = !live;
       remove.onclick = () => {
+        if (!live) return;
         if (state.intake)
           draft[side][first.section].find(
             (x) => x.id === first.itemId,
@@ -689,6 +741,7 @@ function renderFields() {
       if (assemblyRank(targetStage) >= min) {
         const add = document.createElement("button");
         add.textContent = title + " 추가";
+        add.disabled = !live;
         add.onclick = () => {
           if (state.intake) {
             status(
@@ -718,6 +771,16 @@ function renderFields() {
       renderCalculated();
     }
   }
+  if(!inComponent() && draft.processTooling) {
+    const box=document.createElement('details'),summary=document.createElement('summary');summary.textContent='공구 조립 배치 · 제품 기준';box.append(summary);
+    for(const f of fieldsForObject(draft.processTooling,'processTooling').filter(f=>placementField(f.path))){
+      const row=document.createElement('label');row.className='field';row.textContent=f.path;
+      const input=document.createElement('input');input.type='number';input.step='any';input.value=f.value;input.dataset.assemblyField=f.path;input.disabled=!live;
+      input.onchange=()=>{if(live)changeField(f.path,input.valueAsNumber);};row.append(input);box.append(row);
+    }
+    container.append(box);
+  }
+
 }
 function renderCalculated() {
   const box = $("derived-values");
@@ -746,7 +809,7 @@ function renderCalculated() {
       " · " +
       (v.valid ? v.value.toFixed(3) + " mm" : "현재 상태 없음") +
       " ↗";
-    button.disabled = !v.valid;
+    button.disabled = !live || !v.valid;
     button.onclick = () => openDirect({ measurement: m });
     box.append(button);
   }
@@ -784,6 +847,7 @@ function focusField(path, focus = true) {
   updateHighlight();
 }
 function updateHighlight() {
+  if(inComponent()){if(activePath)componentScenes.selectField(activePath);return;}
   const b = activePath && bindingFor(draft, targetStage, activePath);
   for (const row of document.querySelectorAll(".field"))
     row.classList.toggle("active-field", row.dataset.path === activePath);
@@ -1236,6 +1300,7 @@ function renderMeasurements() {
     ]) {
       const b = document.createElement("button");
       b.textContent = text;
+      if (text === "원인 입력 편집") b.disabled = !live;
       b.onclick = fn;
       actions.append(b);
     }
@@ -1265,7 +1330,6 @@ function renderMeasurements() {
 }
 function tab(which) {
   $("tooling-pane").hidden = which !== "tooling";
-  $("tooling-tab").classList.toggle("active", which === "tooling");
   document.body.classList.toggle("tooling-open", which === "tooling");
   window.dispatchEvent(new Event("resize"));
   if (which === "measure") {
@@ -1308,6 +1372,7 @@ $("editor").onchange = () => {
   updateHighlight();
 };
 $("apply").onclick = () => {
+  if (!live) return;
   if (queue.pending) {
     queue.pending.meta.automatic = true;
     queue.flush();
@@ -1417,7 +1482,7 @@ $("add-selected-dim").onclick = () => {
 };
 $("field-to-dim").onclick = () => activePath && addFieldDimension(activePath);
 $("show-all").onclick = () => {
-  state.view.hidden = [];
+  state.view.hidden = []; delete state.view.groupHidden;
   refreshView();
 };
 $("tape-toggle").onclick = () => {
@@ -1568,7 +1633,7 @@ function download(blob, name) {
   setTimeout(() => URL.revokeObjectURL(url), 1500);
 }
 $("save").onclick = () => {
-  if (dirty || busy) return;
+  if (!live || dirty || busy) return;
   try {
     state = reconcileProject(state);
     state.view.camera = viewer.getCamera();
@@ -1582,8 +1647,9 @@ $("save").onclick = () => {
     status("저장 실패", "error", e.message);
   }
 };
-$("open").onclick = () => $("file").click();
+$("open").onclick = () => { if (ready && !preview) $("file").click(); };
 $("file").onchange = async (e) => {
+  if (preview || !ready) return;
   const file = e.target.files[0];
   if (!file) return;
   try {
@@ -1615,22 +1681,22 @@ $("step").onclick = async () => {
     setDirty(dirty);
   }
 };
-$("undo").onclick = () => {
-  queue.invalidate();
-  const next = history.undo(state);
-  if (next) {
-    editGroup = null;
-    request(next, { record: false, replace: true });
-  } else discard();
-};
-$("redo").onclick = () => {
-  queue.invalidate();
-  const next = history.redo(state);
-  if (next) {
-    editGroup = null;
-    request(next, { record: false, replace: true });
+function replayHistory(action) {
+  if (preview) {
+    const entries = action === "undo" ? history.undoList : history.redoList;
+    const next = entries.at(-1);
+    if (next) request(clone(next), { record: false, replace: true, historyAction: action });
+    return;
   }
-};
+  queue.invalidate();
+  const next = history[action](state);
+  if (next) {
+    editGroup = null;
+    request(next, { record: false, replace: true });
+  } else if (action === "undo") discard();
+}
+$("undo").onclick = () => replayHistory("undo");
+$("redo").onclick = () => replayHistory("redo");
 let directContext = null;
 function openDirect(context) {
   if (!model || !live) return;
@@ -1705,7 +1771,7 @@ function openDirect(context) {
         ) + "px"
       : "15vh";
   dialog.showModal();
-  if (paths.length === 1) {
+  if (paths.length === 1 && !ownerForPath(paths[0])) {
     $("direct-value").focus();
     $("direct-value").select();
   }
@@ -1713,7 +1779,9 @@ function openDirect(context) {
 function setDirectField() {
   const path = $("direct-field").value,
     b = path && bindingFor(draft, targetStage, path);
-  $("direct-controls").hidden = !b;
+  const owner = path && ownerForPath(path);
+  $("direct-controls").hidden = !b || !!owner;
+  $("direct-apply").textContent = owner ? components[owner]+" 치수 열기" : "적용";
   $("direct-apply").disabled = !b;
   $("direct-basis").textContent = b
     ? "고정/방향: " + b.fixed + "\n기준: " + b.upstream + "\n영향: " + b.effect
@@ -1727,6 +1795,7 @@ function setDirectField() {
 }
 $("direct-field").onchange = setDirectField;
 $("direct-value").oninput = () => {
+  if (!live) return;
   const path = $("direct-field").value,
     b = bindingFor(draft, targetStage, path),
     value =
@@ -1767,9 +1836,13 @@ $("direct-editor").addEventListener("click", (e) => {
 });
 $("direct-form").onsubmit = (e) => {
   e.preventDefault();
+  if (!live) return;
   const path = $("direct-field").value,
     raw = $("direct-value").value,
     value = Number(raw);
+  if(path && ownerForPath(path)){
+    closeDirect();openOwner(ownerForPath(path),bindingFor(draft,targetStage,path));return;
+  }
   if (!path || raw.trim() === "" || !Number.isFinite(value)) {
     $("direct-error").textContent = "유한한 숫자를 입력하세요.";
     return;
@@ -1841,22 +1914,42 @@ $("migration-apply").onclick = () => {
   }
 };
 async function boot() {
+  setDirty(false);
+  let failure;
   try {
     const engine = await engineHealth();
     live = true;
     $("engine-state").textContent =
       "실시간 CadQuery " + engine.version + " · /api/rebuild 연결 확인";
-    renderFields();
-    request(state, { record: false, replace: true, fit: true });
   } catch (error) {
-    live = false;
+    failure = error;
+    if (previewBuild) {
+      try {
+        const { loadPreview } = await import("./preview/records.js");
+        preview = await loadPreview(new URL("./preview/", document.baseURI));
+        $("engine-state").textContent = previewLabel();
+        $("compare").textContent = "기록 형상 비교";
+      } catch (loadError) {
+        failure = loadError;
+      }
+    }
+  }
+  ready = true;
+  if (!preview) models = createModels();
+  renderFields();
+  setDirty(false);
+  if (live || preview) {
+    request(state, { record: false, replace: true, fit: true });
+    overview.available(true);
+    $("overview-engine").textContent = $("engine-state").textContent;
+  } else {
+    overview.available(false);
     $("engine-state").textContent = "읽기 전용 · CAD 서버 없음";
-    status("계산 서버 연결 필요", "error", error.message);
-    renderFields();
-    setDirty(false);
+    status("계산 서버 연결 필요", "error", failure.message);
   }
 }
-const models = mountModels({
+let models;
+const createModels = () => mountModels({
   getProject: () => clone(state),
   canOpen: () => live && !dirty && !busy && !queue.pending,
   notify: (message) => status(message),
@@ -1889,6 +1982,7 @@ const models = mountModels({
     renderFields();
     syncUI();
     renderCalculated();
+    if (result) overview.refresh(state, result);
     status(
       "모델 적용 · " +
         (state.modelIdentity?.modelId || state.product.id) +
@@ -1897,15 +1991,21 @@ const models = mountModels({
     );
   },
 });
-$("models").onclick = () => models.open();
+$("models").onclick = () => { if (live) models.open(); };
 const comparison = mountComparison({
   getProject: () => state,
-  getLibrary: () => models.library(),
-  canOpen: () => live && !dirty && !busy && !queue.pending,
+  getLibrary: () => models?.library(),
+  canOpen: () => !!(live || preview) && !!model && !dirty && !busy && !queue.pending,
+  compute,
+  isPreview: () => !!preview,
+  getRecordedSources: () => preview.manifest.designs.map(design => ({
+    label: design.modelId + (design.modelRevision ? " / " + design.modelRevision : ""),
+    project: previewExamples[design.name](),
+  })),
+  cacheKey: p => preview ? designIdentity(p) + ":" + p.stage : undefined,
   notify: status,
 });
 $("compare").onclick = () => comparison.open();
-boot();
 
 function previewInspection() {
   if (!model) return;
@@ -1953,10 +2053,6 @@ $("anchor-create").onclick = () => {
   addAnchor(a);
 };
 
-// Dedicated process entry is an explicit virtual model, never a legacy migration.
-$("pouch-example").onclick = () => {
-  request(clone(pouchDemo), { replace: true });
-};
 for (const [id, c] of Object.entries(stageContract))
   if (![...$("stage").options].some((o) => o.value === id))
     $("stage").append(new Option(c.label, id));
@@ -1993,6 +2089,26 @@ function renderPouchResults() {
     };
     el.append(button);
   }
+  for (const side of ["positive", "negative"]) {
+    if (!model.toolingResults?.seals[side]?.tabDimensions || !model.parts.some(p => p.id === "seal." + side)) continue;
+    const inspect = document.createElement("button");
+    inspect.textContent = (side === "positive" ? "양극" : "음극") + " 탭 실링 확대·치수";
+    inspect.onclick = () => inspectTabSeal(side);
+    el.prepend(inspect);
+    const dims=model.toolingResults.seals[side].tabDimensions;
+    for(const [key,label,value] of [["centerLength","중앙 L",dims.center?.length],["transitionR","전이 R",dims.radius?.radius]]){
+      if(!Number.isFinite(value))continue;
+      const ref=document.createElement("button");
+      ref.dataset.ownerPath="processTooling.sealBars."+side+"_upper.tabProfile."+key;
+      ref.textContent=(side==="positive"?"양극 ":"음극 ")+label+" "+value.toFixed(3)+" mm · 실링바 기준 보기";
+      ref.onclick=()=>{
+        openComponent("seal",side,true);
+        const input=$("r4-fields").querySelector(`[data-r4-field$=".tabProfile.${key}"]`);
+        input?.closest("label")?.click();
+      };
+      el.append(ref);
+    }
+  }
   const presets = $("pouch-section");
   presets.replaceChildren(new Option("리드 통과부 단면 선택", ""));
   for (const side of ["positive", "negative"]) {
@@ -2017,12 +2133,281 @@ $("pouch-section").onchange = () => {
   section();
 };
 
-const toolingTools = mountTooling({
-  project: () => state, model: () => model, stageLabel: s => stages[s] || s,
-  lock: v => setDirty(v),
-  preview: async p => { const next = reconcileProject(p); validateProject(next); return rebuild(next, 1000000 + ++editCounter); },
-  showPreview: (m,p) => { toolingPreview = true; viewer.setModel(m,p); viewer.fit(); status("R4 미리보기 · 적용 전 · " + stages[p.stage]); },
-  restore: () => { toolingPreview = false; if(model) {viewer.setModel(model,state); viewer.fit();} },
-  apply: (p,replace=false) => request(p,{replace:true,fit:true}),
+function inspectTabSeal(side) {
+  if (!model || dirty || busy) return;
+  const seal = model.parts.find(p => p.id === "seal." + side);
+  if (!seal) return;
+  state.view.hidden = [...new Set([...state.view.hidden, ...model.parts
+    .filter(p => p.id.startsWith("tool.seal.")).map(p => p.id)])];
+  state.view.hidden = state.view.hidden.filter(id => ![
+    seal.id, side+".lead", side+".leadFilm", "pouch.upper.pocket"
+  ].includes(id));
+  const x = (seal.bounds.min[0] + seal.bounds.max[0]) / 2;
+  const lead = model.parts.find(p => p.id === side+".lead");
+  const y = lead ? (lead.bounds.min[1] + lead.bounds.max[1]) / 2 : 0;
+  selectPart(seal.id);
+  openComponent("seal", side, true);
+  refreshView();
+  const viewport = $("viewport");
+  const aspect = Math.max(.4, viewport.clientWidth / Math.max(1, viewport.clientHeight));
+  viewer.restore({position:[x,y,400],target:[x,y,0],up:[0,1,0],zoom:Math.min(2.9, 2.4*aspect)});
+}
+
+const componentScenes=mountComponentScenes({
+  project:()=>state, product:()=>draft, editable:()=>live, reference:referenceModel,
+  stageLabel:s=>stages[s]||s, title:()=>components[component],
+  fieldValue:path=>basicComponent()?readField(draft,path):toolingTools.fieldValue(path), edit:async(path,v)=>{if(basicComponent()){changeField(path,v);queue.flush();}else await toolingTools.edit(path,v);},
+  selectField:path=>{const el=document.querySelector(`[data-r4-field="${path}"],[data-field="${path}"]`);document.querySelectorAll('.chosen-field').forEach(x=>x.classList.remove('chosen-field'));if(el)(el.closest('.field')||el.closest('label')).classList.add('chosen-field');},
+  pending:()=>dirty,
 });
-$("tooling-tab").onclick = () => tab("tooling");
+const toolingTools = mountTooling({
+  selectField:path=>componentScenes.selectField(path),
+  component: (m,selection)=>componentScenes.show(m,selection),
+  componentMode:()=>inComponent(),
+  project: () => state, model: () => model, stageLabel: s => stages[s] || s,
+  editable: () => live,
+  recorded: () => !!preview,
+  isOpen: () => inComponent() && !basicComponent(),
+  optionChanged(id,value) {
+    if(id==="r4-location")sealLocation=value;
+    if(id==="r4-location" && ["positive","negative"].includes(value))componentSide=value;
+    if(id==="r4-side")componentSide=value;
+    $("component-side").value=componentSide; applicationState();
+  },
+  reference: stage => referenceModel(stage),
+  openStage: stage => request({ ...state, stage }),
+  lock: v => setDirty(v),
+  preview: async p => {
+    if (!live) throw Error("로컬 CAD 서버에서 편집하세요.");
+    return compute(reconcileProject(p), 1000000 + ++editCounter);
+  },
+  showPreview: (m,p) => { toolingPreview = true; if (state.stage===p.stage) viewer.setModel(m,p); status("R4 미리보기 · 적용 전 · " + stages[p.stage]); },
+  restore: () => { toolingPreview = false; if(model) viewer.setModel(model,state); },
+  apply: p => { if (live) request({...p,stage:state.stage}, { replace: true }); },
+});
+const overview = mountOverview({
+  host: $("process-overview"),
+  details: $("process-detail"),
+  getProject: () => state,
+  calculate: project => compute(reconcileProject(project), 2000000 + ++editCounter),
+  selectStage: stage => {
+    pageViews.product="detail";
+    navigate("product","detail");
+    if (stage === state.stage && model) viewer.fit();
+    else request({ ...state, stage }, { fit: true, overviewCard: true });
+  },
+});
+function ownerStage() {
+  if(component==="tab")return "stacked";
+  if(component==="tab_preweld")return "preweld";
+  if(component==="tab_trimmed")return "foil_trimmed";
+  if(component==="lead" && state.product[componentSide].leadFilm.enabled==null)return "welded";
+  if (component==="pouch") return state.product.pouchProcess ? "pouch_formed" : "packaged";
+  if (component==="lead" && state.stage==="preweld" && state.product[componentSide].preweldLead.included)
+    return "preweld";
+  return "assembly";
+}
+
+function renderStageNav() {
+  const host=$("detail-processes");
+  host.replaceChildren();
+  for (const [name,entries] of stageGroups(state)) {
+    const group=document.createElement("details");
+    group.open=true;
+    const heading=document.createElement("summary");heading.textContent=name;group.append(heading);
+    for(const [id,label] of entries) {
+      const btn=document.createElement("button");
+      btn.dataset.process=id;btn.textContent=label+" · "+stageCode(id);
+      btn.setAttribute("aria-current",String(id===state.stage));
+      btn.onclick=()=>changeProcess(id);
+      group.append(btn);
+    }
+    host.append(group);
+  }
+}
+function changeProcess(id) {
+  if (!canNavigate() || id===state.stage) return;
+  request({...state,stage:id},{overviewCard:true});
+}
+function canNavigate() {
+  if (dirty || busy || toolingPreview) {
+    status("계산이 끝난 뒤 미적용 입력을 적용하거나 취소하세요.");return false;
+  }
+  return true;
+}
+let sealLocation="positive";
+let referenceKey, referenceCache=new Map();
+function referenceModel(stage) {
+  const key=designIdentity(state);
+  if(referenceKey!==key) {referenceKey=key;referenceCache=new Map();}
+  if(model?.stage===stage)return Promise.resolve(model);
+  const project=reconcileProject({...state,stage});
+  const cached=overview.acceptedResult(project);
+  if(cached)return Promise.resolve(cached);
+  if(!referenceCache.has(stage)){
+    const cache=referenceCache;
+    cache.set(stage,compute(project,3000000 + ++editCounter).catch(e=>{cache.delete(stage);throw e;}));
+  }
+  return referenceCache.get(stage);
+}
+function applicationState() {
+  const box=$("application-state");
+  box.hidden=!inComponent();
+  if(!inComponent())return;
+  const step=stageContract[state.stage].step ?? -1;
+  const loc=$("r4-location")?.value;
+  const when=loc==="gas"?4:loc==="final"?5:3;
+  let detail="";
+  if(component==="seal")detail=step<when ? "실링 적용 전" : step===7 ? "접힌 플랜지에 남은 실링" :
+    step===6 ? "절단 외곽과 잔류 실링" : "필름 위 공칭 접촉 영역";
+  else if(basicComponent())detail=model?.parts.some(p=>matchesComponent(p.id)) ? "제품에 부품 있음" : "해당 공정에 부품 없음";
+  else if(component==="pouch")detail=step<0?"파우치 적용 전":"제품에 파우치 적용";
+  else detail=component==="gathering" && assemblyRank(state.stage)>=2 || state.stage===component ||
+    component==="laser" && assemblyRank(state.stage)>=3 && state.product.processTooling?.poles[componentSide]?.method==="laser" ? "적용 공정" : "현재 공정에 공구 미적용";
+  box.textContent="적용 제품 · "+stages[state.stage]+" · "+detail+" · "+(preview?"읽기 전용 · CAD 기록":live?"실시간 CAD":"기록 없음");
+}
+function matchesComponent(id) {
+  if(component==="pouch")return id.startsWith("pouch.");
+  if(component==="lead")return id===componentSide+".lead"||id===componentSide+".leadFilm";
+  if(component==="tapes")return id.startsWith(componentSide+".tape.");
+  return id===componentSide+"."+(component.startsWith("tab")?"tab":component);
+}
+function openOwner(key,b) {
+  if(!canNavigate())return;
+  const side=["positive","negative"].includes(b.side)?b.side:componentSide;
+  openComponent(key,side);
+  const field=[...document.querySelectorAll("[data-field],[data-r4-field]")].find(el=>(el.dataset.field??el.dataset.r4Field)===b.path);
+  if(field){const details=field.closest("details");if(details)details.open=true;field.scrollIntoView({block:"nearest"});if(!field.disabled)field.focus();}
+  activePath=b.path;updateHighlight();
+}
+function openComponent(key, side=componentSide, fromSeal=false, kind) {
+  if(!canNavigate())return;
+  component=key==="leadFilm"?"lead":key; componentSide=side;
+  if(kind)toolingTools.kind(kind);
+  if(fromSeal || (key==="seal" && ["positive","negative"].includes(sealLocation)))sealLocation=side;
+  navigate("parts","detail");
+}
+function drawPartDetail() {
+  const token=++drawingGeneration;
+  const drawing=$("component-drawing");
+  drawing.replaceChildren();
+  const basic=basicComponent(), tool=!basic;
+  $("component-title").textContent=components[component];
+  $("component-choice").value=component;
+  $("component-polarity").hidden=component==="pouch" || component==="seal";
+  $("component-side").value=componentSide;
+  $("component-host").append(basic ? $("design-pane") : $("tooling-pane"));
+  $("design-pane").hidden=!basic;
+  $("tooling-pane").hidden=basic;
+  if(tool && !state.product.processTooling){
+    $("tooling-pane").hidden=true;drawing.textContent="현재 모델에 이 공구의 설계·CAD 기록이 없습니다.";return;
+  }
+  const refStage=basic?ownerStage():"film_formed";
+  if(basic){
+    const target=model?.parts.find(p=>matchesComponent(p.id));
+    ownerTarget=component==="pouch"?"pouch":target?.id ||
+      (component==="tapes"?componentSide+".tape."+state.product[componentSide].tapes[0]?.id:componentSide+"."+(component.startsWith("tab")?"tab":component));
+    if(basic){
+      if(target){tree.reveal(target.id); selectedGroup=null;selected=target.id;viewer.select(target.id);}
+      renderFields();
+      if(component.startsWith('tab') && component!=='tab' && draft.processTooling){
+        const path='processTooling.poles.'+componentSide+'.';
+        const extra=document.createElement('div');extra.className='foil-detail-inputs';
+        for(const [suffix,label,value] of [['gathering.depth','집속 침입 깊이',getToolField(draft,path+'gathering.depth')],...(component==='tab_trimmed'?[['foilCut.removedLength','가용접 포일 끝 절단량',getToolField(draft,path+'foilCut.removedLength')??0]]:[])]){
+          const row=document.createElement('label');row.textContent=label+' (mm)';const input=document.createElement('input');input.type='number';input.step='0.1';input.value=Number(value.toFixed(6));input.disabled=!live;input.dataset.field=path+suffix;input.setAttribute('aria-label',label);row.append(input);extra.append(row);
+          row.onclick=()=>componentScenes.selectField(path+suffix);
+          input.onchange=()=>{if(suffix.startsWith('foilCut')&&!draft.processTooling.poles[componentSide].foilCut)draft.processTooling.poles[componentSide].foilCut={removedLength:0};changeField(path+suffix,input.valueAsNumber);};
+        }
+        $('fields').append(extra);
+      }
+      if(component==="leadFilm"){
+        const pole=state.product[componentSide], ref=document.createElement("button");
+        ref.className="owner-ref";ref.dataset.ownerPath=componentSide+".lead.width";
+        ref.textContent="실런트 폭 "+(pole.lead.width+2*pole.leadFilm.overhang).toFixed(3)+" mm = 리드 폭 "+pole.lead.width+" + 2 × 돌출량 "+pole.leadFilm.overhang+" · 리드 폭 보기";
+        ref.onclick=()=>openOwner("lead",{side:componentSide,path:componentSide+".lead.width"});
+        drawing.append(ref);
+      }
+    }
+    referenceModel(refStage).then(m=>{
+      if(token!==drawingGeneration || !inComponent())return;
+      const parts=m.parts.filter(p=>matchesComponent(p.id));
+      if(!parts.length){drawing.textContent="단품 CAD 기록에 해당 부품 없음";return;}
+      componentScenes.show(m,{part:component,side:componentSide},{reset:true});
+      if(component==='lead'){
+       const pole=state.product[componentSide],note=document.createElement('p');
+       note.textContent=pole.leadFilm.enabled===true?'실런트 상대 시작 = '+(pole.leadFilm.start-pole.lead.start).toFixed(3)+' mm · 기존 형상 보존. 폭 = 리드 폭 + 2 × 돌출량':pole.leadFilm.enabled===false?'실런트 부재 · 원본 설정 유지':'실런트 미확정 · 원본 설정 유지';drawing.append(note);
+       if(pole.leadFilm.enabled===true){
+        const label=document.createElement('label');label.textContent='리드 시작 대비 실런트 시작 · 단품 내 상대 거리 (mm)';
+        const input=document.createElement('input');input.type='number';input.step='any';input.dataset.relativeFilmStart=componentSide;
+        input.value=pole.leadFilm.start-pole.lead.start;input.disabled=!live;
+        input.onchange=()=>changeField(componentSide+'.leadFilm.start',Number(input.value)+draft[componentSide].lead.start);
+        label.append(input);drawing.append(label);
+       }
+
+      }
+    }).catch(e=>{if(token===drawingGeneration)drawing.textContent=e.message;});
+  }
+  if(tool){
+    const mode=["preweld","welded"].includes(component)?"ultrasonic":component;
+    toolingTools.open(mode,componentSide,mode==="ultrasonic"?component:null,component==="seal"?sealLocation:null);
+  }
+  applicationState();
+}
+function updateReview(afterAccept=false) {
+  $("current-model").textContent=(state.modelIdentity?.modelId || state.product.id)+" / "+(state.modelIdentity?.revision || state.intake?.model?.revision || "개정 미지정");
+  $("page-product").setAttribute("aria-pressed",String(pageName==="product"));
+  $("page-parts").setAttribute("aria-pressed",String(pageName==="parts"));
+  const overviewMode=pageViews[pageName]==="overview";
+  $("page-overview").setAttribute("aria-pressed",String(overviewMode));
+  $("page-detail").setAttribute("aria-pressed",String(!overviewMode));
+  if(afterAccept && inComponent())drawPartDetail();
+  if(afterAccept && pageName==='parts' && pageViews.parts==='overview')populateComponentCards($('component-list'),{project:()=>state,reference:referenceModel});
+  applicationState();
+}
+function navigate(page,view) {
+  if(!canNavigate())return;
+  pageName=page;pageViews[page]=view;
+  const isPart=page==="parts",full=view==="overview";
+  $("component-overview").hidden=!(isPart && full);
+  $("component-scenes").hidden=!(isPart&&!full);
+  if(!(isPart&&!full))componentScenes.clear();
+  if(isPart&&full&&model)populateComponentCards($("component-list"),{project:()=>state,reference:referenceModel});
+  $("component-workbench").hidden=!(isPart && !full);
+  document.body.classList.toggle("component-detail",isPart&&!full);
+  document.body.classList.remove("tooling-open");
+  const inspector=document.querySelector(".inspector");
+  inspector.insertBefore($("tooling-pane"),$("measure-pane"));
+  inspector.insertBefore($("design-pane"),$("measure-pane"));
+  if(!isPart && full)overview.open();
+  else{
+    overview.showDetail();
+    $("process-detail").hidden=full;document.body.classList.toggle("overview-open",full);
+  }
+  if(inComponent() && model)drawPartDetail();
+  else if(inComponent())$("component-drawing").textContent="현재 모델의 확정 형상 또는 기록 없음";
+  else{drawingGeneration++;tab("design");if(model)renderFields();}
+  updateReview();window.dispatchEvent(new Event("resize"));
+}
+function initReview() {
+  mountModelChoices($("model-choices"),key=>{
+    if(!canNavigate())return;
+    $("model-picker").close();
+    navigate("product","overview");pageViews.parts="overview";
+    request(previewExamples[key](),{replace:true,fit:true});
+  });
+  $("choose-model").onclick=()=>{if(canNavigate())$("model-picker").showModal();};
+  $("close-model-picker").onclick=()=>$("model-picker").close();
+  for(const [key,title] of Object.entries(components))$("component-choice").append(new Option(title,key));
+  mountComponents($("component-list"),(key,side,kind)=>openComponent(key,side,false,kind));
+  $("component-choice").onchange=e=>openComponent(e.target.value);
+  $("component-side").onchange=e=>openComponent(component,e.target.value);
+  $("page-product").onclick=()=>navigate("product",pageViews.product);
+  $("page-parts").onclick=()=>navigate("parts",pageViews.parts);
+  $("page-overview").onclick=()=>navigate(pageName,"overview");
+  $("page-detail").onclick=()=>navigate(pageName,"detail");
+  $("open-seal").onclick=()=>openComponent("seal");
+  navigate("parts","overview");
+}
+
+initReview();
+boot();

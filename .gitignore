@@ -6,3 +6,6 @@ __pycache__/
 *.log
 wheelhouse/
 private-reference/
+
+dist-preview/
+.preview-build-*/

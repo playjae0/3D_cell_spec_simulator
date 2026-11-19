@@ -5,6 +5,7 @@ import cadquery as cq
 from process import ModelError, STAGE_CONTRACT
 from proof_pocket import pocket, roundwire
 from pouch_process import line_intervals, transform_model
+from tab_seal import continuous_paths, tab_face, edge_info, report_profile
 
 POLES=('positive','negative')
 def rect(l,w,x=0,y=0,z=0,r=0):
@@ -49,26 +50,41 @@ def validate_config(p):
             for kind,f in tools.items():
                 pre=side+'.'+stage+'.'+kind
                 check(all(f[k]>0 for k in ['length','width','knurlLength','knurlWidth','pitchU','pitchV','height']),pre+': 치수/피치/높이 양수 필요')
+                check(isinstance(f.get('bodyDepth',3),(int,float)) and not isinstance(f.get('bodyDepth',3),bool) and f.get('bodyDepth',3)>0,pre+': 지지 블록 깊이 양수 필요')
                 check(0<=f['cornerR']<min(f['length'],f['width'])/2,pre+': 외곽 R 범위 오류')
                 check(f['knurlLength']<=f['length'] and f['knurlWidth']<=f['width'],pre+': 너링 범위가 외곽보다 큽니다')
                 check(f['tooth'] in ['pyramid','ridge'],pre+': 치형 미지원')
-                check(f['knurlLength']/f['pitchU']*f['knurlWidth']/f['pitchV']<5000,pre+': 한 작업면의 표시 너링은 5000개 미만으로 설정하세요')
+                check(f['pitchU']>0 and f['pitchV']>0 and f['knurlLength']/f['pitchU']*f['knurlWidth']/f['pitchV']<5000,pre+': 한 작업면의 표시 너링은 5000개 미만으로 설정하세요')
+        removed=d.get('foilCut',{}).get('removedLength',0)
+        check(isinstance(removed,(int,float)) and not isinstance(removed,bool) and math.isfinite(removed) and removed>=0,side+': 포일 절단량은 0 이상의 유한수 필요')
         l=d['laser'];check(l['diameter']>0 and l['pitchX']>0 and l['pitchY']>0,side+': 레이저 직경/피치 양수 필요')
         check(all(isinstance(l[k],int) and 1<=l[k]<=50 for k in ['rows','columns']),side+': 행열 1–50 정수 필요')
         ids=[s['id'] for s in l['spots']];check(len(ids)==len(set(ids)) and len(ids)<=2500,side+': 스팟 ID 중복 또는 개수 초과')
     for f in q['sealBars'].values():
-        check(len(f['vertices'])>=3 and len(f['vertices'])<=100,f['id']+': 윤곽점 3–100개 필요')
+        if 'tabProfile' in f:
+            fields = ['centerLength', 'transitionR', 'centerWidth', 'outerWidth', 'startU', 'endU', 'centerOffset']
+            valid = f['location'] in POLES and isinstance(f['tabProfile'], dict) and all(
+                isinstance(f['tabProfile'].get(k), (float, int)) and not isinstance(f['tabProfile'][k], bool)
+                for k in fields)
+            check(valid, f['id'] + ': 탭측 접선 윤곽 입력 누락 또는 형식 오류')
+            if valid and not errors:
+                tab_face(f, p)
+        else:
+            check(3 <= len(f['vertices']) <= 100, f['id'] + ': 윤곽점 3–100개 필요')
         check(f['extra']['length']>0 and f['extra']['width']>0,f['id']+': 추가 타격 치수 양수 필요')
         check(f['relief']['length']>0 and f['relief']['depth']>=0,f['id']+': 상세 홈 치수 오류')
+    pose_value=p.get('pouchProcess',{}).get('assemblyPose',{})
+    check(not any(pose_value.values()), 'R4 한 장 필름: 수납 조립체는 셀 A/B/C 고정입니다. 비영 조립 배치는 아직 지원하지 않습니다.')
     a=q['packaging'];check(a['bridgeInnerR']>0,'브리지 R > 0 필요')
     check(q['sealBars']['final_upper']['v']<a['cutY']<q['sealBars']['gas_upper']['v'],'최종 실링선 < 절단선 < 가스방 외곽선 필요')
     check(a['foldR']>0 and 0<=a['foldAngle']<=120,'폴딩 R/각도 범위 오류')
     if errors:raise ModelError(errors)
 
-def resolved(p):
+def resolved(p, trimmed=False):
     out=deepcopy(p);q=out.pop('processTooling')
     for side in POLES:
         g=q['poles'][side]['gathering'];t=out[side]['tab'];top=g['topDatumZ']-g['depth']
+        if trimmed:t['axialShortening']+=q['poles'][side].get('foilCut',{}).get('removedLength',0)
         t['thickness']=top-g['bottomZ'];t['gatherZ']=(top+g['bottomZ'])/2
         if q['poles'][side]['method']=='laser':out[side]['joints']=[]
     return out
@@ -92,6 +108,17 @@ def welding(m,p,source,stage):
         if rank<2:continue
         e=pole['end'];L=p['stack']['length'];xyz=lambda x,y,z:[e*(L/2+entry+x),t['gatherY']+y,z]
         metric(m,'r4.'+side+'.residual',side+'.tab',xyz(0,0,bottom),xyz(0,0,top),side+' 집속 잔류 두께')
+        tab_part=next((v for v in m['parts'] if v['id']==side+'.tab'),None)
+        if tab_part is not None:
+            td=tab_part.setdefault('meta',{}).setdefault('dimensions',{})
+            fid='r4.'+side+'.gatheringDepth'
+            feature(m,fid+'.a',side+'.tab',xyz(0,0,g['topDatumZ']));feature(m,fid+'.b',side+'.tab',xyz(0,0,top))
+            td['gatheringDepth']={'a':fid+'.a','b':fid+'.b','value':g['depth'],'label':'집속 침입 깊이','field':'processTooling.poles.'+side+'.gathering.depth','basis':'상면 데이텀에서 집속 상면으로 · 하면 고정'}
+            cut=tab_part['meta'].get('foilCut',{})
+            if cut.get('applied'):
+                end=t['rootLength']-entry-t['axialShortening'];removed=cut['removedLength'];fid=side+'.tab.cut'
+                feature(m,fid+'.a',side+'.tab',xyz(end,0,t['gatherZ']));feature(m,fid+'.b',side+'.tab',xyz(end+removed,0,t['gatherZ']))
+                td['removedLength']={'a':fid+'.a','b':fid+'.b','value':removed,'field':'processTooling.poles.'+side+'.foilCut.removedLength','basis':'가용접 포일 끝에서 제거 · 집속 시작면과 뿌리 고정'}
         wstage='preweld' if rank==2 else 'welded';lead=pole['lead'];z=top if rank==2 else bottom if lead['contactSide']=='below' else top
         contact=rect(t['rootLength']-entry-t['axialShortening'],width,(t['rootLength']-entry-t['axialShortening'])/2)
         if rank>=3:
@@ -113,6 +140,49 @@ def welding(m,p,source,stage):
                     add_part(m,part,side+' '+kind+' 공칭 접촉 (접합/압흔 아님)',real,'#559ed0' if kind=='horn' else '#b467a5')
                     m['parts'][-1]['displayShape']=real.translate((0,0,top-toolZ+.012+(.002 if kind=='horn' else 0)))
                     c=hit.Center();feature(m,part+'.center',part,xyz(c.x,c.y,toolZ),kind='face')
+                from tool_teeth import generate
+                relief, centers = generate(f, kind)
+                relief=pose(relief,f).translate((entry,t['gatherY'],toolZ))
+                tooth_id=id+'.teeth'
+                a=math.radians(f['rotation']);c,s=math.cos(a),math.sin(a)
+                to_world=lambda u,v,w: xyz(f['x']+u*c-v*s,f['y']+u*s+v*c,toolZ+w)
+                root=f['height'] if kind=='horn' else -f['height']
+                origin=to_world(0,0,0)
+                dims={}
+                d=math.radians(f['direction']);dc,ds=math.cos(d),math.sin(d)
+                endpoints={
+                    'pitchU':((0,0,0),(f['pitchU']*dc,f['pitchU']*ds,0)),
+                    'pitchV':((0,0,0),(-f['pitchV']*ds,f['pitchV']*dc,0)),
+                    'height':((0,0,0),(0,0,root)),
+                    'length':((-f['length']/2,0,root),(f['length']/2,0,root)),
+                    'width':((0,-f['width']/2,root),(0,f['width']/2,root)),
+                    'knurlLength':((-f['knurlLength']/2,0,root),(f['knurlLength']/2,0,root)),
+                    'knurlWidth':((0,-f['knurlWidth']/2,root),(0,f['knurlWidth']/2,root)),
+                }
+                for key,(aa,bb) in endpoints.items():
+                    fid=tooth_id+'.'+key
+                    for suffix,v in [('a',aa),('b',bb)]:feature(m,fid+'.'+suffix,tooth_id,to_world(*v),kind='edge')
+                    dims[key]={'a':fid+'.a','b':fid+'.b','value':f[key],
+                               'field':'processTooling.poles.'+side+'.tools.'+wstage+'.'+kind+'.'+key}
+                meta={'dimensions':dims,'datum':{'name':'공칭 접촉 / 치끝 면','origin':origin,
+                    'parent':side+('.lead.' if rank>=3 and ((kind=='horn' and lead['contactSide']=='above') or (kind=='anvil' and lead['contactSide']=='below')) else '.tab.')+('top' if kind=='horn' else 'bottom'),
+                    'axisU':[e*c,s,0],'axisV':[-e*s,c,0],'normal':[0,0,1 if kind=='horn' else -1],
+                    'fixed':'치끝 접촉면 고정; 치근은 제품 반대 방향으로 높이만큼 이동',
+                    'rootZ':toolZ+root,'tipZ':toolZ},'toothCount':len(centers),
+                    'centers':[to_world(*v) for v in centers],
+                    'scope':'접촉부 요철만 · 바디 미정 · 압흔/압착 해석 아님',
+                    'arrayPolicy':'중심 정수 격자 · 전 피치 폭의 치근 · 완전한 치만 유지 · 치근 경계 접촉 허용',
+                    'revision':f['revision']}
+                add_part(m,tooth_id,side+' '+kind+' 실제 치형',place(relief,e,L),
+                         '#5b86db' if kind=='horn' else '#be79c8',meta=meta)
+                depth=f.get('bodyDepth',3.0);sgn=1 if kind=='horn' else -1
+                body_face=rect(f['length'],f['width'],r=f['cornerR']).translate((0,0,root))
+                body=cq.Solid.extrudeLinear(body_face.outerWire(),[],cq.Vector(0,0,sgn*depth))
+                body_id=id+'.body';da=body_id+'.depth.a';db=body_id+'.depth.b'
+                feature(m,da,body_id,to_world(0,0,root),kind='face');feature(m,db,body_id,to_world(0,0,root+sgn*depth),kind='face')
+                body_meta={'datum':{**meta['datum'],'backZ':toolZ+root+sgn*depth},'scope':'가상 지지 블록 · 치근부터 제품 반대 방향 · 실제 홀더/압착 해석 아님','dimensions':{'bodyDepth':{'a':da,'b':db,'value':depth,'field':'processTooling.poles.'+side+'.tools.'+wstage+'.'+kind+'.bodyDepth'}}}
+                add_part(m,body_id,side+' '+kind+' 지지 블록 · 예시',place(pose(body,f).translate((entry,t['gatherY'],toolZ)),e,L),'#88a5d6' if kind=='horn' else '#b695be',role='solid',meta=body_meta)
+                meta['scope']='치형 + 지지 블록 · 가상 예시 · 압흔/압착 해석 아님'
                 plans['tools'][kind]={'outer':paths(outer),'knurl':paths(knurl),'contact':paths(hit),'contactArea':hit.Area(),'surfaceZ':toolZ,'center':[hit.Center().x,hit.Center().y] if hit.Area()>1e-7 else None,'definition':deepcopy(f)}
         else:
             laser=cfg['laser'];r=laser['diameter']/2;rot=math.radians(laser['rotation']);co=math.cos(rot);si=math.sin(rot)
@@ -126,8 +196,10 @@ def welding(m,p,source,stage):
         report['plans'][side]=plans
 
 def seal_transform(face,f,p):
-    face=face.rotate((0,0,0),(0,0,1),f['rotation']).translate((f['u'],f['v'],0))
     loc=f['location']
+    pole = p.get(loc)
+    u = pole['tab']['gatherY'] + pole['lead']['offsetY'] if 'tabProfile' in f else f['u']
+    face=face.rotate((0,0,0),(0,0,1),f['rotation']).translate((u,f['v'],0))
     if loc in POLES:
         # (u,v)->(end*v,u). Workface normal is not used as polarity.
         face=face.rotate((0,0,0),(0,0,1),90)
@@ -146,6 +218,9 @@ def packaging(m,p,stage):
     if a['cutY']<=a['foldLineY']+a['foldR']*math.radians(a['foldAngle']):raise ModelError(['절단 후 남는 재료가 폴딩 호 길이보다 짧습니다'])
     reports=m['toolingResults'];reports['packaging']={'step':step,'open':opened,'bridgeWidth':bridge,'bridgeEdgeY':edge,'gasState':['열린 필름 여유','수납 · 열린 여유','닫힘 · 가스측 개구','탭 실링 · 가스측 개구','가스방 외곽 실링 · 몸체와 연통','최종 실링 · 가스방 격리','가스방 제거','절단 잔여 플랜지 폴딩'][step],'cutY':a['cutY'],'upperDepth':upper['depth'],'upperFloorR':upper['floorR'],'lowerDepth':lower['depth'],'lowerFloorR':lower['floorR'],'remainingFlange':a['cutY']-lower['openingWidth']/2}
     flangeFaces=[];fold_profiles={}
+    phase1 = any('tabProfile' in bar for bar in cfg['sealBars'].values())
+    cup_edge = a['cups']['lower']['y'] + lower['openingWidth'] / 2
+    seal_paths = continuous_paths if phase1 else paths
     for half in ['lower','upper']:
         h=q['sheets'][half];L,W,d,rf,rt,pr,film=[h[k] for k in ['openingLength','openingWidth','depth','floorR','rimR','planR','filmThickness']]
         cx=a['cups'][half]['x'];cy=a['cups'][half]['y']*(-1 if half=='upper' else 1)
@@ -177,6 +252,14 @@ def packaging(m,p,stage):
             ('planR',pr,[cx+L/2-pr,centerY+W/2,z],[cx+L/2-pr,centerY+W/2-pr,z])]:
             feature(m,part+'.'+key,part,point,kind='radius',value=value,center=center)
         feature(m,part+'.opening',part,[cx,centerY,z],kind='face',normal=[0,0,1 if opened or half=='lower' else -1])
+        dims={}
+        for key,aa,bb in [('openingLength',[cx-L/2,centerY,z],[cx+L/2,centerY,z]),('openingWidth',[cx,centerY-W/2,z],[cx,centerY+W/2,z]),('depth',[cx,centerY,z],[cx,centerY,z+sign*d]),('filmThickness',[cx,centerY,z+sign*d],[cx,centerY,z+sign*(d+film)])]:
+            fid=part+'.dimension.'+key
+            feature(m,fid+'.a',part,aa);feature(m,fid+'.b',part,bb)
+            dims[key]={'a':fid+'.a','b':fid+'.b','value':h[key],'field':'pouchProcess.sheets.'+half+'.'+key,'label':half+' '+key,'basis':'해당 컵 내면 림 고정 · 필름 외면은 법선 방향'}
+        for key in ['floorR','rimR','planR']:
+            dims[key]={'a':part+'.'+key,'b':part+'.'+key,'mode':'radius','value':h[key],'field':'pouchProcess.sheets.'+half+'.'+key,'label':half+' '+key,'basis':'바닥/림/평면 코너의 독립 내면 반경'}
+        next(x for x in m['parts'] if x['id']==part)['meta']['dimensions']=dims
     xmin=max(lower['blank']['xMinus'],upper['blank']['xMinus']);xmax=min(lower['blank']['xPlus'],upper['blank']['xPlus'])
     if step>=6:xmin=max(lower['cut']['xMinus'],upper['cut']['xMinus']);xmax=min(lower['cut']['xPlus'],upper['cut']['xPlus'])
     if opened:bs=box(xmax-xmin,bridge,t,(xmin+xmax)/2,edge-bridge/2,-R-t/2)
@@ -188,32 +271,78 @@ def packaging(m,p,stage):
         for side in POLES:
             pole=p[side];tab=pole['tab'];lf=pole['leadFilm'];center=pole['end']*(p['stack']['length']/2+tab['gatherDistance']+lf['start']+lf['length']/2)
             reports['packaging'][side+'SealantX']=center
+    if phase1:
+        report = reports['packaging']
+        report['remainingFlange'] = a['cutY'] - cup_edge
+        report['gasAllowance'] = lower['blank']['yPlus'] - cup_edge
+        report['filmEdgeY'] = a['cutY'] if step >= 6 else lower['blank']['yPlus']
+        if step >= 6:
+            report['foldTip'] = mapped_point(fold_profiles, [0, a['cutY'], R+t])
     if opened:return
-    film=flangeFaces[0].intersect(flangeFaces[1]);seals={}
+    film=flangeFaces[0].intersect(flangeFaces[1]);seals={};tab_edges={}
     for key,f in cfg['sealBars'].items():
         loc=f['location'];required=3 if loc in POLES else 4 if loc=='gas' else 5
-        base=outline(f);extra=f['extra'];union=base
+        if 'tabProfile' in f:
+            base, tab_edges[key] = tab_face(f, p)
+        else:
+            base = outline(f)
+        extra=f['extra'];union=base
         if extra['enabled']:union=base.fuse(rect(extra['length'],extra['width'],extra['u'],extra['v'])).clean()
         relief=f['relief'];working=union
         if relief['enabled'] and relief['depth']>0:
             bb=union.BoundingBox();working=union.cut(rect(relief['length'],bb.ylen+2,relief['u'],(bb.ymax+bb.ymin)/2))
         projected=seal_transform(working,f,p);seals[key]=projected
-        reports['seals'][key]={'base':paths(base),'union':paths(union),'working':paths(working),'projected':paths(projected),'projectionArea':projected.Area(),'baseArea':base.Area(),'definition':deepcopy(f),'active':step>=required}
+        reports['seals'][key]={'base':seal_paths(base),'union':seal_paths(union),'working':seal_paths(working),'projected':seal_paths(projected),'projectionArea':projected.Area(),'baseArea':base.Area(),'definition':deepcopy(f),'active':step>=required}
+        bb=union.BoundingBox()
+        center=f.get('tabProfile',{}).get('centerOffset',(bb.xmin+bb.xmax)/2)
+        section_points=[('central',center),('outside-left',bb.xmin+1),('outside-right',bb.xmax-1),('relief',relief['u'])]
+        sections=[]
+        for label,u in section_points:
+            intervals=line_intervals(slab(union),(u,0,.05),(0,1,0))
+            depth=relief['depth'] if relief['enabled'] and abs(u-relief['u'])<relief['length']/2 else 0
+            sections.append({'id':label,'u':u,'direction':[0,1,0],'intervals':intervals,
+                'profile':[[[a,depth],[b,depth]] for a,b in intervals],
+                'width':sum(b-a for a,b in intervals),'recessDepth':depth,
+                'scope':'공칭 작업면 단면 · 가상 예시 · 공구 바디/제품 압착 결과 아님'})
+        reports['seals'][key]['crossSections']=sections
+        if key in tab_edges:
+            reports['seals'][key]['tabDimensions'] = {
+                name: edge_info(edge) for name, edge in tab_edges[key].items()
+            }
         if step>=required and step<6 and projected.Area()>1e-8:
             z=R+t+.02 if f['half']=='upper' else -R-t-.02
             add_part(m,'tool.seal.'+key,key+' 실링바 작업면',projected.translate((0,0,z)),'#688dcc' if f['half']=='upper' else '#b481bc')
+    if phase1:
+        gas = seals['gas_upper'].intersect(seals['gas_lower'])
+        final = seals['final_upper'].intersect(seals['final_lower'])
+        if gas.Area() < 1e-7 or final.Area() < 1e-7:
+            raise ModelError(['가스방·최종 실링의 상하 작업면이 서로 겹쳐야 합니다'])
+        if not final.BoundingBox().ymax < a['cutY'] < gas.BoundingBox().ymin:
+            raise ModelError(['절단선은 최종 실링 바깥 끝과 가스방 외곽 실링 사이에 있어야 합니다'])
     product_regions={}
     for loc in ['positive','negative','gas','final']:
         required=3 if loc in POLES else 4 if loc=='gas' else 5
         upper=seals[loc+'_upper'];bottom=seals[loc+'_lower'];effective=upper.intersect(bottom);product=effective.intersect(film)
         product_regions[loc]=product
-        report={'overlapArea':effective.Area(),'productArea':product.Area(),'effective':paths(effective),'product':paths(product),'sections':[]};reports['seals'][loc]=report
+        report={'overlapArea':effective.Area(),'productArea':product.Area(),'effective':seal_paths(effective),'product':seal_paths(product),'sections':[]};reports['seals'][loc]=report
         # Preserve pre-cut record, while trimmed product only contains retained material.
         if step>=required and not(step>=6 and loc=='gas') and product.Area()>1e-8:
-            display=product.translate((0,0,R+t+.008))
+            surface_z = R + t
+            shape_z = surface_z if phase1 else surface_z + .008
+            shape = product.translate((0,0,shape_z))
             if step>=7:
-                display=fold_shape(slab(display,.004),fold_profiles,R+t+.008,R+t+.012)
-            add_part(m,'seal.'+loc,loc+' 제품 공칭 실링 (상하 유효 중첩∩필름)',display,'#dca857')
+                shape = fold_shape(slab(shape,.004), fold_profiles, shape_z, shape_z+.004)
+            colors = {'gas': '#398bb5', 'final': '#af713a'}
+            add_part(m,'seal.'+loc,loc+' 제품 공칭 실링 (상하 유효 중첩∩필름)',shape,
+                     colors.get(loc,'#dca857') if phase1 else '#dca857')
+            if phase1 and step < 7:
+                # Offset only the display mesh to avoid z-fighting with the film.
+                m['parts'][-1]['displayShape'] = shape.translate((0,0,.008))
+            if phase1:
+                report['retainedBounds'] = {
+                    'min': [shape.BoundingBox().xmin, shape.BoundingBox().ymin, shape.BoundingBox().zmin],
+                    'max': [shape.BoundingBox().xmax, shape.BoundingBox().ymax, shape.BoundingBox().zmax],
+                }
         if loc in POLES:
             pole=p[loc];tab=pole['tab'];lead=pole['lead'];lf=pole['leadFilm'];cy=tab['gatherY']+lead['offsetY'];filmX=sorted([pole['end']*(p['stack']['length']/2+tab['gatherDistance']+lf['start']+a) for a in [0,lf['length']]])
             for label,y in [('left',cy-lead['width']/2),('center',cy),('right',cy+lead['width']/2)]:
@@ -222,6 +351,8 @@ def packaging(m,p,stage):
                 report['sections'].append({'id':label,'y':y,'width':w,'sealantOverlap':ov,'intervals':intervals})
                 if step>=required and intervals:
                     lo,hi=max(intervals,key=lambda v:v[1]-v[0]);metric(m,'r4.seal.'+loc+'.'+label,'seal.'+loc,[lo,y,0],[hi,y,0],loc+' '+label+' 실링 폭')
+        if loc in POLES and any(loc+'_'+half in tab_edges for half in ('upper','lower')):
+            report_profile(m, p, loc, step, product, tab_edges, reports, fold_profiles, R+t)
         report['retainedAfterCut']=step>=6
     if step>=4:
         for side in POLES:
@@ -230,19 +361,39 @@ def packaging(m,p,stage):
             for boundary in (['gas'] if step==4 else ['gas','final'] if step==5 else ['final']):
                 if product_regions[side].intersect(product_regions[boundary]).Area()<1e-7:
                     raise ModelError([side+': '+boundary+' 실링과 연결되지 않습니다. 작업면 끝/배치를 확인하세요.'])
-    if step>=6:metric(m,'r4.trim.remaining','pouch.lower.flange',mapped_point(fold_profiles,[0,lower['openingWidth']/2,-R]),mapped_point(fold_profiles,[0,a['cutY'],-R]),'절단 잔여 재료 폭',materialValue=a['cutY']-lower['openingWidth']/2)
+    if phase1:
+        def boundary(id, part, y, start, stop, mapped=False):
+            ends = [[x, y, R+t] for x in (start, stop)]
+            if mapped:
+                ends = [mapped_point(fold_profiles, point) for point in ends]
+            feature(m, id, part, [(u+v)/2 for u,v in zip(*ends)], kind='edge', segment=ends)
+
+        if step >= 5:
+            boundary('phase1.cut.line', 'pouch.upper.flange', a['cutY'], xmin, xmax, step >= 7)
+        if step >= 4 and step < 6:
+            b = product_regions['gas'].BoundingBox()
+            boundary('phase1.gas.outer', 'seal.gas', b.ymax, b.xmin, b.xmax)
+        if step >= 5:
+            b = product_regions['final'].BoundingBox()
+            boundary('phase1.final.inner', 'seal.final', b.ymin, b.xmin, b.xmax)
+    if step>=6:metric(m,'r4.trim.remaining','pouch.lower.flange',mapped_point(fold_profiles,[0,cup_edge if phase1 else lower['openingWidth']/2,-R]),mapped_point(fold_profiles,[0,a['cutY'],-R]),'절단 잔여 재료 폭',materialValue=a['cutY']-(cup_edge if phase1 else lower['openingWidth']/2))
     m['diagnostics'].append({'level':'warning','message':'실링은 평면 공칭 영역입니다. 브리지 폐합은 원통 굽힘; 리드 통과부 국부 필름 변형/융착 강도/가스 팽창은 해석하지 않습니다.'})
 
 def build_r4(source,stage,base_builder):
-    validate_config(source);p=resolved(source);cap=STAGE_CONTRACT[stage]
-    stageAssembly='assembly' if cap.get('r4') else stage
+    validate_config(source);cap=STAGE_CONTRACT[stage]
+    trimmed=stage not in ['stacked','gathered','preweld']
+    p=resolved(source,trimmed)
+    stageAssembly='assembly' if cap.get('r4') else 'preweld' if stage=='foil_trimmed' else stage
     # Root-only/gathered views retain their upstream definition; depth starts at preweld.
     if stage in ['stacked','gathered']:
         p=deepcopy(source);p.pop('processTooling')
     if cap.get('r4') and cap['assembly'] is None:m={'parts':[],'features':{},'paths':[],'diagnostics':[]}
     else:m=base_builder(p,stageAssembly)
+    for side in POLES:
+        tab=next((part for part in m['parts'] if part['id']==side+'.tab'),None)
+        if tab is not None:tab.setdefault('meta',{})['foilCut']={'removedLength':source['processTooling']['poles'][side].get('foilCut',{}).get('removedLength',0),'applied':trimmed,'basis':'가용접 포일 끝에서 바깥쪽 재료 제거 · 집속 시작면 고정'}
     m['stage']=stage;m['processCapabilities']={'r4':True};m['toolingResults']={'poles':{},'seals':{},'plans':{}}
-    welding(m,resolved(source),source,'stacked' if cap.get('r4') and cap['assembly'] is None else stageAssembly)
+    welding(m,resolved(source,trimmed),source,'stacked' if cap.get('r4') and cap['assembly'] is None else stageAssembly)
     if cap.get('r4'):
         # Tooling is not present in downstream manufacturing states; records remain in source.
         m['parts']=[x for x in m['parts'] if not x['id'].startswith('tool.') and '.contact.' not in x['id']]

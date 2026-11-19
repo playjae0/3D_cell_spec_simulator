@@ -409,7 +409,7 @@
     "processTooling": {
       "version": 1,
       "example": true,
-      "revision": "R4-demo-1",
+      "revision": "R4-demo-2",
       "packaging": {
         "bridgeInnerR": 0.4,
         "cutY": 50,
@@ -439,7 +439,7 @@
             "preweld": {
               "horn": {
                 "id": "positive-preweld-horn",
-                "revision": "example-1",
+                "revision": "example-2-block",
                 "x": 1.5,
                 "y": 0,
                 "rotation": 0,
@@ -452,11 +452,12 @@
                 "pitchV": 1,
                 "direction": 0,
                 "height": 0.2,
-                "tooth": "pyramid"
+                "tooth": "pyramid",
+                "bodyDepth": 3.0
               },
               "anvil": {
                 "id": "positive-preweld-anvil",
-                "revision": "example-1",
+                "revision": "example-2-block",
                 "x": 1.5,
                 "y": 0,
                 "rotation": 0,
@@ -469,13 +470,14 @@
                 "pitchV": 1,
                 "direction": 0,
                 "height": 0.15,
-                "tooth": "pyramid"
+                "tooth": "pyramid",
+                "bodyDepth": 3.0
               }
             },
             "welded": {
               "horn": {
                 "id": "positive-welded-horn",
-                "revision": "example-1",
+                "revision": "example-2-block",
                 "x": 6,
                 "y": 0,
                 "rotation": 0,
@@ -488,11 +490,12 @@
                 "pitchV": 1,
                 "direction": 0,
                 "height": 0.2,
-                "tooth": "pyramid"
+                "tooth": "pyramid",
+                "bodyDepth": 3.0
               },
               "anvil": {
                 "id": "positive-welded-anvil",
-                "revision": "example-1",
+                "revision": "example-2-block",
                 "x": 6,
                 "y": 0,
                 "rotation": 0,
@@ -505,7 +508,8 @@
                 "pitchV": 1,
                 "direction": 0,
                 "height": 0.15,
-                "tooth": "pyramid"
+                "tooth": "pyramid",
+                "bodyDepth": 3.0
               }
             }
           },
@@ -564,6 +568,9 @@
                 "dy": 0
               }
             ]
+          },
+          "foilCut": {
+            "removedLength": 1.0
           }
         },
         "negative": {
@@ -577,7 +584,7 @@
             "preweld": {
               "horn": {
                 "id": "negative-preweld-horn",
-                "revision": "example-1",
+                "revision": "example-2-block",
                 "x": 1.5,
                 "y": 0,
                 "rotation": 0,
@@ -590,11 +597,12 @@
                 "pitchV": 1,
                 "direction": 0,
                 "height": 0.2,
-                "tooth": "pyramid"
+                "tooth": "pyramid",
+                "bodyDepth": 3.0
               },
               "anvil": {
                 "id": "negative-preweld-anvil",
-                "revision": "example-1",
+                "revision": "example-2-block",
                 "x": 1.5,
                 "y": 0,
                 "rotation": 0,
@@ -607,13 +615,14 @@
                 "pitchV": 1,
                 "direction": 0,
                 "height": 0.15,
-                "tooth": "pyramid"
+                "tooth": "pyramid",
+                "bodyDepth": 3.0
               }
             },
             "welded": {
               "horn": {
                 "id": "negative-welded-horn",
-                "revision": "example-1",
+                "revision": "example-2-block",
                 "x": 6,
                 "y": 0,
                 "rotation": 0,
@@ -626,11 +635,12 @@
                 "pitchV": 1,
                 "direction": 0,
                 "height": 0.2,
-                "tooth": "pyramid"
+                "tooth": "pyramid",
+                "bodyDepth": 3.0
               },
               "anvil": {
                 "id": "negative-welded-anvil",
-                "revision": "example-1",
+                "revision": "example-2-block",
                 "x": 6,
                 "y": 0,
                 "rotation": 0,
@@ -643,7 +653,8 @@
                 "pitchV": 1,
                 "direction": 0,
                 "height": 0.15,
-                "tooth": "pyramid"
+                "tooth": "pyramid",
+                "bodyDepth": 3.0
               }
             }
           },
@@ -702,6 +713,9 @@
                 "dy": 0
               }
             ]
+          },
+          "foilCut": {
+            "removedLength": 0.6
           }
         }
       },
@@ -1145,5 +1159,9 @@
         29
       ]
     }
+  },
+  "modelIdentity": {
+    "modelId": "virtual-process-tooling-r4",
+    "revision": "R4-demo-2"
   }
 }

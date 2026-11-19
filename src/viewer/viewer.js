@@ -14,7 +14,7 @@ const sv = (tag, attrs = {}, text) => {
   return e;
 };
 export class Viewer {
-  constructor(host, { onSelect, onPick, onAnchor, onCamera, onHover, onEdit }) {
+  constructor(host, { onSelect, onPick, onAnchor, onCamera, onHover, onEdit, onDimensionSelect }) {
     this.onHover = onHover;
     this.onEdit = onEdit;
     this.selectionMode = "part";
@@ -118,6 +118,10 @@ export class Viewer {
       }
       down = null;
       const { hits, pt } = this.hit(e);
+      if (onDimensionSelect && !this.picking) {
+        const dim=this.dimensionHits.map(d=>({...d,distance:segmentDistance(pt,d.a,d.b)})).sort((a,b)=>a.distance-b.distance)[0];
+        if(dim?.distance<14) {onDimensionSelect(dim.measurement);return;}
+      }
       if (this.picking) {
         if (this.pickKind === "surface") {
           const hit = hits[0];
@@ -268,7 +272,8 @@ export class Viewer {
       );
       this.model.add(line);
     }
-    this.select(this.selected);
+    this.selectionEdges = new Map();
+    this.applyColors();
     this.draw();
   }
   visibleFeatures() {
@@ -342,7 +347,7 @@ export class Viewer {
       mesh.material.emissive?.set(
         id === this.highlight?.partId || this.highlight?.partIds?.includes(id)
           ? "#513810"
-          : id === this.selected
+          : this.selectedIds?.includes(id)
             ? "#173f40"
             : id === this.hovered
               ? "#263c55"
@@ -350,8 +355,9 @@ export class Viewer {
       );
     }
   }
-  select(id) {
+  select(id, members = id ? [id] : []) {
     this.selected = id;
+    this.selectedIds = members;
     this.applyColors();
     this.draw();
   }
@@ -433,6 +439,25 @@ export class Viewer {
       svg.append(sv("line", attrs));
       return [x, y];
     };
+    // Project the selected mesh edges above the enclosure, including in the CPU renderer.
+    for (const mesh of this.meshes) {
+      const id = mesh.userData.part.id;
+      if (!mesh.visible || !this.selectedIds?.includes(id)) continue;
+      let vertices = this.selectionEdges?.get(id);
+      if (!vertices) {
+        const edges = new T.EdgesGeometry(mesh.geometry, 22);
+        vertices = edges.attributes.position.array;
+        this.selectionEdges?.set(id, vertices);
+        edges.dispose();
+      }
+      const segments = [];
+      for (let i = 0; i < vertices.length; i += 6) {
+        const a = this.project(vertices.subarray(i,i+3)), b = this.project(vertices.subarray(i+3,i+6));
+        segments.push(`M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${b[0].toFixed(1)} ${b[1].toFixed(1)}`);
+      }
+      svg.append(sv("path", {"data-selection-outline":id,d:segments.join(""),fill:"none",
+        stroke:"#ab4b00","stroke-width":1.6,"stroke-linejoin":"round"}));
+    }
     const text = (p, label, color = "#146e6a") => {
       const [x, y] = this.project(p);
       svg.append(
@@ -449,6 +474,20 @@ export class Viewer {
         ),
       );
     };
+    if (this.state?.view.datums && this.state.view.section.axis === "none") {
+      const guides = [
+        ["phase1.gas.outer", "#317ca5", "가스방 외곽 실링"],
+        ["phase1.final.inner", "#92643a", "몸체 쪽 최종 실링"],
+        ["phase1.cut.line", "#435b66", "절단선"],
+      ];
+      for (const [id, color, label] of guides) {
+        const feature = this.data?.features[id];
+        if (!feature?.available || this.state.view.hidden.includes(feature.partId)) continue;
+        line(...feature.segment, color, 1.1, true);
+        const [a, b] = feature.segment;
+        text(a.map((value, i) => value * .7 + b[i] * .3), label, color);
+      }
+    }
     if (this.state?.view.datums) {
       const L = this.state.product.stack.length,
         W = this.state.product.stack.width;
