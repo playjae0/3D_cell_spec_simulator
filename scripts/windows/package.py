@@ -35,6 +35,13 @@ def main():
     (runtime/'python312._pth').write_text('python312.zip\n.\nLib/site-packages\n../app/cad\nimport site\n',encoding='utf-8')
     site=runtime/'Lib/site-packages'
     call(sys.executable,'-m','pip','install','--disable-pip-version-check','--only-binary=:all:','--no-compile','--target',site,'-r','cad/requirements.lock.txt')
+    # App-local MSVC CRT: a clean workstation must not depend on the runner's
+    # globally installed Visual C++ redistributable for OCP/numerical wheels.
+    vs=Path(os.environ.get('ProgramFiles','C:/Program Files'))/'Microsoft Visual Studio/2022'
+    crt_dirs=list(vs.glob('*/VC/Redist/MSVC/*/x64/Microsoft.VC143.CRT'))
+    if not crt_dirs:raise RuntimeError('재배포 가능한 MSVC x64 CRT 디렉터리를 찾지 못했습니다.')
+    crt=sorted(crt_dirs,key=lambda p:tuple(int(x) for x in p.parents[1].name.split('.')))[-1]
+    for dll in crt.glob('*.dll'):shutil.copy2(dll,runtime/dll.name)
     # One-directory launcher avoids a temporary-extraction parent process and
     # keeps EXE termination tied to the Windows Job Object that owns CAD.
     call(sys.executable,'-m','PyInstaller','--noconfirm','--clean','--onedir','--console','--name','CellStudio','--distpath',OUT/'launcher','--workpath',OUT/'pyinstaller-work','--specpath',OUT,'scripts/windows/launcher.py')
@@ -45,13 +52,14 @@ def main():
     shutil.copy2(ROOT/'src/data/stages.json',app/'src/data/stages.json')
     shutil.copytree(ROOT/'dist',app/'dist')
     if any(p.suffix=='.map' or 'preview-data' in p.parts for p in (app/'dist').rglob('*')):raise RuntimeError('개발/프리뷰 자산이 일반 빌드에 포함됨')
-    version={'sourceCommit':sha,'platform':'win-x64','python':PYTHON,'cadquery':'2.7.0','runtimeSource':url,'runtimeArchiveSha256':hashlib.sha256(embed.read_bytes()).hexdigest(),'buildRun':os.environ.get('GITHUB_SERVER_URL','')+'/'+os.environ.get('GITHUB_REPOSITORY','')+'/actions/runs/'+os.environ.get('GITHUB_RUN_ID','local')}
+    version={'sourceCommit':sha,'platform':'win-x64','python':PYTHON,'cadquery':'2.7.0','msvcRuntime':crt.parents[1].name,'runtimeSource':url,'runtimeArchiveSha256':hashlib.sha256(embed.read_bytes()).hexdigest(),'buildRun':os.environ.get('GITHUB_SERVER_URL','')+'/'+os.environ.get('GITHUB_REPOSITORY','')+'/actions/runs/'+os.environ.get('GITHUB_RUN_ID','local')}
     text=json.dumps(version,ensure_ascii=False,indent=2)+'\n'
     (dest/'VERSION.json').write_text(text,encoding='utf-8');(app/'dist/trial-version.json').write_text(text,encoding='utf-8')
     shutil.copy2(ROOT/'docs/windows/user-guide.txt',dest/'시작 안내.txt')
     notices=dest/'notices';notices.mkdir()
     shutil.copy2(runtime/'LICENSE.txt',notices/'CPython-LICENSE.txt')
     shutil.copy2(ROOT/'cad/requirements.lock.txt',notices/'cad-requirements.lock.txt')
+    (notices/'Microsoft-CRT.txt').write_text('Microsoft Visual C++ Redistributable — app-local x64 CRT\nVersion: '+crt.parents[1].name+'\nCopyright Microsoft Corporation. All rights reserved.\nRedistributable list: https://learn.microsoft.com/visualstudio/releases/2022/redistribution\nRedistributed under the Visual Studio license terms: https://visualstudio.microsoft.com/license-terms/\nOnly the redistributable Microsoft.VC143.CRT DLLs are included; no SDK or build tools.\n',encoding='utf-8')
     for name in ['LICENSE','LICENSE.md','LICENSE.txt']:
         if (ROOT/name).is_file():shutil.copy2(ROOT/name,notices/name)
     inventory=[]

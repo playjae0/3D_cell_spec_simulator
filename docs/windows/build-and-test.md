@@ -20,6 +20,8 @@ Windows 개발 PC에서 수동 재현할 때는 Node 22, Python 3.12.10 x64, Git
 
 런처는 표준 라이브러리만 사용하는 작은 PyInstaller EXE다. CAD는 동봉 CPython 3.12.10 embeddable 런타임의 `-I -X utf8` 격리 모드로 실행한다. CadQuery/OCP의 동적 확장과 네이티브 DLL을 일반 wheel 디렉터리에 보존하므로 CAD 패키지의 freeze 누락을 피한다. Python/Node/CadQuery를 현업 PC에 설치하지 않는다. EXE는 127.0.0.1에만 바인드하는 기존 CAD 서버를 자식 프로세스로 실행하며, Windows Job Object로 런처 종료 시 자식도 종료한다. 동일 포트를 유지해 브라우저 보관함 원점을 유지한다.
 
+MSVC x64 재배포 DLL도 runtime 폴더에 포함한다. 실행 검수는 실제 로드한 Python/CadQuery/OCP와 MSVC DLL 경로가 배포 폴더 안에 있는지 검사한다. 운영체제 기본 DLL과 브라우저 자체는 Windows 환경을 사용한다.
+
 포장 허용 목록은 일반 `dist`, `cad/*.py`, `src/data/stages.json`, 런타임/wheel, 버전/파일 목록, 사용 안내와 라이선스 고지다. 저장소 전체를 복사하지 않는다. 조사 자료, 사진, 과거 ZIP, 개발 캡처, 사용자 모델, 프리뷰 기록은 포함하지 않는다. 저장소 원본 파일을 삭제하지 않는다. 실제 크기·큰 파일·포함 이유는 `size-report.json`, 개별 파일 해시는 배포본 `FILE-MANIFEST.json`에 있다. CPython 다운로드 출처와 원문 해시도 VERSION.json에 기록한다.
 
 ## 입력 감사 범위

@@ -34,9 +34,11 @@ def main():
     try:
         if a.bundle:
             v=json.loads((a.bundle/'VERSION.json').read_text(encoding='utf-8'));result['sourceCommit']=v['sourceCommit']
-            probe=subprocess.check_output([str(a.bundle/'runtime/python.exe'),'-I','-X','utf8','-c','import json,sys,cadquery,OCP; print(json.dumps(dict(executable=sys.executable,cadquery=cadquery.__file__,ocp=OCP.__file__,path=sys.path)))'],cwd=a.bundle)
+            probe=subprocess.check_output([str(a.bundle/'runtime/python.exe'),'-I','-X','utf8',str(Path(__file__).resolve().with_name('runtime_probe.py'))],cwd=a.bundle)
             result['runtimeProvenance']=json.loads(probe)
             for k in ['executable','cadquery','ocp']:assert Path(result['runtimeProvenance'][k]).is_relative_to(a.bundle/'runtime')
+            assert result['runtimeProvenance']['msvcModules']
+            for dll in result['runtimeProvenance']['msvcModules']:assert Path(dll).is_relative_to(a.bundle/'runtime'),dll
             if a.offline:
                 code="import urllib.request,sys\ntry:\n urllib.request.build_opener(urllib.request.ProxyHandler({})).open('https://www.python.org',timeout=5);sys.exit(9)\nexcept OSError:\n print('external HTTPS blocked')"
                 blocked=subprocess.run([str(a.bundle/'runtime/python.exe'),'-I','-X','utf8','-c',code],capture_output=True,timeout=15)

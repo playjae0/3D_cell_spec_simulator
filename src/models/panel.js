@@ -454,13 +454,10 @@ export function mountModels({ getProject, canOpen, onApply, onGuide, notify }) {
     ["intake-template", false],
     ["intake-template-all", true],
   ])
-    $(id).onclick = () =>
-      download(
-        addToolingIntake(template(intake.model, scope ? STAGES : [$("intake-stage").value]),getProject().product,true),
-        scope
-          ? "cell-intake-" + VERSION + "-all.json"
-          : "cell-intake-" + VERSION + "-" + $("intake-stage").value + ".json",
-      );
+    $(id).onclick = () => {
+      const blank=addToolingIntake(template(intake.model, scope ? STAGES : [$("intake-stage").value]),getProject().product,true);
+      download(blank,'cell-intake-'+blank.formatVersion+'-'+(scope?'all':$("intake-stage").value)+'.json');
+    };
   $("intake-preview").onclick = async () => {
     try {
       const project = projectFromIntake(intake, $("intake-stage").value);
@@ -549,14 +546,14 @@ export function mountModels({ getProject, canOpen, onApply, onGuide, notify }) {
   }
   $("model-new").onclick = () =>
     openIntake(
-      template(
+      addToolingIntake(template(
         {
           modelId: "model-" + Date.now(),
           modelName: "새 셀 모델",
           revision: "1",
         },
         [getProject().stage],
-      ),
+      ),getProject().product,true),
     );
   $("model-revise").onclick = () => openIntake(currentIntake(), getProject());
   $("model-copy").onclick = () => openIntake(currentIntake(true), getProject());
