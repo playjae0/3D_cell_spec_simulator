@@ -1,0 +1,1632 @@
+{
+  "processTooling.revision": {
+    "valueType": "string",
+    "unit": null,
+    "label": "공구 개정"
+  },
+  "processTooling.packaging.bridgeInnerR": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "브리지 안쪽 R"
+  },
+  "processTooling.packaging.cutY": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "가스방 절단선 Y"
+  },
+  "processTooling.packaging.foldLineY": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "잔여 플랜지 접힘선 Y"
+  },
+  "processTooling.packaging.foldAngle": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "접힘 각도"
+  },
+  "processTooling.packaging.foldR": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "접힘 안쪽 R"
+  },
+  "processTooling.packaging.cups.upper.x": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "진입 X 기준 위치"
+  },
+  "processTooling.packaging.cups.upper.y": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "중심 Y 기준 위치"
+  },
+  "processTooling.packaging.cups.lower.x": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "진입 X 기준 위치"
+  },
+  "processTooling.packaging.cups.lower.y": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "중심 Y 기준 위치"
+  },
+  "processTooling.poles.positive.gathering.topDatumZ": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "고정 상면 데이텀 Z"
+  },
+  "processTooling.poles.positive.gathering.bottomZ": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "고정 하면 Z"
+  },
+  "processTooling.poles.positive.gathering.depth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "침입 깊이"
+  },
+  "processTooling.poles.positive.method": {
+    "valueType": "string",
+    "unit": null,
+    "label": "메인 용접 방식"
+  },
+  "processTooling.poles.positive.tools.preweld.horn.revision": {
+    "valueType": "string",
+    "unit": null,
+    "label": "공구 개정"
+  },
+  "processTooling.poles.positive.tools.preweld.horn.x": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "진입 X 기준 위치"
+  },
+  "processTooling.poles.positive.tools.preweld.horn.y": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "중심 Y 기준 위치"
+  },
+  "processTooling.poles.positive.tools.preweld.horn.rotation": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "배치 회전"
+  },
+  "processTooling.poles.positive.tools.preweld.horn.length": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 길이 U"
+  },
+  "processTooling.poles.positive.tools.preweld.horn.width": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 폭 V"
+  },
+  "processTooling.poles.positive.tools.preweld.horn.cornerR": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 코너 R"
+  },
+  "processTooling.poles.positive.tools.preweld.horn.knurlLength": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 길이 U"
+  },
+  "processTooling.poles.positive.tools.preweld.horn.knurlWidth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 폭 V"
+  },
+  "processTooling.poles.positive.tools.preweld.horn.pitchU": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 U 피치"
+  },
+  "processTooling.poles.positive.tools.preweld.horn.pitchV": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 V 피치"
+  },
+  "processTooling.poles.positive.tools.preweld.horn.direction": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "너링 방향"
+  },
+  "processTooling.poles.positive.tools.preweld.horn.height": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "대표 치형 높이"
+  },
+  "processTooling.poles.positive.tools.preweld.horn.tooth": {
+    "valueType": "string",
+    "unit": null,
+    "label": "대표 치형"
+  },
+  "processTooling.poles.positive.tools.preweld.horn.bodyDepth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "지지 블록 깊이"
+  },
+  "processTooling.poles.positive.tools.preweld.anvil.revision": {
+    "valueType": "string",
+    "unit": null,
+    "label": "공구 개정"
+  },
+  "processTooling.poles.positive.tools.preweld.anvil.x": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "진입 X 기준 위치"
+  },
+  "processTooling.poles.positive.tools.preweld.anvil.y": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "중심 Y 기준 위치"
+  },
+  "processTooling.poles.positive.tools.preweld.anvil.rotation": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "배치 회전"
+  },
+  "processTooling.poles.positive.tools.preweld.anvil.length": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 길이 U"
+  },
+  "processTooling.poles.positive.tools.preweld.anvil.width": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 폭 V"
+  },
+  "processTooling.poles.positive.tools.preweld.anvil.cornerR": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 코너 R"
+  },
+  "processTooling.poles.positive.tools.preweld.anvil.knurlLength": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 길이 U"
+  },
+  "processTooling.poles.positive.tools.preweld.anvil.knurlWidth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 폭 V"
+  },
+  "processTooling.poles.positive.tools.preweld.anvil.pitchU": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 U 피치"
+  },
+  "processTooling.poles.positive.tools.preweld.anvil.pitchV": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 V 피치"
+  },
+  "processTooling.poles.positive.tools.preweld.anvil.direction": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "너링 방향"
+  },
+  "processTooling.poles.positive.tools.preweld.anvil.height": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "대표 치형 높이"
+  },
+  "processTooling.poles.positive.tools.preweld.anvil.tooth": {
+    "valueType": "string",
+    "unit": null,
+    "label": "대표 치형"
+  },
+  "processTooling.poles.positive.tools.preweld.anvil.bodyDepth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "지지 블록 깊이"
+  },
+  "processTooling.poles.positive.tools.welded.horn.revision": {
+    "valueType": "string",
+    "unit": null,
+    "label": "공구 개정"
+  },
+  "processTooling.poles.positive.tools.welded.horn.x": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "진입 X 기준 위치"
+  },
+  "processTooling.poles.positive.tools.welded.horn.y": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "중심 Y 기준 위치"
+  },
+  "processTooling.poles.positive.tools.welded.horn.rotation": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "배치 회전"
+  },
+  "processTooling.poles.positive.tools.welded.horn.length": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 길이 U"
+  },
+  "processTooling.poles.positive.tools.welded.horn.width": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 폭 V"
+  },
+  "processTooling.poles.positive.tools.welded.horn.cornerR": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 코너 R"
+  },
+  "processTooling.poles.positive.tools.welded.horn.knurlLength": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 길이 U"
+  },
+  "processTooling.poles.positive.tools.welded.horn.knurlWidth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 폭 V"
+  },
+  "processTooling.poles.positive.tools.welded.horn.pitchU": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 U 피치"
+  },
+  "processTooling.poles.positive.tools.welded.horn.pitchV": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 V 피치"
+  },
+  "processTooling.poles.positive.tools.welded.horn.direction": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "너링 방향"
+  },
+  "processTooling.poles.positive.tools.welded.horn.height": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "대표 치형 높이"
+  },
+  "processTooling.poles.positive.tools.welded.horn.tooth": {
+    "valueType": "string",
+    "unit": null,
+    "label": "대표 치형"
+  },
+  "processTooling.poles.positive.tools.welded.horn.bodyDepth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "지지 블록 깊이"
+  },
+  "processTooling.poles.positive.tools.welded.anvil.revision": {
+    "valueType": "string",
+    "unit": null,
+    "label": "공구 개정"
+  },
+  "processTooling.poles.positive.tools.welded.anvil.x": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "진입 X 기준 위치"
+  },
+  "processTooling.poles.positive.tools.welded.anvil.y": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "중심 Y 기준 위치"
+  },
+  "processTooling.poles.positive.tools.welded.anvil.rotation": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "배치 회전"
+  },
+  "processTooling.poles.positive.tools.welded.anvil.length": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 길이 U"
+  },
+  "processTooling.poles.positive.tools.welded.anvil.width": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 폭 V"
+  },
+  "processTooling.poles.positive.tools.welded.anvil.cornerR": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 코너 R"
+  },
+  "processTooling.poles.positive.tools.welded.anvil.knurlLength": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 길이 U"
+  },
+  "processTooling.poles.positive.tools.welded.anvil.knurlWidth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 폭 V"
+  },
+  "processTooling.poles.positive.tools.welded.anvil.pitchU": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 U 피치"
+  },
+  "processTooling.poles.positive.tools.welded.anvil.pitchV": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 V 피치"
+  },
+  "processTooling.poles.positive.tools.welded.anvil.direction": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "너링 방향"
+  },
+  "processTooling.poles.positive.tools.welded.anvil.height": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "대표 치형 높이"
+  },
+  "processTooling.poles.positive.tools.welded.anvil.tooth": {
+    "valueType": "string",
+    "unit": null,
+    "label": "대표 치형"
+  },
+  "processTooling.poles.positive.tools.welded.anvil.bodyDepth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "지지 블록 깊이"
+  },
+  "processTooling.poles.positive.laser.revision": {
+    "valueType": "string",
+    "unit": null,
+    "label": "공구 개정"
+  },
+  "processTooling.poles.positive.laser.x": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "진입 X 기준 위치"
+  },
+  "processTooling.poles.positive.laser.y": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "중심 Y 기준 위치"
+  },
+  "processTooling.poles.positive.laser.diameter": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "공칭 스팟 직경"
+  },
+  "processTooling.poles.positive.laser.rows": {
+    "valueType": "number",
+    "unit": "1",
+    "label": "배열 행 수"
+  },
+  "processTooling.poles.positive.laser.columns": {
+    "valueType": "number",
+    "unit": "1",
+    "label": "배열 열 수"
+  },
+  "processTooling.poles.positive.laser.pitchX": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "배열 X 피치"
+  },
+  "processTooling.poles.positive.laser.pitchY": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "배열 Y 피치"
+  },
+  "processTooling.poles.positive.laser.rotation": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "배치 회전"
+  },
+  "processTooling.poles.positive.laser.spots.*.row": {
+    "valueType": "number",
+    "unit": "1",
+    "label": "행 인덱스"
+  },
+  "processTooling.poles.positive.laser.spots.*.column": {
+    "valueType": "number",
+    "unit": "1",
+    "label": "열 인덱스"
+  },
+  "processTooling.poles.positive.laser.spots.*.dx": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "개별 X 이동"
+  },
+  "processTooling.poles.positive.laser.spots.*.dy": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "개별 Y 이동"
+  },
+  "processTooling.poles.positive.foilCut.removedLength": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "포일 끝 절단량"
+  },
+  "processTooling.poles.negative.gathering.topDatumZ": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "고정 상면 데이텀 Z"
+  },
+  "processTooling.poles.negative.gathering.bottomZ": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "고정 하면 Z"
+  },
+  "processTooling.poles.negative.gathering.depth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "침입 깊이"
+  },
+  "processTooling.poles.negative.method": {
+    "valueType": "string",
+    "unit": null,
+    "label": "메인 용접 방식"
+  },
+  "processTooling.poles.negative.tools.preweld.horn.revision": {
+    "valueType": "string",
+    "unit": null,
+    "label": "공구 개정"
+  },
+  "processTooling.poles.negative.tools.preweld.horn.x": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "진입 X 기준 위치"
+  },
+  "processTooling.poles.negative.tools.preweld.horn.y": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "중심 Y 기준 위치"
+  },
+  "processTooling.poles.negative.tools.preweld.horn.rotation": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "배치 회전"
+  },
+  "processTooling.poles.negative.tools.preweld.horn.length": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 길이 U"
+  },
+  "processTooling.poles.negative.tools.preweld.horn.width": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 폭 V"
+  },
+  "processTooling.poles.negative.tools.preweld.horn.cornerR": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 코너 R"
+  },
+  "processTooling.poles.negative.tools.preweld.horn.knurlLength": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 길이 U"
+  },
+  "processTooling.poles.negative.tools.preweld.horn.knurlWidth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 폭 V"
+  },
+  "processTooling.poles.negative.tools.preweld.horn.pitchU": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 U 피치"
+  },
+  "processTooling.poles.negative.tools.preweld.horn.pitchV": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 V 피치"
+  },
+  "processTooling.poles.negative.tools.preweld.horn.direction": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "너링 방향"
+  },
+  "processTooling.poles.negative.tools.preweld.horn.height": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "대표 치형 높이"
+  },
+  "processTooling.poles.negative.tools.preweld.horn.tooth": {
+    "valueType": "string",
+    "unit": null,
+    "label": "대표 치형"
+  },
+  "processTooling.poles.negative.tools.preweld.horn.bodyDepth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "지지 블록 깊이"
+  },
+  "processTooling.poles.negative.tools.preweld.anvil.revision": {
+    "valueType": "string",
+    "unit": null,
+    "label": "공구 개정"
+  },
+  "processTooling.poles.negative.tools.preweld.anvil.x": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "진입 X 기준 위치"
+  },
+  "processTooling.poles.negative.tools.preweld.anvil.y": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "중심 Y 기준 위치"
+  },
+  "processTooling.poles.negative.tools.preweld.anvil.rotation": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "배치 회전"
+  },
+  "processTooling.poles.negative.tools.preweld.anvil.length": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 길이 U"
+  },
+  "processTooling.poles.negative.tools.preweld.anvil.width": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 폭 V"
+  },
+  "processTooling.poles.negative.tools.preweld.anvil.cornerR": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 코너 R"
+  },
+  "processTooling.poles.negative.tools.preweld.anvil.knurlLength": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 길이 U"
+  },
+  "processTooling.poles.negative.tools.preweld.anvil.knurlWidth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 폭 V"
+  },
+  "processTooling.poles.negative.tools.preweld.anvil.pitchU": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 U 피치"
+  },
+  "processTooling.poles.negative.tools.preweld.anvil.pitchV": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 V 피치"
+  },
+  "processTooling.poles.negative.tools.preweld.anvil.direction": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "너링 방향"
+  },
+  "processTooling.poles.negative.tools.preweld.anvil.height": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "대표 치형 높이"
+  },
+  "processTooling.poles.negative.tools.preweld.anvil.tooth": {
+    "valueType": "string",
+    "unit": null,
+    "label": "대표 치형"
+  },
+  "processTooling.poles.negative.tools.preweld.anvil.bodyDepth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "지지 블록 깊이"
+  },
+  "processTooling.poles.negative.tools.welded.horn.revision": {
+    "valueType": "string",
+    "unit": null,
+    "label": "공구 개정"
+  },
+  "processTooling.poles.negative.tools.welded.horn.x": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "진입 X 기준 위치"
+  },
+  "processTooling.poles.negative.tools.welded.horn.y": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "중심 Y 기준 위치"
+  },
+  "processTooling.poles.negative.tools.welded.horn.rotation": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "배치 회전"
+  },
+  "processTooling.poles.negative.tools.welded.horn.length": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 길이 U"
+  },
+  "processTooling.poles.negative.tools.welded.horn.width": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 폭 V"
+  },
+  "processTooling.poles.negative.tools.welded.horn.cornerR": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 코너 R"
+  },
+  "processTooling.poles.negative.tools.welded.horn.knurlLength": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 길이 U"
+  },
+  "processTooling.poles.negative.tools.welded.horn.knurlWidth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 폭 V"
+  },
+  "processTooling.poles.negative.tools.welded.horn.pitchU": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 U 피치"
+  },
+  "processTooling.poles.negative.tools.welded.horn.pitchV": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 V 피치"
+  },
+  "processTooling.poles.negative.tools.welded.horn.direction": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "너링 방향"
+  },
+  "processTooling.poles.negative.tools.welded.horn.height": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "대표 치형 높이"
+  },
+  "processTooling.poles.negative.tools.welded.horn.tooth": {
+    "valueType": "string",
+    "unit": null,
+    "label": "대표 치형"
+  },
+  "processTooling.poles.negative.tools.welded.horn.bodyDepth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "지지 블록 깊이"
+  },
+  "processTooling.poles.negative.tools.welded.anvil.revision": {
+    "valueType": "string",
+    "unit": null,
+    "label": "공구 개정"
+  },
+  "processTooling.poles.negative.tools.welded.anvil.x": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "진입 X 기준 위치"
+  },
+  "processTooling.poles.negative.tools.welded.anvil.y": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "중심 Y 기준 위치"
+  },
+  "processTooling.poles.negative.tools.welded.anvil.rotation": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "배치 회전"
+  },
+  "processTooling.poles.negative.tools.welded.anvil.length": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 길이 U"
+  },
+  "processTooling.poles.negative.tools.welded.anvil.width": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 폭 V"
+  },
+  "processTooling.poles.negative.tools.welded.anvil.cornerR": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 코너 R"
+  },
+  "processTooling.poles.negative.tools.welded.anvil.knurlLength": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 길이 U"
+  },
+  "processTooling.poles.negative.tools.welded.anvil.knurlWidth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 폭 V"
+  },
+  "processTooling.poles.negative.tools.welded.anvil.pitchU": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 U 피치"
+  },
+  "processTooling.poles.negative.tools.welded.anvil.pitchV": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "너링 V 피치"
+  },
+  "processTooling.poles.negative.tools.welded.anvil.direction": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "너링 방향"
+  },
+  "processTooling.poles.negative.tools.welded.anvil.height": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "대표 치형 높이"
+  },
+  "processTooling.poles.negative.tools.welded.anvil.tooth": {
+    "valueType": "string",
+    "unit": null,
+    "label": "대표 치형"
+  },
+  "processTooling.poles.negative.tools.welded.anvil.bodyDepth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "지지 블록 깊이"
+  },
+  "processTooling.poles.negative.laser.revision": {
+    "valueType": "string",
+    "unit": null,
+    "label": "공구 개정"
+  },
+  "processTooling.poles.negative.laser.x": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "진입 X 기준 위치"
+  },
+  "processTooling.poles.negative.laser.y": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "중심 Y 기준 위치"
+  },
+  "processTooling.poles.negative.laser.diameter": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "공칭 스팟 직경"
+  },
+  "processTooling.poles.negative.laser.rows": {
+    "valueType": "number",
+    "unit": "1",
+    "label": "배열 행 수"
+  },
+  "processTooling.poles.negative.laser.columns": {
+    "valueType": "number",
+    "unit": "1",
+    "label": "배열 열 수"
+  },
+  "processTooling.poles.negative.laser.pitchX": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "배열 X 피치"
+  },
+  "processTooling.poles.negative.laser.pitchY": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "배열 Y 피치"
+  },
+  "processTooling.poles.negative.laser.rotation": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "배치 회전"
+  },
+  "processTooling.poles.negative.laser.spots.*.row": {
+    "valueType": "number",
+    "unit": "1",
+    "label": "행 인덱스"
+  },
+  "processTooling.poles.negative.laser.spots.*.column": {
+    "valueType": "number",
+    "unit": "1",
+    "label": "열 인덱스"
+  },
+  "processTooling.poles.negative.laser.spots.*.dx": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "개별 X 이동"
+  },
+  "processTooling.poles.negative.laser.spots.*.dy": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "개별 Y 이동"
+  },
+  "processTooling.poles.negative.foilCut.removedLength": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "포일 끝 절단량"
+  },
+  "processTooling.sealBars.positive_upper.revision": {
+    "valueType": "string",
+    "unit": null,
+    "label": "공구 개정"
+  },
+  "processTooling.sealBars.positive_upper.location": {
+    "valueType": "string",
+    "unit": null,
+    "label": "location"
+  },
+  "processTooling.sealBars.positive_upper.half": {
+    "valueType": "string",
+    "unit": null,
+    "label": "half"
+  },
+  "processTooling.sealBars.positive_upper.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.positive_upper.v": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 V"
+  },
+  "processTooling.sealBars.positive_upper.rotation": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "배치 회전"
+  },
+  "processTooling.sealBars.positive_upper.extra.enabled": {
+    "valueType": "boolean",
+    "unit": null,
+    "label": "사용"
+  },
+  "processTooling.sealBars.positive_upper.extra.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.positive_upper.extra.v": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 V"
+  },
+  "processTooling.sealBars.positive_upper.extra.length": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 길이 U"
+  },
+  "processTooling.sealBars.positive_upper.extra.width": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 폭 V"
+  },
+  "processTooling.sealBars.positive_upper.relief.enabled": {
+    "valueType": "boolean",
+    "unit": null,
+    "label": "사용"
+  },
+  "processTooling.sealBars.positive_upper.relief.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.positive_upper.relief.length": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 길이 U"
+  },
+  "processTooling.sealBars.positive_upper.relief.depth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "침입 깊이"
+  },
+  "processTooling.sealBars.positive_upper.tabProfile.centerLength": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "중앙 접점 간 L"
+  },
+  "processTooling.sealBars.positive_upper.tabProfile.transitionR": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "전이 원호 R"
+  },
+  "processTooling.sealBars.positive_upper.tabProfile.centerWidth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "중앙 폭"
+  },
+  "processTooling.sealBars.positive_upper.tabProfile.outerWidth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "바깥 폭"
+  },
+  "processTooling.sealBars.positive_upper.tabProfile.startU": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "리드 중심 기준 하단 U"
+  },
+  "processTooling.sealBars.positive_upper.tabProfile.endU": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "리드 중심 기준 상단 U"
+  },
+  "processTooling.sealBars.positive_upper.tabProfile.centerOffset": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "리드 중심에서 U 오프셋"
+  },
+  "processTooling.sealBars.positive_lower.revision": {
+    "valueType": "string",
+    "unit": null,
+    "label": "공구 개정"
+  },
+  "processTooling.sealBars.positive_lower.location": {
+    "valueType": "string",
+    "unit": null,
+    "label": "location"
+  },
+  "processTooling.sealBars.positive_lower.half": {
+    "valueType": "string",
+    "unit": null,
+    "label": "half"
+  },
+  "processTooling.sealBars.positive_lower.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.positive_lower.v": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 V"
+  },
+  "processTooling.sealBars.positive_lower.rotation": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "배치 회전"
+  },
+  "processTooling.sealBars.positive_lower.extra.enabled": {
+    "valueType": "boolean",
+    "unit": null,
+    "label": "사용"
+  },
+  "processTooling.sealBars.positive_lower.extra.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.positive_lower.extra.v": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 V"
+  },
+  "processTooling.sealBars.positive_lower.extra.length": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 길이 U"
+  },
+  "processTooling.sealBars.positive_lower.extra.width": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 폭 V"
+  },
+  "processTooling.sealBars.positive_lower.relief.enabled": {
+    "valueType": "boolean",
+    "unit": null,
+    "label": "사용"
+  },
+  "processTooling.sealBars.positive_lower.relief.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.positive_lower.relief.length": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 길이 U"
+  },
+  "processTooling.sealBars.positive_lower.relief.depth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "침입 깊이"
+  },
+  "processTooling.sealBars.positive_lower.tabProfile.centerLength": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "중앙 접점 간 L"
+  },
+  "processTooling.sealBars.positive_lower.tabProfile.transitionR": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "전이 원호 R"
+  },
+  "processTooling.sealBars.positive_lower.tabProfile.centerWidth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "중앙 폭"
+  },
+  "processTooling.sealBars.positive_lower.tabProfile.outerWidth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "바깥 폭"
+  },
+  "processTooling.sealBars.positive_lower.tabProfile.startU": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "리드 중심 기준 하단 U"
+  },
+  "processTooling.sealBars.positive_lower.tabProfile.endU": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "리드 중심 기준 상단 U"
+  },
+  "processTooling.sealBars.positive_lower.tabProfile.centerOffset": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "리드 중심에서 U 오프셋"
+  },
+  "processTooling.sealBars.negative_upper.revision": {
+    "valueType": "string",
+    "unit": null,
+    "label": "공구 개정"
+  },
+  "processTooling.sealBars.negative_upper.location": {
+    "valueType": "string",
+    "unit": null,
+    "label": "location"
+  },
+  "processTooling.sealBars.negative_upper.half": {
+    "valueType": "string",
+    "unit": null,
+    "label": "half"
+  },
+  "processTooling.sealBars.negative_upper.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.negative_upper.v": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 V"
+  },
+  "processTooling.sealBars.negative_upper.rotation": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "배치 회전"
+  },
+  "processTooling.sealBars.negative_upper.extra.enabled": {
+    "valueType": "boolean",
+    "unit": null,
+    "label": "사용"
+  },
+  "processTooling.sealBars.negative_upper.extra.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.negative_upper.extra.v": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 V"
+  },
+  "processTooling.sealBars.negative_upper.extra.length": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 길이 U"
+  },
+  "processTooling.sealBars.negative_upper.extra.width": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 폭 V"
+  },
+  "processTooling.sealBars.negative_upper.relief.enabled": {
+    "valueType": "boolean",
+    "unit": null,
+    "label": "사용"
+  },
+  "processTooling.sealBars.negative_upper.relief.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.negative_upper.relief.length": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 길이 U"
+  },
+  "processTooling.sealBars.negative_upper.relief.depth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "침입 깊이"
+  },
+  "processTooling.sealBars.negative_upper.tabProfile.centerLength": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "중앙 접점 간 L"
+  },
+  "processTooling.sealBars.negative_upper.tabProfile.transitionR": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "전이 원호 R"
+  },
+  "processTooling.sealBars.negative_upper.tabProfile.centerWidth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "중앙 폭"
+  },
+  "processTooling.sealBars.negative_upper.tabProfile.outerWidth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "바깥 폭"
+  },
+  "processTooling.sealBars.negative_upper.tabProfile.startU": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "리드 중심 기준 하단 U"
+  },
+  "processTooling.sealBars.negative_upper.tabProfile.endU": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "리드 중심 기준 상단 U"
+  },
+  "processTooling.sealBars.negative_upper.tabProfile.centerOffset": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "리드 중심에서 U 오프셋"
+  },
+  "processTooling.sealBars.negative_lower.revision": {
+    "valueType": "string",
+    "unit": null,
+    "label": "공구 개정"
+  },
+  "processTooling.sealBars.negative_lower.location": {
+    "valueType": "string",
+    "unit": null,
+    "label": "location"
+  },
+  "processTooling.sealBars.negative_lower.half": {
+    "valueType": "string",
+    "unit": null,
+    "label": "half"
+  },
+  "processTooling.sealBars.negative_lower.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.negative_lower.v": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 V"
+  },
+  "processTooling.sealBars.negative_lower.rotation": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "배치 회전"
+  },
+  "processTooling.sealBars.negative_lower.extra.enabled": {
+    "valueType": "boolean",
+    "unit": null,
+    "label": "사용"
+  },
+  "processTooling.sealBars.negative_lower.extra.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.negative_lower.extra.v": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 V"
+  },
+  "processTooling.sealBars.negative_lower.extra.length": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 길이 U"
+  },
+  "processTooling.sealBars.negative_lower.extra.width": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 폭 V"
+  },
+  "processTooling.sealBars.negative_lower.relief.enabled": {
+    "valueType": "boolean",
+    "unit": null,
+    "label": "사용"
+  },
+  "processTooling.sealBars.negative_lower.relief.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.negative_lower.relief.length": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 길이 U"
+  },
+  "processTooling.sealBars.negative_lower.relief.depth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "침입 깊이"
+  },
+  "processTooling.sealBars.negative_lower.tabProfile.centerLength": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "중앙 접점 간 L"
+  },
+  "processTooling.sealBars.negative_lower.tabProfile.transitionR": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "전이 원호 R"
+  },
+  "processTooling.sealBars.negative_lower.tabProfile.centerWidth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "중앙 폭"
+  },
+  "processTooling.sealBars.negative_lower.tabProfile.outerWidth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "바깥 폭"
+  },
+  "processTooling.sealBars.negative_lower.tabProfile.startU": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "리드 중심 기준 하단 U"
+  },
+  "processTooling.sealBars.negative_lower.tabProfile.endU": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "리드 중심 기준 상단 U"
+  },
+  "processTooling.sealBars.negative_lower.tabProfile.centerOffset": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "리드 중심에서 U 오프셋"
+  },
+  "processTooling.sealBars.gas_upper.revision": {
+    "valueType": "string",
+    "unit": null,
+    "label": "공구 개정"
+  },
+  "processTooling.sealBars.gas_upper.location": {
+    "valueType": "string",
+    "unit": null,
+    "label": "location"
+  },
+  "processTooling.sealBars.gas_upper.half": {
+    "valueType": "string",
+    "unit": null,
+    "label": "half"
+  },
+  "processTooling.sealBars.gas_upper.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.gas_upper.v": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 V"
+  },
+  "processTooling.sealBars.gas_upper.rotation": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "배치 회전"
+  },
+  "processTooling.sealBars.gas_upper.vertices.*.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.gas_upper.vertices.*.v": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 V"
+  },
+  "processTooling.sealBars.gas_upper.vertices.*.arc": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "도착 구간 원호 처짐 (+내측 연장)"
+  },
+  "processTooling.sealBars.gas_upper.extra.enabled": {
+    "valueType": "boolean",
+    "unit": null,
+    "label": "사용"
+  },
+  "processTooling.sealBars.gas_upper.extra.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.gas_upper.extra.v": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 V"
+  },
+  "processTooling.sealBars.gas_upper.extra.length": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 길이 U"
+  },
+  "processTooling.sealBars.gas_upper.extra.width": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 폭 V"
+  },
+  "processTooling.sealBars.gas_upper.relief.enabled": {
+    "valueType": "boolean",
+    "unit": null,
+    "label": "사용"
+  },
+  "processTooling.sealBars.gas_upper.relief.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.gas_upper.relief.length": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 길이 U"
+  },
+  "processTooling.sealBars.gas_upper.relief.depth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "침입 깊이"
+  },
+  "processTooling.sealBars.gas_lower.revision": {
+    "valueType": "string",
+    "unit": null,
+    "label": "공구 개정"
+  },
+  "processTooling.sealBars.gas_lower.location": {
+    "valueType": "string",
+    "unit": null,
+    "label": "location"
+  },
+  "processTooling.sealBars.gas_lower.half": {
+    "valueType": "string",
+    "unit": null,
+    "label": "half"
+  },
+  "processTooling.sealBars.gas_lower.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.gas_lower.v": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 V"
+  },
+  "processTooling.sealBars.gas_lower.rotation": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "배치 회전"
+  },
+  "processTooling.sealBars.gas_lower.vertices.*.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.gas_lower.vertices.*.v": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 V"
+  },
+  "processTooling.sealBars.gas_lower.vertices.*.arc": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "도착 구간 원호 처짐 (+내측 연장)"
+  },
+  "processTooling.sealBars.gas_lower.extra.enabled": {
+    "valueType": "boolean",
+    "unit": null,
+    "label": "사용"
+  },
+  "processTooling.sealBars.gas_lower.extra.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.gas_lower.extra.v": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 V"
+  },
+  "processTooling.sealBars.gas_lower.extra.length": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 길이 U"
+  },
+  "processTooling.sealBars.gas_lower.extra.width": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 폭 V"
+  },
+  "processTooling.sealBars.gas_lower.relief.enabled": {
+    "valueType": "boolean",
+    "unit": null,
+    "label": "사용"
+  },
+  "processTooling.sealBars.gas_lower.relief.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.gas_lower.relief.length": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 길이 U"
+  },
+  "processTooling.sealBars.gas_lower.relief.depth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "침입 깊이"
+  },
+  "processTooling.sealBars.final_upper.revision": {
+    "valueType": "string",
+    "unit": null,
+    "label": "공구 개정"
+  },
+  "processTooling.sealBars.final_upper.location": {
+    "valueType": "string",
+    "unit": null,
+    "label": "location"
+  },
+  "processTooling.sealBars.final_upper.half": {
+    "valueType": "string",
+    "unit": null,
+    "label": "half"
+  },
+  "processTooling.sealBars.final_upper.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.final_upper.v": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 V"
+  },
+  "processTooling.sealBars.final_upper.rotation": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "배치 회전"
+  },
+  "processTooling.sealBars.final_upper.vertices.*.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.final_upper.vertices.*.v": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 V"
+  },
+  "processTooling.sealBars.final_upper.vertices.*.arc": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "도착 구간 원호 처짐 (+내측 연장)"
+  },
+  "processTooling.sealBars.final_upper.extra.enabled": {
+    "valueType": "boolean",
+    "unit": null,
+    "label": "사용"
+  },
+  "processTooling.sealBars.final_upper.extra.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.final_upper.extra.v": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 V"
+  },
+  "processTooling.sealBars.final_upper.extra.length": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 길이 U"
+  },
+  "processTooling.sealBars.final_upper.extra.width": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 폭 V"
+  },
+  "processTooling.sealBars.final_upper.relief.enabled": {
+    "valueType": "boolean",
+    "unit": null,
+    "label": "사용"
+  },
+  "processTooling.sealBars.final_upper.relief.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.final_upper.relief.length": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 길이 U"
+  },
+  "processTooling.sealBars.final_upper.relief.depth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "침입 깊이"
+  },
+  "processTooling.sealBars.final_lower.revision": {
+    "valueType": "string",
+    "unit": null,
+    "label": "공구 개정"
+  },
+  "processTooling.sealBars.final_lower.location": {
+    "valueType": "string",
+    "unit": null,
+    "label": "location"
+  },
+  "processTooling.sealBars.final_lower.half": {
+    "valueType": "string",
+    "unit": null,
+    "label": "half"
+  },
+  "processTooling.sealBars.final_lower.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.final_lower.v": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 V"
+  },
+  "processTooling.sealBars.final_lower.rotation": {
+    "valueType": "number",
+    "unit": "deg",
+    "label": "배치 회전"
+  },
+  "processTooling.sealBars.final_lower.vertices.*.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.final_lower.vertices.*.v": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 V"
+  },
+  "processTooling.sealBars.final_lower.vertices.*.arc": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "도착 구간 원호 처짐 (+내측 연장)"
+  },
+  "processTooling.sealBars.final_lower.extra.enabled": {
+    "valueType": "boolean",
+    "unit": null,
+    "label": "사용"
+  },
+  "processTooling.sealBars.final_lower.extra.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.final_lower.extra.v": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 V"
+  },
+  "processTooling.sealBars.final_lower.extra.length": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 길이 U"
+  },
+  "processTooling.sealBars.final_lower.extra.width": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 폭 V"
+  },
+  "processTooling.sealBars.final_lower.relief.enabled": {
+    "valueType": "boolean",
+    "unit": null,
+    "label": "사용"
+  },
+  "processTooling.sealBars.final_lower.relief.u": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "작업면 U"
+  },
+  "processTooling.sealBars.final_lower.relief.length": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "외곽 길이 U"
+  },
+  "processTooling.sealBars.final_lower.relief.depth": {
+    "valueType": "number",
+    "unit": "mm",
+    "label": "침입 깊이"
+  }
+}

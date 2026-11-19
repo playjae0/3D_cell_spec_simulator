@@ -9,3 +9,6 @@ private-reference/
 
 dist-preview/
 .preview-build-*/
+
+build/
+trial-evidence/

@@ -1,0 +1,28 @@
+Windows 시험판 입력키트 1.4 보강 규칙 (기존 1.2 설명과 충돌하면 이 규칙 우선)
+
+1. 01_Blank_Intake.json은 null 빈 양식이며 04_Filled_Virtual_Intake.json은 공개 가상 작성 예시입니다.
+   모델 ID·이름·개정, 원점/축/극성, 활성 공정의 필수값, 출처/문서 위치, 사용자 검토가 필요합니다.
+   사내 문서에 없는 값은 null/status=missing/reviewStatus=pending으로 유지합니다.
+   Copilot은 검토 완료를 대신 결정하지 않습니다. 누락값을 예시 숫자, 0, 반대극 값으로 채우지 마세요.
+2. formatVersion=1.4, dictionaryVersion=cell-intake-1.4.
+   processTooling은 ID/배열/버전만 있는 구조입니다. 그 안의 치수/개정/방식 값은 null로 유지합니다.
+   모든 실제 값은 parameters[].value에만 입력합니다. 구조와 값이 이중으로 관리되지 않습니다.
+   공구 파라미터 ID는 processTooling.으로 시작합니다. 양극/음극·스팟·윤곽점 ID는 보존합니다.
+   1.4 시험판은 공구 구성 전체의 값·출처·검토를 요구합니다. 미사용 공구도 구성 검토가 필요합니다.
+   기존 1.0~1.3 양식은 호환됩니다. 1.3 공구 스냅샷은 보존되지만 개별 출처는 추정하지 않습니다.
+3. 02_Field_Dictionary.json의 valueType/unit/activeStages/basis/requiredRule을 따릅니다.
+   mm와 원문 µm는 구분합니다. µm/um/μm는 mm로 정규화하며 원 값·단위·문서 위치를 보존합니다.
+   값이 없으면 null이며 0과 다릅니다. 지원하지 않는 단위/ID는 검증에서 막힙니다.
+   도면 기준을 앱 기준에 대응시키지 못하면 coordinateMapping을 미확정으로 남기세요.
+   임의의 기준변환·미러링·대칭·특허 실시예 채택 금지. unmappedRequirements/conflicts에 기록합니다.
+4. 최신 입력 포함: 혼/엔빌 bodyDepth, 각 피치·치높이, 독립 공구 배치/개정, 양극/음극 포일 절단량,
+   실링 프로파일 중앙 접점 간 길이/R, 절단선/접힘선, 상하 컵 배치, 파우치 상하 깊이/반경.
+   검사 데이텀/주석/측정 기준은 inspectionDatums/inspectionItems/anchors 등 기존 구조로 보존합니다.
+   허용 범위와 부품 간 간섭은 ‘임시 CAD 생성’에서도 검사합니다. JSON 검토 통과만으로 실물 승인 아님.
+5. 출력은 JSON입니다. sourceRefs마다 sourceId와 문서 내 페이지/표/행/치수 ID인 locator를 기록합니다.
+   parameters의 originalValue/originalUnit/originalText와 sources의 문서명/개정을 보존합니다.
+   담당자가 JSON을 검토한 후 모델/입력 양식에서 재검증하고 필요한 항목의 검토 완료를 기록합니다.
+6. 05_Review.csv는 04_Filled_Virtual_Intake.json에서 생성한 표입니다.
+   수정 후 앱의 ‘현재 JSON 검토 CSV’로 재생성합니다. CSV만 수정해도 CAD에는 적용되지 않습니다.
+   source/basis가 JSON 객체인 칸은 상세 내용을 유지한 것입니다. 스프레드시트 수식으로 해석될 수 있는
+   원문 문자열은 CSV에 작은따옴표를 붙여 보호합니다. 원본 값은 JSON이 기준입니다.

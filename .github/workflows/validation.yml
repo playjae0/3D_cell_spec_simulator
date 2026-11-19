@@ -1,9 +1,19 @@
 name: Core and intake regression
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      target_ref:
+        description: 'Windows 시험판으로 만들 브랜치/태그/커밋 (이 패키징 코드가 포함된 버전)'
+        required: true
+        default: main
+        type: string
 permissions:
   contents: read
 jobs:
   verify:
+    if: github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,3 +29,103 @@ jobs:
       - run: npm run build
       - run: python -m pip install -r cad/requirements.lock.txt
       - run: python -m unittest discover -s tests -p '*geometry*.py' -v
+  windows-package:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: windows-2022
+    timeout-minutes: 45
+    env:
+      PYTHONUTF8: '1'
+    outputs:
+      sha: ${{ steps.version.outputs.sha }}
+      short: ${{ steps.version.outputs.short }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_ref }}
+      - name: Record actual checkout
+        id: version
+        shell: pwsh
+        run: |
+          $sha = git rev-parse HEAD
+          "sha=$sha" >> $env:GITHUB_OUTPUT
+          "short=$($sha.Substring(0,12))" >> $env:GITHUB_OUTPUT
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.10'
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: python -m pip install pyinstaller==6.16.0
+      - run: npm run build:windows
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CellStudio-win-x64-${{ steps.version.outputs.short }}
+          path: build/windows/CellStudio-win-x64-*.zip
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CellStudio-IntakeKit-${{ steps.version.outputs.short }}
+          path: build/windows/CellStudio-IntakeKit-*.zip
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CellStudio-package-report-${{ steps.version.outputs.short }}
+          path: build/windows/size-report.json
+          if-no-files-found: error
+  windows-extracted-offline:
+    needs: windows-package
+    runs-on: windows-2022
+    timeout-minutes: 35
+    env:
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.windows-package.outputs.sha }}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: CellStudio-*
+          path: downloaded
+          merge-multiple: true
+      - name: Prepare external test harness (not part of application)
+        run: python -m pip install playwright==1.56.0
+      - name: Extract downloaded ZIPs into Korean and space path
+        shell: pwsh
+        run: |
+          New-Item -Type Directory -Force 'trial-evidence' | Out-Null
+          $dest = Join-Path $env:RUNNER_TEMP '사내 시험 Cell Studio'
+          New-Item -Type Directory -Force $dest | Out-Null
+          Get-ChildItem downloaded/*.zip | ForEach-Object { Expand-Archive -LiteralPath $_.FullName -DestinationPath $dest }
+          "TRIAL_ROOT=$dest" >> $env:GITHUB_ENV
+      - name: Offline extracted EXE acceptance
+        shell: pwsh
+        run: |
+          $app = (Get-ChildItem $env:TRIAL_ROOT -Directory -Filter 'CellStudio-win-x64-*').FullName
+          $kit = (Get-ChildItem $env:TRIAL_ROOT -Directory -Filter 'CellStudio-IntakeKit-*').FullName
+          $rule = 'CellStudioTrialOffline-' + $env:GITHUB_RUN_ID
+          $ranges = @('0.0.0.0-126.255.255.255','128.0.0.0-255.255.255.255','::/0')
+          try {
+            New-NetFirewallRule -DisplayName $rule -Direction Outbound -Action Block -RemoteAddress $ranges -Profile Any | Out-Null
+            $blocked = $false
+            try { Invoke-WebRequest https://www.python.org -TimeoutSec 5 | Out-Null } catch { $blocked = $true }
+            if (-not $blocked) { throw 'External network was not blocked' }
+            @{ externalHttpsBlocked=$blocked; policy='all outbound non-loopback addresses'; hostname=$env:COMPUTERNAME; image=$env:ImageOS; appPythonInstalled=$false; note='GitHub hosted runner has developer tools; application PATH is isolated, test harness uses host Python' } | ConvertTo-Json | Set-Content -Encoding utf8 trial-evidence/network.json
+            python scripts/windows/acceptance.py --bundle "$app" --intake "$kit/04_Filled_Virtual_Intake.json" --out "$PWD/trial-evidence" --offline
+            if ($LASTEXITCODE -ne 0) { throw 'Extracted EXE acceptance failed' }
+          } finally {
+            Get-NetFirewallRule -DisplayName $rule -ErrorAction SilentlyContinue | Remove-NetFirewallRule
+          }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: CellStudio-Windows-evidence-${{ needs.windows-package.outputs.short }}
+          path: trial-evidence/
+          if-no-files-found: error
+          retention-days: 30
