@@ -2,7 +2,7 @@
 import os,json,argparse
 from pathlib import Path
 from playwright.sync_api import sync_playwright,expect
-cli=argparse.ArgumentParser();cli.add_argument('--url',default='http://127.0.0.1:19878');cli.add_argument('--mode',default='live');cli.add_argument('--touch',action='store_true');args=cli.parse_args()
+cli=argparse.ArgumentParser();cli.add_argument('--url',default='http://127.0.0.1:19878');cli.add_argument('--mode',default='live');cli.add_argument('--touch',action='store_true');cli.add_argument('--label');args=cli.parse_args()
 out=Path('docs/component-v2/evidence');out.mkdir(parents=True,exist_ok=True)
 with sync_playwright() as pw:
  b=pw.chromium.launch(executable_path='/usr/bin/chromium',headless=True,args=['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader'])
@@ -15,7 +15,7 @@ with sync_playwright() as pw:
    try:responses.append({'status':r.status,'data':r.json()})
    except Exception:pass
  page.on('response',response)
- label=args.mode+('-touch' if args.touch else '')
+ label=args.label or args.mode+('-touch' if args.touch else '')
  def shot(name):
   print('capture',name,flush=True);page.screenshot(path=str(out/f'{label}-{name}.png'),full_page=True)
  def click(q):page.locator(q).tap() if args.touch else page.locator(q).click()
@@ -82,7 +82,7 @@ with sync_playwright() as pw:
   click('#page-parts');open_card('welded','anvil');original_stage=page.locator('#stage').input_value()
  click('#application-toggle');expect(page.locator('#reference-title')).to_contain_text('S3',timeout=180000);shot('application');assert page.locator('#stage').input_value()==original_stage
  open_card('seal');expect(page.locator('.seal-cross-sections')).to_be_visible(timeout=180000);expect(page.locator('[data-section-id=central] summary')).to_contain_text('폭 3.000');click('[data-section-id=outside-left] summary');expect(page.locator('[data-section-id=outside-left] summary')).to_contain_text('폭 5.000');shot('seal-section')
- click('#page-product');expect(page.locator('#process-overview')).to_be_visible();expect(page.locator('.process-card[data-state=ready]')).to_have_count(13,timeout=360000)
+ click('#page-product');click('#page-overview');expect(page.locator('#process-overview')).to_be_visible();expect(page.locator('.process-card[data-state=ready]')).to_have_count(13,timeout=360000)
  click('.process-card[data-stage=preweld]');expect(page.locator('#stage')).to_have_value('preweld',timeout=180000)
  # group visibility restores all pole parts without camera jumps
  click('[data-group-eye=positive]') if page.locator('[data-group-eye=positive]').count() else None

@@ -1044,7 +1044,7 @@
   },
   "measurements": [
     {
-      "id": "edc6730e-317e-4371-bc1e-0e3437be2b0e",
+      "id": "b6b2d3fa-ce1b-4a94-a771-7823f1f14249",
       "name": "조립체 길이",
       "group": "적층체",
       "stage": "tab_sealed",
@@ -1068,7 +1068,7 @@
       }
     },
     {
-      "id": "83425355-25ee-4c59-a7a4-5b56c33ad520",
+      "id": "52847a69-c5c0-4c70-bc93-d0865b4322c1",
       "name": "조립체 폭",
       "group": "적층체",
       "stage": "tab_sealed",
@@ -1092,7 +1092,7 @@
       }
     },
     {
-      "id": "c5b67137-b0d5-474b-8d11-2b2dbaab5fe9",
+      "id": "d585f8d3-640b-4e93-9b32-09a22bf8f87b",
       "name": "조립체 두께",
       "group": "적층체",
       "stage": "tab_sealed",
@@ -1116,7 +1116,7 @@
       }
     },
     {
-      "id": "5d61e67a-b3bb-4bdd-b462-3d35ca4d3d11",
+      "id": "2eb49378-a0ae-4ffd-b6fd-541de09dec52",
       "name": "양극 포일 일정 폭",
       "group": "양극 포일",
       "stage": "tab_sealed",
@@ -1140,7 +1140,7 @@
       }
     },
     {
-      "id": "c47fdbd1-39f7-4a11-b4c1-7c67bdc659c0",
+      "id": "f9be10dd-52dd-446c-b4a5-3b5ab840cb80",
       "name": "양극 뿌리 높이",
       "group": "양극 포일",
       "stage": "tab_sealed",
@@ -1164,7 +1164,7 @@
       }
     },
     {
-      "id": "a250f5ca-7a08-43fc-a30f-e2fc59a7a084",
+      "id": "9da8417d-eff9-4503-9b18-6c03fc5eb9b4",
       "name": "양극 집속 거리",
       "group": "양극 집속",
       "stage": "tab_sealed",
@@ -1188,7 +1188,7 @@
       }
     },
     {
-      "id": "7aa9e8ba-2d80-4e9f-a4e3-c1c636657245",
+      "id": "21a71a00-819f-435c-bcbf-6867ae61fc0d",
       "name": "양극 집속 높이",
       "group": "양극 집속",
       "stage": "tab_sealed",
@@ -1212,7 +1212,7 @@
       }
     },
     {
-      "id": "085aea59-675e-4e93-bb83-2971c5fc040e",
+      "id": "70517ee3-e204-4a2f-b84f-b502139e0ec4",
       "name": "양극 집속 두께",
       "group": "양극 집속",
       "stage": "tab_sealed",
@@ -1236,7 +1236,7 @@
       }
     },
     {
-      "id": "cce7e8ef-e948-48d5-bbe7-d570734b1e49",
+      "id": "b5327a42-a107-48a3-8e50-01b0bc7cddb7",
       "name": "양극 Y 편심",
       "group": "양극 집속",
       "stage": "tab_sealed",
@@ -1260,7 +1260,7 @@
       }
     },
     {
-      "id": "2e7fe80d-29e1-47fe-9dd6-42dc965f30bf",
+      "id": "e0974499-129b-4a79-a4f8-a8443a44e08a",
       "name": "양극 가용접 pre-1 길이",
       "group": "양극 가용접",
       "stage": "tab_sealed",
@@ -1284,7 +1284,7 @@
       }
     },
     {
-      "id": "801d757a-147f-4ae2-9905-c876f2e92821",
+      "id": "26e06150-564c-443a-a9e4-b0f3368f3e2d",
       "name": "양극 가용접 pre-1 폭",
       "group": "양극 가용접",
       "stage": "tab_sealed",
@@ -1308,7 +1308,7 @@
       }
     },
     {
-      "id": "d6f9e91c-6e95-4b2b-87b4-39a43c99d484",
+      "id": "58909762-abdb-4bc1-9189-b1991d0c0915",
       "name": "양극 가용접 시작 위치",
       "group": "양극 가용접",
       "stage": "tab_sealed",
@@ -1332,7 +1332,7 @@
       }
     },
     {
-      "id": "17405386-f40d-4154-8198-d20f146f7119",
+      "id": "c40125eb-36c3-47eb-abd0-50788d0e131a",
       "name": "양극 가용접 탭 끝 거리",
       "group": "양극 가용접",
       "stage": "tab_sealed",
@@ -1356,7 +1356,7 @@
       }
     },
     {
-      "id": "d1222680-7271-4fa4-90ab-0ab3e25c85eb",
+      "id": "9b826f1a-4086-47c9-9ce9-b6d651d93f7f",
       "name": "양극 가용접 측면 거리",
       "group": "양극 가용접",
       "stage": "tab_sealed",
@@ -1380,7 +1380,7 @@
       }
     },
     {
-      "id": "c1a853ca-b228-4c4e-aef6-68ee688bf8e3",
+      "id": "7dac7a72-7470-42ee-9714-cb25e3baff27",
       "name": "양극 메인 용접 main 길이",
       "group": "양극 메인 용접",
       "stage": "tab_sealed",
@@ -1404,7 +1404,7 @@
       }
     },
     {
-      "id": "1b0d8242-c95c-4519-ae69-926e9175547d",
+      "id": "8df7b3f2-1e86-448f-8ba0-fca9d39a6f06",
       "name": "양극 메인 용접 main 폭",
       "group": "양극 메인 용접",
       "stage": "tab_sealed",
@@ -1428,7 +1428,7 @@
       }
     },
     {
-      "id": "43e0e330-d943-4f65-b43e-9fb2dd9b875f",
+      "id": "800b8369-40be-49df-ba3e-ff4dbc23ec84",
       "name": "양극 메인 용접 시작 위치",
       "group": "양극 메인 용접",
       "stage": "tab_sealed",
@@ -1452,7 +1452,7 @@
       }
     },
     {
-      "id": "0a5280f4-a3b4-49f5-8ddb-46d765782178",
+      "id": "42c721f9-28aa-41ab-beb2-49f3a3926a5a",
       "name": "양극 메인 용접 탭 끝 거리",
       "group": "양극 메인 용접",
       "stage": "tab_sealed",
@@ -1476,7 +1476,7 @@
       }
     },
     {
-      "id": "fa53fc0c-f3ab-4b96-b304-50586a84fda0",
+      "id": "9dc2c91e-e831-40f3-a471-99932e940190",
       "name": "양극 메인 용접 측면 거리",
       "group": "양극 메인 용접",
       "stage": "tab_sealed",
@@ -1500,7 +1500,7 @@
       }
     },
     {
-      "id": "32502c25-e34b-40b2-9fdb-75cbaaf46203",
+      "id": "a639da03-3e67-4761-ac24-b316a0d57b2e",
       "name": "양극 용접–리드 끝",
       "group": "양극 메인 용접",
       "stage": "tab_sealed",
@@ -1524,7 +1524,7 @@
       }
     },
     {
-      "id": "64e01054-3392-4b6b-8004-52857f0aa868",
+      "id": "34a342db-a710-46d2-88e9-eaac215ab07f",
       "name": "양극 테이프 yellow 길이",
       "group": "양극 테이프",
       "stage": "tab_sealed",
@@ -1548,7 +1548,7 @@
       }
     },
     {
-      "id": "1b1763b1-bcf5-4a79-8c6e-9b138bb70ead",
+      "id": "d5e86895-9f81-4e33-a16d-099f92d8f51f",
       "name": "양극 테이프 yellow 폭",
       "group": "양극 테이프",
       "stage": "tab_sealed",
@@ -1572,7 +1572,7 @@
       }
     },
     {
-      "id": "a6c4a58e-e651-41fa-ab64-d1b57f52138f",
+      "id": "bdbf8cbc-47fd-4885-9163-d11e421bacc1",
       "name": "양극 테이프 시작 위치",
       "group": "양극 테이프",
       "stage": "tab_sealed",
@@ -1596,7 +1596,7 @@
       }
     },
     {
-      "id": "c25ad8c3-db9f-4f01-b0da-ff9586d8b227",
+      "id": "a9897964-b244-4ad4-8340-f5c3f1ff54ae",
       "name": "양극 테이프 탭 끝 거리",
       "group": "양극 테이프",
       "stage": "tab_sealed",
@@ -1620,7 +1620,7 @@
       }
     },
     {
-      "id": "a16330d9-0dfd-4737-bb4b-a7b1fd4ee3c3",
+      "id": "58775ad1-c384-4cdd-9141-2acafe859d66",
       "name": "양극 테이프 측면 거리",
       "group": "양극 테이프",
       "stage": "tab_sealed",
@@ -1644,7 +1644,7 @@
       }
     },
     {
-      "id": "1f090bcb-9c1d-4a63-8812-52f3efc0a048",
+      "id": "e85e0250-99b9-4625-9730-6f0412c8ad1a",
       "name": "양극 테이프–용접 시작",
       "group": "양극 테이프",
       "stage": "tab_sealed",
@@ -1668,7 +1668,7 @@
       }
     },
     {
-      "id": "5f3882db-1f39-40fa-b469-54585c6e72f6",
+      "id": "61cacc29-777a-45d9-9d33-a092bae3a199",
       "name": "양극 리드 배치",
       "group": "양극 리드",
       "stage": "tab_sealed",
@@ -1692,7 +1692,7 @@
       }
     },
     {
-      "id": "23e7b2f7-cc3d-4024-95f2-d41c0452c169",
+      "id": "a6bcac4c-aef6-4539-83d2-ff3e12fd1bab",
       "name": "양극 리드 폭",
       "group": "양극 리드",
       "stage": "tab_sealed",
@@ -1716,7 +1716,7 @@
       }
     },
     {
-      "id": "71fe14e2-4c24-474d-bb91-f7e832a2c772",
+      "id": "858fcf8e-64f6-435d-8c2f-b8db88b86ee0",
       "name": "양극 겹침 길이",
       "group": "양극 리드",
       "stage": "tab_sealed",
@@ -1740,7 +1740,7 @@
       }
     },
     {
-      "id": "85815bd6-8cf0-4668-a161-bdffc0c1557b",
+      "id": "a1f1560f-6436-425f-ba96-5cf9ab853503",
       "name": "양극 겹침 폭",
       "group": "양극 리드",
       "stage": "tab_sealed",
@@ -1764,7 +1764,7 @@
       }
     },
     {
-      "id": "0d17155f-e0df-47ac-a425-4fdc5a618989",
+      "id": "140fc9e2-f822-415b-85cb-2a3032f98a5c",
       "name": "양극 조립체 밖 돌출",
       "group": "양극 리드",
       "stage": "tab_sealed",
@@ -1788,7 +1788,7 @@
       }
     },
     {
-      "id": "c3497745-712b-4995-8cd9-244fb4b55e7d",
+      "id": "bceaad28-d159-4074-a310-c0663cf205a7",
       "name": "음극 포일 일정 폭",
       "group": "음극 포일",
       "stage": "tab_sealed",
@@ -1812,7 +1812,7 @@
       }
     },
     {
-      "id": "4c2990f3-c894-44cf-8e14-43cab361d52a",
+      "id": "0906ce85-6f99-462e-b14f-1845396c7e70",
       "name": "음극 뿌리 높이",
       "group": "음극 포일",
       "stage": "tab_sealed",
@@ -1836,7 +1836,7 @@
       }
     },
     {
-      "id": "1bd3a976-6cac-438b-a06d-82bcd076a4b2",
+      "id": "f84a37c3-d9e5-4c6f-b932-386d4dd1d011",
       "name": "음극 집속 거리",
       "group": "음극 집속",
       "stage": "tab_sealed",
@@ -1860,7 +1860,7 @@
       }
     },
     {
-      "id": "29ac2b46-8368-4c5f-a9d0-b5b07c24eed0",
+      "id": "a391f8af-dee0-4ef5-bbe5-038cfb7fc1b3",
       "name": "음극 집속 높이",
       "group": "음극 집속",
       "stage": "tab_sealed",
@@ -1884,7 +1884,7 @@
       }
     },
     {
-      "id": "5ec7d79a-c01f-4ec3-a8ce-3bb0ff691be2",
+      "id": "9b454839-654e-4faa-8465-6058ab72c20c",
       "name": "음극 집속 두께",
       "group": "음극 집속",
       "stage": "tab_sealed",
@@ -1908,7 +1908,7 @@
       }
     },
     {
-      "id": "f13a5938-f3e0-45b6-9964-cb0723032423",
+      "id": "49f9062c-dde3-442d-a196-1417a8946d23",
       "name": "음극 Y 편심",
       "group": "음극 집속",
       "stage": "tab_sealed",
@@ -1932,7 +1932,7 @@
       }
     },
     {
-      "id": "0d778e13-9e92-4aaf-a67a-0f64d7bfa51c",
+      "id": "4f83717d-e515-4952-a8bf-eb55054d320d",
       "name": "음극 가용접 pre-1 길이",
       "group": "음극 가용접",
       "stage": "tab_sealed",
@@ -1956,7 +1956,7 @@
       }
     },
     {
-      "id": "64136a26-aeef-42a6-9e81-80436757a30e",
+      "id": "335f7949-50f5-40f1-86c1-c9d386f82f41",
       "name": "음극 가용접 pre-1 폭",
       "group": "음극 가용접",
       "stage": "tab_sealed",
@@ -1980,7 +1980,7 @@
       }
     },
     {
-      "id": "315f53cb-3431-4b6c-93f0-f7b83411e7ff",
+      "id": "1d829edd-e3c9-4bf4-854c-492685f27efe",
       "name": "음극 가용접 시작 위치",
       "group": "음극 가용접",
       "stage": "tab_sealed",
@@ -2004,7 +2004,7 @@
       }
     },
     {
-      "id": "332e0d59-6176-4d6f-adc8-143d537238e7",
+      "id": "09fdbb6f-c182-49b0-9810-8031c65bc2c7",
       "name": "음극 가용접 탭 끝 거리",
       "group": "음극 가용접",
       "stage": "tab_sealed",
@@ -2028,7 +2028,7 @@
       }
     },
     {
-      "id": "6162a6be-751d-40c2-b5ec-58a0969c44d1",
+      "id": "67e72066-50f7-44da-abfc-10333cbf3ae1",
       "name": "음극 가용접 측면 거리",
       "group": "음극 가용접",
       "stage": "tab_sealed",
@@ -2052,7 +2052,7 @@
       }
     },
     {
-      "id": "48db3a43-83e2-4603-bc87-b7ede6ad7e5a",
+      "id": "296bd53d-8411-483a-84f6-d98a10aca77b",
       "name": "음극 메인 용접 main 길이",
       "group": "음극 메인 용접",
       "stage": "tab_sealed",
@@ -2076,7 +2076,7 @@
       }
     },
     {
-      "id": "51d06c93-0e97-4641-840a-8acaa4572ae6",
+      "id": "ad149a7d-44b3-4887-a53a-e23ce70d2dd1",
       "name": "음극 메인 용접 main 폭",
       "group": "음극 메인 용접",
       "stage": "tab_sealed",
@@ -2100,7 +2100,7 @@
       }
     },
     {
-      "id": "4759676b-ae49-45ef-8637-8d36fbad41b5",
+      "id": "8417fbb6-fa2a-4a65-ab78-94d84d3b4442",
       "name": "음극 메인 용접 시작 위치",
       "group": "음극 메인 용접",
       "stage": "tab_sealed",
@@ -2124,7 +2124,7 @@
       }
     },
     {
-      "id": "415f9fa2-aec4-42d5-8cd1-742ef00bc891",
+      "id": "04c005a1-a5af-4b4a-8166-1ed8a4740bdd",
       "name": "음극 메인 용접 탭 끝 거리",
       "group": "음극 메인 용접",
       "stage": "tab_sealed",
@@ -2148,7 +2148,7 @@
       }
     },
     {
-      "id": "a3e3e979-beb4-4b4a-a152-dca19c121eae",
+      "id": "7c6236ae-9270-45c7-9901-13871ffdc94b",
       "name": "음극 메인 용접 측면 거리",
       "group": "음극 메인 용접",
       "stage": "tab_sealed",
@@ -2172,7 +2172,7 @@
       }
     },
     {
-      "id": "e1bd66e9-1f21-4a3e-ae13-c1e2ae723c9a",
+      "id": "df497c19-741a-4e69-bb3c-d3edb3c5cefa",
       "name": "음극 용접–리드 끝",
       "group": "음극 메인 용접",
       "stage": "tab_sealed",
@@ -2196,7 +2196,7 @@
       }
     },
     {
-      "id": "9c97eefe-cc3c-4659-9acf-1be7d837f9a1",
+      "id": "525f679c-044d-4fc3-a0bc-a718b6e33f38",
       "name": "음극 테이프 yellow 길이",
       "group": "음극 테이프",
       "stage": "tab_sealed",
@@ -2220,7 +2220,7 @@
       }
     },
     {
-      "id": "7964c631-2682-4e17-9815-49dc6f57891e",
+      "id": "e9dfefe7-6b57-44dd-8e01-df453782a9fb",
       "name": "음극 테이프 yellow 폭",
       "group": "음극 테이프",
       "stage": "tab_sealed",
@@ -2244,7 +2244,7 @@
       }
     },
     {
-      "id": "9bb2ea87-ccc1-422b-9ebc-52f00061b347",
+      "id": "d955e4d1-f61b-4a0c-901f-c9f36d8eaea0",
       "name": "음극 테이프 시작 위치",
       "group": "음극 테이프",
       "stage": "tab_sealed",
@@ -2268,7 +2268,7 @@
       }
     },
     {
-      "id": "3fb57523-205b-4757-acf8-03a044ded23c",
+      "id": "1f0363c5-317f-4f17-89dc-150e892fadab",
       "name": "음극 테이프 탭 끝 거리",
       "group": "음극 테이프",
       "stage": "tab_sealed",
@@ -2292,7 +2292,7 @@
       }
     },
     {
-      "id": "bc58f066-1891-48a2-9ce8-317b8a024213",
+      "id": "dc86c56b-59ed-4b97-974d-7b437b012174",
       "name": "음극 테이프 측면 거리",
       "group": "음극 테이프",
       "stage": "tab_sealed",
@@ -2316,7 +2316,7 @@
       }
     },
     {
-      "id": "06ef8ff6-b5ef-49e1-a863-4dd65c29cd84",
+      "id": "54140fc4-ca15-497c-8b4d-275d7b709668",
       "name": "음극 테이프–용접 시작",
       "group": "음극 테이프",
       "stage": "tab_sealed",
@@ -2340,7 +2340,7 @@
       }
     },
     {
-      "id": "b79cb0f9-5017-4a43-b39a-24c23ddda972",
+      "id": "4a4da548-71d3-4501-ad8d-af769a0fe66f",
       "name": "음극 리드 배치",
       "group": "음극 리드",
       "stage": "tab_sealed",
@@ -2364,7 +2364,7 @@
       }
     },
     {
-      "id": "81c0b121-7a10-47ff-b100-a513b40c5c73",
+      "id": "747dae76-500b-44b4-bd77-8d8b0c9a8b04",
       "name": "음극 리드 폭",
       "group": "음극 리드",
       "stage": "tab_sealed",
@@ -2388,7 +2388,7 @@
       }
     },
     {
-      "id": "86644125-355f-4f5c-b933-4e42387ce20f",
+      "id": "4e5e426d-e6a4-4d3c-8496-0d46e7c49c2c",
       "name": "음극 겹침 길이",
       "group": "음극 리드",
       "stage": "tab_sealed",
@@ -2412,7 +2412,7 @@
       }
     },
     {
-      "id": "9cc39a8c-f36f-4855-b24f-489831340e44",
+      "id": "100f4df3-9ad6-4705-8295-7cdd2c7b28b1",
       "name": "음극 겹침 폭",
       "group": "음극 리드",
       "stage": "tab_sealed",
@@ -2436,7 +2436,7 @@
       }
     },
     {
-      "id": "11f486e1-7094-4cf1-974f-a353a14f1e0b",
+      "id": "dce60269-7e0a-433c-b9e6-b4e5aaedfbfb",
       "name": "음극 조립체 밖 돌출",
       "group": "음극 리드",
       "stage": "tab_sealed",

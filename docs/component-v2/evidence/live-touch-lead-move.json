@@ -1,0 +1,2511 @@
+{
+  "schemaVersion": 3,
+  "modelVersion": "pouch-process-cad-2",
+  "unit": "mm",
+  "demo": true,
+  "stage": "assembly",
+  "product": {
+    "id": "virtual-pouch-phase1",
+    "stack": {
+      "length": 240,
+      "width": 68,
+      "thickness": 7,
+      "cornerR": 1.2
+    },
+    "positive": {
+      "end": -1,
+      "material": "미지정 · 양극 예시",
+      "tab": {
+        "rootSpread": 6.4,
+        "rootY": -1,
+        "rootZ": 0,
+        "gatherDistance": 10,
+        "gatherY": -1,
+        "gatherZ": 0,
+        "thickness": 0.6,
+        "edgeR": 0.1,
+        "foilWidth": 32,
+        "rootLength": 21,
+        "axialShortening": 0
+      },
+      "lead": {
+        "start": 2.2,
+        "length": 38,
+        "width": 37,
+        "thickness": 0.35,
+        "offsetY": 0.5,
+        "contactSide": "below"
+      },
+      "joints": [
+        {
+          "id": "main",
+          "enabled": true,
+          "kind": "tab_to_lead",
+          "process": "unspecified",
+          "start": 4,
+          "length": 4.5,
+          "width": 26,
+          "offsetY": 0,
+          "postThicknessMeasured": null
+        }
+      ],
+      "tapes": [
+        {
+          "id": "yellow",
+          "enabled": true,
+          "host": "tab",
+          "path": "top",
+          "start": 3.5,
+          "length": 5,
+          "width": 31,
+          "offsetY": 0,
+          "thickness": 0.08,
+          "edgeDrop": 0.2,
+          "backside": "unconfirmed",
+          "face": "top"
+        }
+      ],
+      "leadFilm": {
+        "enabled": true,
+        "start": 20.2,
+        "length": 5,
+        "overhang": 2,
+        "thickness": 0.12
+      },
+      "specs": [],
+      "prewelds": [
+        {
+          "id": "pre-1",
+          "enabled": true,
+          "kind": "tab_to_tab",
+          "process": "unspecified",
+          "start": 0.5,
+          "length": 2,
+          "width": 24,
+          "offsetY": 0
+        }
+      ],
+      "preweldLead": {
+        "included": false,
+        "start": 2,
+        "length": 38,
+        "width": 36,
+        "thickness": 0.35,
+        "offsetY": 0.5,
+        "contactSide": "below"
+      }
+    },
+    "negative": {
+      "end": 1,
+      "material": "미지정 · 음극 예시",
+      "tab": {
+        "rootSpread": 6,
+        "rootY": 1.5,
+        "rootZ": 0,
+        "gatherDistance": 9,
+        "gatherY": 1.5,
+        "gatherZ": 0,
+        "thickness": 0.5,
+        "edgeR": 0.08,
+        "foilWidth": 29,
+        "rootLength": 21,
+        "axialShortening": 0
+      },
+      "lead": {
+        "start": 2.5,
+        "length": 40,
+        "width": 34,
+        "thickness": 0.25,
+        "offsetY": -0.5,
+        "contactSide": "below"
+      },
+      "joints": [
+        {
+          "id": "main",
+          "enabled": true,
+          "kind": "tab_to_lead",
+          "process": "unspecified",
+          "start": 5,
+          "length": 4,
+          "width": 24,
+          "offsetY": 0,
+          "postThicknessMeasured": null
+        }
+      ],
+      "tapes": [
+        {
+          "id": "yellow",
+          "enabled": true,
+          "host": "tab",
+          "path": "top",
+          "start": 4,
+          "length": 5,
+          "width": 28,
+          "offsetY": 0,
+          "thickness": 0.07,
+          "edgeDrop": 0.18,
+          "backside": "unconfirmed",
+          "face": "top"
+        }
+      ],
+      "leadFilm": {
+        "enabled": true,
+        "start": 21,
+        "length": 5,
+        "overhang": 1.5,
+        "thickness": 0.1
+      },
+      "specs": [],
+      "prewelds": [
+        {
+          "id": "pre-1",
+          "enabled": true,
+          "kind": "tab_to_tab",
+          "process": "unspecified",
+          "start": 0.5,
+          "length": 2,
+          "width": 22,
+          "offsetY": 0
+        }
+      ],
+      "preweldLead": {
+        "included": false,
+        "start": 2.5,
+        "length": 40,
+        "width": 34,
+        "thickness": 0.25,
+        "offsetY": -0.5,
+        "contactSide": "below"
+      }
+    },
+    "pouch": {
+      "openingLength": 298,
+      "openingWidth": 79,
+      "planR": 7,
+      "filmThickness": 0.15,
+      "upperDepth": 4.3,
+      "lowerDepth": 4.2,
+      "upperFloorR": 1.2,
+      "upperRimR": 0.85,
+      "lowerFloorR": 1.1,
+      "lowerRimR": 0.8,
+      "sealGap": 1.2,
+      "sealWidth": 3.5,
+      "trimMargin": 2.5,
+      "foldAngle": 90,
+      "foldR": 0.8,
+      "packagingExtraYMinus": 14,
+      "packagingExtraYPlus": 0
+    },
+    "pouchProcess": {
+      "version": 1,
+      "type": "double_cup",
+      "construction": "separate_sheets",
+      "sidewall": "vertical",
+      "seamGap": 0.8,
+      "neutralFraction": 0.5,
+      "assemblyPose": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "rx": 0,
+        "ry": 0,
+        "rz": 0
+      },
+      "sheets": {
+        "upper": {
+          "openingLength": 298,
+          "openingWidth": 79,
+          "depth": 4.3,
+          "floorR": 1.2,
+          "rimR": 0.85,
+          "planR": 7,
+          "filmThickness": 0.15,
+          "blank": {
+            "xMinus": -163,
+            "xPlus": 165,
+            "yMinus": -80,
+            "yPlus": 45
+          },
+          "cut": {
+            "xMinus": -160,
+            "xPlus": 161,
+            "yMinus": -50,
+            "yPlus": 45
+          }
+        },
+        "lower": {
+          "openingLength": 298,
+          "openingWidth": 79,
+          "depth": 4.2,
+          "floorR": 1.1,
+          "rimR": 0.8,
+          "planR": 7,
+          "filmThickness": 0.15,
+          "blank": {
+            "xMinus": -163,
+            "xPlus": 165,
+            "yMinus": -45,
+            "yPlus": 80
+          },
+          "cut": {
+            "xMinus": -160,
+            "xPlus": 161,
+            "yMinus": -45,
+            "yPlus": 50
+          }
+        }
+      },
+      "toolFaces": {
+        "upper_xMinus": {
+          "enabled": true,
+          "half": "upper",
+          "edge": "xMinus",
+          "start": 2,
+          "width": 5,
+          "length": 71,
+          "offset": 0,
+          "cornerR": 0.7,
+          "reliefEnabled": false,
+          "reliefLength": 10,
+          "reliefWidth": 1,
+          "reliefOffset": 0
+        },
+        "upper_xPlus": {
+          "enabled": true,
+          "half": "upper",
+          "edge": "xPlus",
+          "start": 2,
+          "width": 5.5,
+          "length": 71,
+          "offset": 0,
+          "cornerR": 0.7,
+          "reliefEnabled": false,
+          "reliefLength": 10,
+          "reliefWidth": 1,
+          "reliefOffset": 0
+        },
+        "upper_yMinus": {
+          "enabled": true,
+          "half": "upper",
+          "edge": "yMinus",
+          "start": 2,
+          "width": 5,
+          "length": 290,
+          "offset": 0,
+          "cornerR": 0,
+          "reliefEnabled": false,
+          "reliefLength": 10,
+          "reliefWidth": 1,
+          "reliefOffset": 0
+        },
+        "upper_yPlus": {
+          "enabled": true,
+          "half": "upper",
+          "edge": "yPlus",
+          "start": 2,
+          "width": 5.5,
+          "length": 290,
+          "offset": 0,
+          "cornerR": 0,
+          "reliefEnabled": false,
+          "reliefLength": 10,
+          "reliefWidth": 1,
+          "reliefOffset": 0
+        },
+        "lower_xMinus": {
+          "enabled": true,
+          "half": "lower",
+          "edge": "xMinus",
+          "start": 2.4,
+          "width": 5,
+          "length": 71,
+          "offset": 0,
+          "cornerR": 0.7,
+          "reliefEnabled": false,
+          "reliefLength": 10,
+          "reliefWidth": 1,
+          "reliefOffset": 0
+        },
+        "lower_xPlus": {
+          "enabled": true,
+          "half": "lower",
+          "edge": "xPlus",
+          "start": 2.4,
+          "width": 5.5,
+          "length": 71,
+          "offset": 0,
+          "cornerR": 0.7,
+          "reliefEnabled": false,
+          "reliefLength": 10,
+          "reliefWidth": 1,
+          "reliefOffset": 0
+        },
+        "lower_yMinus": {
+          "enabled": true,
+          "half": "lower",
+          "edge": "yMinus",
+          "start": 2.4,
+          "width": 5,
+          "length": 290,
+          "offset": 0,
+          "cornerR": 0,
+          "reliefEnabled": false,
+          "reliefLength": 10,
+          "reliefWidth": 1,
+          "reliefOffset": 0
+        },
+        "lower_yPlus": {
+          "enabled": true,
+          "half": "lower",
+          "edge": "yPlus",
+          "start": 2.4,
+          "width": 5.5,
+          "length": 290,
+          "offset": 0,
+          "cornerR": 0,
+          "reliefEnabled": false,
+          "reliefLength": 10,
+          "reliefWidth": 1,
+          "reliefOffset": 0
+        }
+      },
+      "folds": {
+        "yMinus1": {
+          "enabled": true,
+          "edge": "yMinus",
+          "order": 1,
+          "line": 43.5,
+          "angle": 80,
+          "innerR": 0.8
+        },
+        "yMinus2": {
+          "enabled": false,
+          "edge": "yMinus",
+          "order": 2,
+          "line": 48.5,
+          "angle": -20,
+          "innerR": 0.8
+        },
+        "yPlus1": {
+          "enabled": true,
+          "edge": "yPlus",
+          "order": 1,
+          "line": 43.5,
+          "angle": 80,
+          "innerR": 0.8
+        },
+        "yPlus2": {
+          "enabled": false,
+          "edge": "yPlus",
+          "order": 2,
+          "line": 48.5,
+          "angle": -20,
+          "innerR": 0.8
+        }
+      }
+    },
+    "name": "R4 공정·요소기술 · 가상 예시",
+    "processTooling": {
+      "version": 1,
+      "example": true,
+      "revision": "phase1-1",
+      "packaging": {
+        "bridgeInnerR": 0.4,
+        "cutY": 50,
+        "foldLineY": 46,
+        "foldAngle": 80,
+        "foldR": 0.8,
+        "cups": {
+          "upper": {
+            "x": 0,
+            "y": 0
+          },
+          "lower": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      },
+      "poles": {
+        "positive": {
+          "gathering": {
+            "topDatumZ": 3.2,
+            "bottomZ": -0.3,
+            "depth": 2.9000000000000004
+          },
+          "method": "ultrasonic",
+          "tools": {
+            "preweld": {
+              "horn": {
+                "id": "positive-preweld-horn",
+                "revision": "example-1",
+                "x": 1.5,
+                "y": 0,
+                "rotation": 0,
+                "length": 2.5,
+                "width": 26,
+                "cornerR": 0.2,
+                "knurlLength": 2,
+                "knurlWidth": 24,
+                "pitchU": 0.8,
+                "pitchV": 1,
+                "direction": 0,
+                "height": 0.2,
+                "tooth": "pyramid"
+              },
+              "anvil": {
+                "id": "positive-preweld-anvil",
+                "revision": "example-1",
+                "x": 1.5,
+                "y": 0,
+                "rotation": 0,
+                "length": 2.5,
+                "width": 26,
+                "cornerR": 0.2,
+                "knurlLength": 2,
+                "knurlWidth": 24,
+                "pitchU": 1,
+                "pitchV": 1,
+                "direction": 0,
+                "height": 0.15,
+                "tooth": "pyramid"
+              }
+            },
+            "welded": {
+              "horn": {
+                "id": "positive-welded-horn",
+                "revision": "example-1",
+                "x": 6,
+                "y": 0,
+                "rotation": 0,
+                "length": 5,
+                "width": 26,
+                "cornerR": 0.2,
+                "knurlLength": 4,
+                "knurlWidth": 24,
+                "pitchU": 0.8,
+                "pitchV": 1,
+                "direction": 0,
+                "height": 0.2,
+                "tooth": "pyramid"
+              },
+              "anvil": {
+                "id": "positive-welded-anvil",
+                "revision": "example-1",
+                "x": 6,
+                "y": 0,
+                "rotation": 0,
+                "length": 5,
+                "width": 26,
+                "cornerR": 0.2,
+                "knurlLength": 4,
+                "knurlWidth": 24,
+                "pitchU": 1,
+                "pitchV": 1,
+                "direction": 0,
+                "height": 0.3,
+                "tooth": "pyramid"
+              }
+            }
+          },
+          "laser": {
+            "id": "positive-laser",
+            "revision": "example-1",
+            "x": 6,
+            "y": 0,
+            "diameter": 1.2,
+            "rows": 2,
+            "columns": 3,
+            "pitchX": 2,
+            "pitchY": 8,
+            "rotation": 0,
+            "spots": [
+              {
+                "id": "spot-1",
+                "row": 0,
+                "column": 0,
+                "dx": 0,
+                "dy": 0
+              },
+              {
+                "id": "spot-2",
+                "row": 0,
+                "column": 1,
+                "dx": 0,
+                "dy": 0
+              },
+              {
+                "id": "spot-3",
+                "row": 0,
+                "column": 2,
+                "dx": 0,
+                "dy": 0
+              },
+              {
+                "id": "spot-4",
+                "row": 1,
+                "column": 0,
+                "dx": 0,
+                "dy": 0
+              },
+              {
+                "id": "spot-5",
+                "row": 1,
+                "column": 1,
+                "dx": 0,
+                "dy": 0
+              },
+              {
+                "id": "spot-6",
+                "row": 1,
+                "column": 2,
+                "dx": 0,
+                "dy": 0
+              }
+            ]
+          }
+        },
+        "negative": {
+          "gathering": {
+            "topDatumZ": 3,
+            "bottomZ": -0.25,
+            "depth": 2.75
+          },
+          "method": "ultrasonic",
+          "tools": {
+            "preweld": {
+              "horn": {
+                "id": "negative-preweld-horn",
+                "revision": "example-1",
+                "x": 1.5,
+                "y": 0,
+                "rotation": 0,
+                "length": 2.5,
+                "width": 24,
+                "cornerR": 0.2,
+                "knurlLength": 2,
+                "knurlWidth": 22,
+                "pitchU": 0.8,
+                "pitchV": 1,
+                "direction": 0,
+                "height": 0.2,
+                "tooth": "pyramid"
+              },
+              "anvil": {
+                "id": "negative-preweld-anvil",
+                "revision": "example-1",
+                "x": 1.5,
+                "y": 0,
+                "rotation": 0,
+                "length": 2.5,
+                "width": 24,
+                "cornerR": 0.2,
+                "knurlLength": 2,
+                "knurlWidth": 22,
+                "pitchU": 1,
+                "pitchV": 1,
+                "direction": 0,
+                "height": 0.15,
+                "tooth": "pyramid"
+              }
+            },
+            "welded": {
+              "horn": {
+                "id": "negative-welded-horn",
+                "revision": "example-1",
+                "x": 6,
+                "y": 0,
+                "rotation": 0,
+                "length": 5,
+                "width": 24,
+                "cornerR": 0.2,
+                "knurlLength": 4,
+                "knurlWidth": 22,
+                "pitchU": 0.8,
+                "pitchV": 1,
+                "direction": 0,
+                "height": 0.2,
+                "tooth": "pyramid"
+              },
+              "anvil": {
+                "id": "negative-welded-anvil",
+                "revision": "example-1",
+                "x": 6,
+                "y": 0,
+                "rotation": 0,
+                "length": 5,
+                "width": 24,
+                "cornerR": 0.2,
+                "knurlLength": 4,
+                "knurlWidth": 22,
+                "pitchU": 1,
+                "pitchV": 1,
+                "direction": 0,
+                "height": 0.15,
+                "tooth": "pyramid"
+              }
+            }
+          },
+          "laser": {
+            "id": "negative-laser",
+            "revision": "example-1",
+            "x": 6,
+            "y": 0,
+            "diameter": 1.2,
+            "rows": 2,
+            "columns": 3,
+            "pitchX": 2,
+            "pitchY": 8,
+            "rotation": 0,
+            "spots": [
+              {
+                "id": "spot-1",
+                "row": 0,
+                "column": 0,
+                "dx": 0,
+                "dy": 0
+              },
+              {
+                "id": "spot-2",
+                "row": 0,
+                "column": 1,
+                "dx": 0,
+                "dy": 0
+              },
+              {
+                "id": "spot-3",
+                "row": 0,
+                "column": 2,
+                "dx": 0,
+                "dy": 0
+              },
+              {
+                "id": "spot-4",
+                "row": 1,
+                "column": 0,
+                "dx": 0,
+                "dy": 0
+              },
+              {
+                "id": "spot-5",
+                "row": 1,
+                "column": 1,
+                "dx": 0,
+                "dy": 0
+              },
+              {
+                "id": "spot-6",
+                "row": 1,
+                "column": 2,
+                "dx": 0,
+                "dy": 0
+              }
+            ]
+          }
+        }
+      },
+      "sealBars": {
+        "positive_upper": {
+          "id": "positive-upper",
+          "revision": "phase1-1",
+          "location": "positive",
+          "half": "upper",
+          "u": 15,
+          "v": 156,
+          "rotation": 0,
+          "extra": {
+            "enabled": false,
+            "u": -20,
+            "v": -1,
+            "length": 8,
+            "width": 2
+          },
+          "relief": {
+            "enabled": false,
+            "u": 0,
+            "length": 12,
+            "depth": 0.2
+          },
+          "tabProfile": {
+            "centerLength": 38,
+            "transitionR": 3,
+            "centerWidth": 3,
+            "outerWidth": 5,
+            "startU": -44.5,
+            "endU": 75.5,
+            "centerOffset": 0
+          }
+        },
+        "positive_lower": {
+          "id": "positive-lower",
+          "revision": "phase1-1",
+          "location": "positive",
+          "half": "lower",
+          "u": 15,
+          "v": 156,
+          "rotation": 0,
+          "extra": {
+            "enabled": false,
+            "u": -20,
+            "v": -1,
+            "length": 8,
+            "width": 2
+          },
+          "relief": {
+            "enabled": false,
+            "u": 0,
+            "length": 12,
+            "depth": 0.2
+          },
+          "tabProfile": {
+            "centerLength": 38,
+            "transitionR": 3,
+            "centerWidth": 3,
+            "outerWidth": 5,
+            "startU": -44.5,
+            "endU": 75.5,
+            "centerOffset": 0
+          }
+        },
+        "negative_upper": {
+          "id": "negative-upper",
+          "revision": "phase1-1",
+          "location": "negative",
+          "half": "upper",
+          "u": 15,
+          "v": 156,
+          "rotation": 0,
+          "extra": {
+            "enabled": false,
+            "u": -20,
+            "v": -1,
+            "length": 8,
+            "width": 2
+          },
+          "relief": {
+            "enabled": false,
+            "u": 0,
+            "length": 12,
+            "depth": 0.2
+          },
+          "tabProfile": {
+            "centerLength": 36,
+            "transitionR": 2.5,
+            "centerWidth": 3,
+            "outerWidth": 4.8,
+            "startU": -46,
+            "endU": 74,
+            "centerOffset": 0
+          }
+        },
+        "negative_lower": {
+          "id": "negative-lower",
+          "revision": "phase1-1",
+          "location": "negative",
+          "half": "lower",
+          "u": 15,
+          "v": 156,
+          "rotation": 0,
+          "extra": {
+            "enabled": false,
+            "u": -20,
+            "v": -1,
+            "length": 8,
+            "width": 2
+          },
+          "relief": {
+            "enabled": false,
+            "u": 0,
+            "length": 12,
+            "depth": 0.2
+          },
+          "tabProfile": {
+            "centerLength": 36,
+            "transitionR": 2.5,
+            "centerWidth": 3,
+            "outerWidth": 4.8,
+            "startU": -46,
+            "endU": 74,
+            "centerOffset": 0
+          }
+        },
+        "gas_upper": {
+          "id": "gas-upper",
+          "revision": "example-1",
+          "location": "gas",
+          "half": "upper",
+          "u": 1,
+          "v": 73,
+          "rotation": 0,
+          "vertices": [
+            {
+              "id": "inner-start",
+              "u": -163,
+              "v": 0
+            },
+            {
+              "id": "inner-shoulder",
+              "u": 0,
+              "v": 0,
+              "arc": 0
+            },
+            {
+              "id": "inner-end",
+              "u": 163,
+              "v": 0
+            },
+            {
+              "id": "outer-end",
+              "u": 163,
+              "v": 5
+            },
+            {
+              "id": "outer-start",
+              "u": -163,
+              "v": 5
+            }
+          ],
+          "extra": {
+            "enabled": false,
+            "u": -20,
+            "v": -1,
+            "length": 8,
+            "width": 2
+          },
+          "relief": {
+            "enabled": false,
+            "u": 0,
+            "length": 12,
+            "depth": 0.2
+          }
+        },
+        "gas_lower": {
+          "id": "gas-lower",
+          "revision": "example-1",
+          "location": "gas",
+          "half": "lower",
+          "u": 1,
+          "v": 73,
+          "rotation": 0,
+          "vertices": [
+            {
+              "id": "inner-start",
+              "u": -163,
+              "v": 0
+            },
+            {
+              "id": "inner-shoulder",
+              "u": 0,
+              "v": 0,
+              "arc": 0
+            },
+            {
+              "id": "inner-end",
+              "u": 163,
+              "v": 0
+            },
+            {
+              "id": "outer-end",
+              "u": 163,
+              "v": 5
+            },
+            {
+              "id": "outer-start",
+              "u": -163,
+              "v": 5
+            }
+          ],
+          "extra": {
+            "enabled": false,
+            "u": -20,
+            "v": -1,
+            "length": 8,
+            "width": 2
+          },
+          "relief": {
+            "enabled": false,
+            "u": 0,
+            "length": 12,
+            "depth": 0.2
+          }
+        },
+        "final_upper": {
+          "id": "final-upper",
+          "revision": "example-1",
+          "location": "final",
+          "half": "upper",
+          "u": 1,
+          "v": 44,
+          "rotation": 0,
+          "vertices": [
+            {
+              "id": "inner-start",
+              "u": -163,
+              "v": 0
+            },
+            {
+              "id": "inner-shoulder",
+              "u": 0,
+              "v": 0,
+              "arc": 0
+            },
+            {
+              "id": "inner-end",
+              "u": 163,
+              "v": 0
+            },
+            {
+              "id": "outer-end",
+              "u": 163,
+              "v": 5
+            },
+            {
+              "id": "outer-start",
+              "u": -163,
+              "v": 5
+            }
+          ],
+          "extra": {
+            "enabled": false,
+            "u": -20,
+            "v": -1,
+            "length": 8,
+            "width": 2
+          },
+          "relief": {
+            "enabled": false,
+            "u": 0,
+            "length": 12,
+            "depth": 0.2
+          }
+        },
+        "final_lower": {
+          "id": "final-lower",
+          "revision": "example-1",
+          "location": "final",
+          "half": "lower",
+          "u": 1,
+          "v": 44,
+          "rotation": 0,
+          "vertices": [
+            {
+              "id": "inner-start",
+              "u": -163,
+              "v": 0
+            },
+            {
+              "id": "inner-shoulder",
+              "u": 0,
+              "v": 0,
+              "arc": 0
+            },
+            {
+              "id": "inner-end",
+              "u": 163,
+              "v": 0
+            },
+            {
+              "id": "outer-end",
+              "u": 163,
+              "v": 5
+            },
+            {
+              "id": "outer-start",
+              "u": -163,
+              "v": 5
+            }
+          ],
+          "extra": {
+            "enabled": false,
+            "u": -20,
+            "v": -1,
+            "length": 8,
+            "width": 2
+          },
+          "relief": {
+            "enabled": false,
+            "u": 0,
+            "length": 12,
+            "depth": 0.2
+          }
+        }
+      }
+    }
+  },
+  "datumSet": {
+    "id": "model",
+    "origin": [
+      0,
+      0,
+      0
+    ],
+    "rotationZ": 0
+  },
+  "measurements": [
+    {
+      "id": "0b87cab3-ecec-441f-bb88-5201feaf310e",
+      "name": "조립체 길이",
+      "group": "적층체",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "stack.length.minus"
+      },
+      "b": {
+        "featureId": "stack.length.plus"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "59a5691b-4543-4b83-ac04-49a62be2a847",
+      "name": "조립체 폭",
+      "group": "적층체",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "y",
+      "a": {
+        "featureId": "stack.width.minus"
+      },
+      "b": {
+        "featureId": "stack.width.plus"
+      },
+      "visible": false,
+      "offset": 18,
+      "offsetAxis": "x",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "e760c6a8-df45-48a2-9e83-ff9a5eb82b4c",
+      "name": "조립체 두께",
+      "group": "적층체",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "thickness",
+      "a": {
+        "featureId": "stack.thickness.minus"
+      },
+      "b": {
+        "featureId": "stack.thickness.plus"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "527b942f-f8b7-4c6a-95ba-2cddd81e8607",
+      "name": "양극 포일 일정 폭",
+      "group": "양극 포일",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "y",
+      "a": {
+        "featureId": "positive.tab.rootWidthMinus"
+      },
+      "b": {
+        "featureId": "positive.tab.rootWidthPlus"
+      },
+      "visible": true,
+      "offset": 18,
+      "offsetAxis": "x",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "2490781a-3416-4393-9345-de42816ed886",
+      "name": "양극 뿌리 높이",
+      "group": "양극 포일",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "z",
+      "a": {
+        "featureId": "positive.tab.rootZBase"
+      },
+      "b": {
+        "featureId": "positive.tab.root"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "1d6c528c-59fa-4739-92c5-1acfd907d0dd",
+      "name": "양극 집속 거리",
+      "group": "양극 집속",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "positive.tab.root"
+      },
+      "b": {
+        "featureId": "positive.tab.gather"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "98e7f644-33d1-43dd-a2e3-06ee6827faa3",
+      "name": "양극 집속 높이",
+      "group": "양극 집속",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "z",
+      "a": {
+        "featureId": "positive.tab.gatherZBase"
+      },
+      "b": {
+        "featureId": "positive.tab.gather"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "86c98604-cc93-458f-a665-99de628dfdc5",
+      "name": "양극 집속 두께",
+      "group": "양극 집속",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "thickness",
+      "a": {
+        "featureId": "positive.tab.bottom"
+      },
+      "b": {
+        "featureId": "positive.tab.top"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "555b0c77-bbb3-42b0-9163-57ed22348306",
+      "name": "양극 Y 편심",
+      "group": "양극 집속",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "y",
+      "a": {
+        "featureId": "positive.tab.gatherRootY"
+      },
+      "b": {
+        "featureId": "positive.tab.gather"
+      },
+      "visible": false,
+      "offset": 18,
+      "offsetAxis": "x",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "273bc74f-a044-4b37-94f4-b8619f7d35fa",
+      "name": "양극 가용접 pre-1 길이",
+      "group": "양극 가용접",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "positive.preweld.pre-1.start"
+      },
+      "b": {
+        "featureId": "positive.preweld.pre-1.end"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "4c62e021-ca76-48ec-bcc6-06bbbe1b9a6d",
+      "name": "양극 가용접 pre-1 폭",
+      "group": "양극 가용접",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "y",
+      "a": {
+        "featureId": "positive.preweld.pre-1.widthMinus"
+      },
+      "b": {
+        "featureId": "positive.preweld.pre-1.widthPlus"
+      },
+      "visible": false,
+      "offset": 18,
+      "offsetAxis": "x",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "769dd807-81b5-43f0-9548-dd8611d39e8f",
+      "name": "양극 가용접 시작 위치",
+      "group": "양극 가용접",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "positive.tab.gather"
+      },
+      "b": {
+        "featureId": "positive.preweld.pre-1.start"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "ebc5dcf8-9e57-45af-9d26-fb60011f4c58",
+      "name": "양극 가용접 탭 끝 거리",
+      "group": "양극 가용접",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "positive.preweld.pre-1.end"
+      },
+      "b": {
+        "featureId": "positive.tab.tipCenter"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "90dae1b8-4438-4878-8ca1-328647c515cb",
+      "name": "양극 가용접 측면 거리",
+      "group": "양극 가용접",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "y",
+      "a": {
+        "featureId": "positive.preweld.pre-1.widthPlus"
+      },
+      "b": {
+        "featureId": "positive.tab.gatherWidthPlus"
+      },
+      "visible": false,
+      "offset": 18,
+      "offsetAxis": "x",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "c03118c4-d791-4d87-993c-01cf4da06155",
+      "name": "양극 메인 용접 main 길이",
+      "group": "양극 메인 용접",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "positive.joint.main.start"
+      },
+      "b": {
+        "featureId": "positive.joint.main.end"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "6ef5cd2d-f57c-4e39-92e3-91dea30b86d4",
+      "name": "양극 메인 용접 main 폭",
+      "group": "양극 메인 용접",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "y",
+      "a": {
+        "featureId": "positive.joint.main.widthMinus"
+      },
+      "b": {
+        "featureId": "positive.joint.main.widthPlus"
+      },
+      "visible": false,
+      "offset": 18,
+      "offsetAxis": "x",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "0ae35d4f-953c-472e-98fe-f5196438d62d",
+      "name": "양극 메인 용접 시작 위치",
+      "group": "양극 메인 용접",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "positive.tab.gather"
+      },
+      "b": {
+        "featureId": "positive.joint.main.start"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "73ba7f40-6462-4895-bad4-da0e28222344",
+      "name": "양극 메인 용접 탭 끝 거리",
+      "group": "양극 메인 용접",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "positive.joint.main.end"
+      },
+      "b": {
+        "featureId": "positive.tab.tipCenter"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "1c6c76af-d808-42e0-9866-f7b2337c361f",
+      "name": "양극 메인 용접 측면 거리",
+      "group": "양극 메인 용접",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "y",
+      "a": {
+        "featureId": "positive.joint.main.widthPlus"
+      },
+      "b": {
+        "featureId": "positive.tab.gatherWidthPlus"
+      },
+      "visible": false,
+      "offset": 18,
+      "offsetAxis": "x",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "e6346028-2f4b-4cc7-9a99-a3b328a92028",
+      "name": "양극 용접–리드 끝",
+      "group": "양극 메인 용접",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "positive.joint.main.end"
+      },
+      "b": {
+        "featureId": "positive.lead.end"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "d0af0482-4b0a-402b-9358-ee38859c6abc",
+      "name": "양극 테이프 yellow 길이",
+      "group": "양극 테이프",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "positive.tape.yellow.start"
+      },
+      "b": {
+        "featureId": "positive.tape.yellow.end"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "97d9a732-4562-46a7-b9a5-e6f5fdb07629",
+      "name": "양극 테이프 yellow 폭",
+      "group": "양극 테이프",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "y",
+      "a": {
+        "featureId": "positive.tape.yellow.widthMinus"
+      },
+      "b": {
+        "featureId": "positive.tape.yellow.widthPlus"
+      },
+      "visible": false,
+      "offset": 18,
+      "offsetAxis": "x",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "843dac37-b702-4770-92c0-9fc85a701216",
+      "name": "양극 테이프 시작 위치",
+      "group": "양극 테이프",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "positive.tab.gather"
+      },
+      "b": {
+        "featureId": "positive.tape.yellow.start"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "7629a472-3ff7-4f7d-aa8e-acaafadfb7a0",
+      "name": "양극 테이프 탭 끝 거리",
+      "group": "양극 테이프",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "positive.tape.yellow.end"
+      },
+      "b": {
+        "featureId": "positive.tab.tipCenter"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "a5e6c72c-3bf7-403e-809d-3e9cb5dcc805",
+      "name": "양극 테이프 측면 거리",
+      "group": "양극 테이프",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "y",
+      "a": {
+        "featureId": "positive.tape.yellow.widthPlus"
+      },
+      "b": {
+        "featureId": "positive.tab.gatherWidthPlus"
+      },
+      "visible": false,
+      "offset": 18,
+      "offsetAxis": "x",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "89b5207d-4e23-4b00-b7dc-7562d23aa95c",
+      "name": "양극 테이프–용접 시작",
+      "group": "양극 테이프",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "positive.joint.main.start"
+      },
+      "b": {
+        "featureId": "positive.tape.yellow.start"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "032a1846-4fb7-4411-bd3b-c8f4e5381d4d",
+      "name": "양극 리드 배치",
+      "group": "양극 리드",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "positive.tab.gather"
+      },
+      "b": {
+        "featureId": "positive.lead.start"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "5045b2bc-d50e-4b9a-b1dd-af8df0ae7d0f",
+      "name": "양극 리드 폭",
+      "group": "양극 리드",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "y",
+      "a": {
+        "featureId": "positive.lead.widthMinus"
+      },
+      "b": {
+        "featureId": "positive.lead.widthPlus"
+      },
+      "visible": false,
+      "offset": 18,
+      "offsetAxis": "x",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "a9cc8e7b-c8ae-423f-b8f8-26ca666ccaba",
+      "name": "양극 겹침 길이",
+      "group": "양극 리드",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "positive.lead.overlapStart"
+      },
+      "b": {
+        "featureId": "positive.lead.overlapEnd"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "838d435c-29e8-41d5-b3bf-290575216b31",
+      "name": "양극 겹침 폭",
+      "group": "양극 리드",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "y",
+      "a": {
+        "featureId": "positive.lead.overlapWidthMinus"
+      },
+      "b": {
+        "featureId": "positive.lead.overlapWidthPlus"
+      },
+      "visible": false,
+      "offset": 18,
+      "offsetAxis": "x",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "08ffc481-306b-44e7-b95d-76277d043b48",
+      "name": "양극 조립체 밖 돌출",
+      "group": "양극 리드",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "positive.tab.root"
+      },
+      "b": {
+        "featureId": "positive.lead.end"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "d7b6ff2e-8f3f-49a7-8e52-7818cc5ed9a8",
+      "name": "음극 포일 일정 폭",
+      "group": "음극 포일",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "y",
+      "a": {
+        "featureId": "negative.tab.rootWidthMinus"
+      },
+      "b": {
+        "featureId": "negative.tab.rootWidthPlus"
+      },
+      "visible": false,
+      "offset": 18,
+      "offsetAxis": "x",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "271dc1b5-781c-4823-b2d6-fd19fa4cfaa4",
+      "name": "음극 뿌리 높이",
+      "group": "음극 포일",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "z",
+      "a": {
+        "featureId": "negative.tab.rootZBase"
+      },
+      "b": {
+        "featureId": "negative.tab.root"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "4b6d5e03-86e4-45a5-8ea1-e235b9f3f7f6",
+      "name": "음극 집속 거리",
+      "group": "음극 집속",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "negative.tab.root"
+      },
+      "b": {
+        "featureId": "negative.tab.gather"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "0a40bb3d-c204-4814-bf30-bdb9b98ad977",
+      "name": "음극 집속 높이",
+      "group": "음극 집속",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "z",
+      "a": {
+        "featureId": "negative.tab.gatherZBase"
+      },
+      "b": {
+        "featureId": "negative.tab.gather"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "c7746e4a-dc69-4bff-97bd-55180915ce8e",
+      "name": "음극 집속 두께",
+      "group": "음극 집속",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "thickness",
+      "a": {
+        "featureId": "negative.tab.bottom"
+      },
+      "b": {
+        "featureId": "negative.tab.top"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "c3d4c7cd-45bd-406b-a2ed-932fb1a17a72",
+      "name": "음극 Y 편심",
+      "group": "음극 집속",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "y",
+      "a": {
+        "featureId": "negative.tab.gatherRootY"
+      },
+      "b": {
+        "featureId": "negative.tab.gather"
+      },
+      "visible": false,
+      "offset": 18,
+      "offsetAxis": "x",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "8e8103eb-653c-4c8c-8da3-ba5b63db0a97",
+      "name": "음극 가용접 pre-1 길이",
+      "group": "음극 가용접",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "negative.preweld.pre-1.start"
+      },
+      "b": {
+        "featureId": "negative.preweld.pre-1.end"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "b093e4f7-d6fe-4d71-9d6c-e43196f671a9",
+      "name": "음극 가용접 pre-1 폭",
+      "group": "음극 가용접",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "y",
+      "a": {
+        "featureId": "negative.preweld.pre-1.widthMinus"
+      },
+      "b": {
+        "featureId": "negative.preweld.pre-1.widthPlus"
+      },
+      "visible": false,
+      "offset": 18,
+      "offsetAxis": "x",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "b7532c3c-731e-4060-9164-b9aca77d88d2",
+      "name": "음극 가용접 시작 위치",
+      "group": "음극 가용접",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "negative.tab.gather"
+      },
+      "b": {
+        "featureId": "negative.preweld.pre-1.start"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "8f375d1f-6904-4580-8580-5e0453e6c153",
+      "name": "음극 가용접 탭 끝 거리",
+      "group": "음극 가용접",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "negative.preweld.pre-1.end"
+      },
+      "b": {
+        "featureId": "negative.tab.tipCenter"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "b29ba8b4-96e2-42ca-8b7a-83523b7ef411",
+      "name": "음극 가용접 측면 거리",
+      "group": "음극 가용접",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "y",
+      "a": {
+        "featureId": "negative.preweld.pre-1.widthPlus"
+      },
+      "b": {
+        "featureId": "negative.tab.gatherWidthPlus"
+      },
+      "visible": false,
+      "offset": 18,
+      "offsetAxis": "x",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "4a94f590-62e8-47c7-83c8-97fe752adcb9",
+      "name": "음극 메인 용접 main 길이",
+      "group": "음극 메인 용접",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "negative.joint.main.start"
+      },
+      "b": {
+        "featureId": "negative.joint.main.end"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "d5973fe0-4777-41bf-af9c-c6ece197747c",
+      "name": "음극 메인 용접 main 폭",
+      "group": "음극 메인 용접",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "y",
+      "a": {
+        "featureId": "negative.joint.main.widthMinus"
+      },
+      "b": {
+        "featureId": "negative.joint.main.widthPlus"
+      },
+      "visible": false,
+      "offset": 18,
+      "offsetAxis": "x",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "e387009e-ee6e-41f8-a273-4bb3580469ec",
+      "name": "음극 메인 용접 시작 위치",
+      "group": "음극 메인 용접",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "negative.tab.gather"
+      },
+      "b": {
+        "featureId": "negative.joint.main.start"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "b4a9c3dd-8357-42cf-8c71-83cd0a220e3d",
+      "name": "음극 메인 용접 탭 끝 거리",
+      "group": "음극 메인 용접",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "negative.joint.main.end"
+      },
+      "b": {
+        "featureId": "negative.tab.tipCenter"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "a64e5f91-59d5-4fe1-90cf-651668630a9f",
+      "name": "음극 메인 용접 측면 거리",
+      "group": "음극 메인 용접",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "y",
+      "a": {
+        "featureId": "negative.joint.main.widthPlus"
+      },
+      "b": {
+        "featureId": "negative.tab.gatherWidthPlus"
+      },
+      "visible": false,
+      "offset": 18,
+      "offsetAxis": "x",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "b09abd6f-736a-4793-bdfd-3d0f07d29ba8",
+      "name": "음극 용접–리드 끝",
+      "group": "음극 메인 용접",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "negative.joint.main.end"
+      },
+      "b": {
+        "featureId": "negative.lead.end"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "bb3ea92f-275b-446e-9b9c-f73e28a77976",
+      "name": "음극 테이프 yellow 길이",
+      "group": "음극 테이프",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "negative.tape.yellow.start"
+      },
+      "b": {
+        "featureId": "negative.tape.yellow.end"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "4b4a68bf-53e1-4eeb-af45-aad4b6f98362",
+      "name": "음극 테이프 yellow 폭",
+      "group": "음극 테이프",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "y",
+      "a": {
+        "featureId": "negative.tape.yellow.widthMinus"
+      },
+      "b": {
+        "featureId": "negative.tape.yellow.widthPlus"
+      },
+      "visible": false,
+      "offset": 18,
+      "offsetAxis": "x",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "f955008a-2d77-4eda-945c-aba85dd08c63",
+      "name": "음극 테이프 시작 위치",
+      "group": "음극 테이프",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "negative.tab.gather"
+      },
+      "b": {
+        "featureId": "negative.tape.yellow.start"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "26191dea-807b-45c8-91b0-72fc45fd631e",
+      "name": "음극 테이프 탭 끝 거리",
+      "group": "음극 테이프",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "negative.tape.yellow.end"
+      },
+      "b": {
+        "featureId": "negative.tab.tipCenter"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "b3c786dd-c2eb-4f68-a71e-46e567aefa51",
+      "name": "음극 테이프 측면 거리",
+      "group": "음극 테이프",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "y",
+      "a": {
+        "featureId": "negative.tape.yellow.widthPlus"
+      },
+      "b": {
+        "featureId": "negative.tab.gatherWidthPlus"
+      },
+      "visible": false,
+      "offset": 18,
+      "offsetAxis": "x",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "1cc1ebc0-667a-4733-b59d-52d924871479",
+      "name": "음극 테이프–용접 시작",
+      "group": "음극 테이프",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "negative.joint.main.start"
+      },
+      "b": {
+        "featureId": "negative.tape.yellow.start"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "fe74400e-24b8-48f9-956b-6366d9826a28",
+      "name": "음극 리드 배치",
+      "group": "음극 리드",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "negative.tab.gather"
+      },
+      "b": {
+        "featureId": "negative.lead.start"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "c0519758-c66d-4ea9-9f30-e9868bf02845",
+      "name": "음극 리드 폭",
+      "group": "음극 리드",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "y",
+      "a": {
+        "featureId": "negative.lead.widthMinus"
+      },
+      "b": {
+        "featureId": "negative.lead.widthPlus"
+      },
+      "visible": false,
+      "offset": 18,
+      "offsetAxis": "x",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "359c5935-b1d7-45d4-8b85-19c923164a9f",
+      "name": "음극 겹침 길이",
+      "group": "음극 리드",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "negative.lead.overlapStart"
+      },
+      "b": {
+        "featureId": "negative.lead.overlapEnd"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "c478c16b-5b3b-4502-bcaa-7dddd2b9fe98",
+      "name": "음극 겹침 폭",
+      "group": "음극 리드",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "y",
+      "a": {
+        "featureId": "negative.lead.overlapWidthMinus"
+      },
+      "b": {
+        "featureId": "negative.lead.overlapWidthPlus"
+      },
+      "visible": false,
+      "offset": 18,
+      "offsetAxis": "x",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    },
+    {
+      "id": "594c7f99-6820-4f25-9cef-ff28f88d1bb7",
+      "name": "음극 조립체 밖 돌출",
+      "group": "음극 리드",
+      "stage": "tab_sealed",
+      "datumId": "legacy",
+      "mode": "x",
+      "a": {
+        "featureId": "negative.tab.root"
+      },
+      "b": {
+        "featureId": "negative.lead.end"
+      },
+      "visible": false,
+      "offset": 15,
+      "offsetAxis": "y",
+      "spec": {
+        "target": null,
+        "minus": null,
+        "plus": null,
+        "measured": null,
+        "note": ""
+      }
+    }
+  ],
+  "view": {
+    "hidden": [],
+    "transparent": false,
+    "datums": true,
+    "section": {
+      "axis": "none",
+      "position": 0
+    },
+    "camera": {
+      "position": [
+        130.75,
+        -189.9999999999998,
+        319.9999999999998
+      ],
+      "target": [
+        0.75,
+        0,
+        0
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "zoom": 0.9593435553298859
+    },
+    "autoRebuild": false
+  },
+  "notes": "R4 가상 예시 mm. 포일/공구/실링은 공칭 형상이며 변형·융착·가스팽창 해석이 아닙니다.",
+  "anchors": [],
+  "migration": {
+    "from": 2,
+    "decision": "새 가상 예시는 종전 집속 폭을 선택. 사용자 파일 변환은 별도 확인.",
+    "originalWidths": {
+      "positive": [
+        38,
+        32
+      ],
+      "negative": [
+        36,
+        29
+      ]
+    }
+  },
+  "modelIdentity": {
+    "modelId": "virtual-pouch-phase1",
+    "revision": "phase1-1"
+  }
+}

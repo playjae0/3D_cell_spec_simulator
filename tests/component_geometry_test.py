@@ -21,7 +21,7 @@ class ComponentGeometry(unittest.TestCase):
  def test_anvil_height_keeps_tip_plane_root_moves(self):
   p=copy.deepcopy(P);p['processTooling']['poles']['positive']['tools']['welded']['anvil']['height']=.3
   m=build(p,'welded');a=teeth(self.base,'anvil');b=teeth(m,'anvil');da=a['meta']['datum'];db=b['meta']['datum']
-  self.assertEqual(da['origin'],db['origin']);self.assertEqual(da['tipZ'],db['tipZ']);self.assertAlmostEqual(db['rootZ']-da['rootZ'],-.15)
+  self.assertEqual(da['parent'],'positive.lead.bottom');self.assertEqual(teeth(self.base)['meta']['datum']['parent'],'positive.tab.top');self.assertEqual(da['origin'],db['origin']);self.assertEqual(da['tipZ'],db['tipZ']);self.assertAlmostEqual(db['rootZ']-da['rootZ'],-.15)
   self.assertAlmostEqual(exact_bounds(b['shape']).zmin-exact_bounds(a['shape']).zmin,-.15)
   self.assertEqual(teeth(self.base)['meta'],teeth(m)['meta'])
  def test_invalid_pitch_and_empty_relief_rejected(self):

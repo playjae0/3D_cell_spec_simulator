@@ -1,0 +1,12 @@
+test_anvil_height_keeps_tip_plane_root_moves (component_geometry_test.ComponentGeometry.test_anvil_height_keeps_tip_plane_root_moves) ... ok
+test_invalid_pitch_and_empty_relief_rejected (component_geometry_test.ComponentGeometry.test_invalid_pitch_and_empty_relief_rejected) ... ok
+test_legacy_lead_film_relative_position_and_width (component_geometry_test.ComponentGeometry.test_legacy_lead_film_relative_position_and_width) ... ok
+test_pitch_changes_actual_centers_not_mate_or_datum (component_geometry_test.ComponentGeometry.test_pitch_changes_actual_centers_not_mate_or_datum) ... ok
+test_r4_nonzero_legacy_placement_is_explicitly_rejected (component_geometry_test.ComponentGeometry.test_r4_nonzero_legacy_placement_is_explicitly_rejected) ... ok
+test_ridge_and_rotated_boundary_are_valid_solids (component_geometry_test.ComponentGeometry.test_ridge_and_rotated_boundary_are_valid_solids) ... ok
+test_seal_center_and_exterior_sections_use_exact_boundary (component_geometry_test.ComponentGeometry.test_seal_center_and_exterior_sections_use_exact_boundary) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 33.707s
+
+OK
