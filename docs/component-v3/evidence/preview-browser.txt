@@ -1,0 +1,17 @@
+Recorded lookup and comparison reject changed designs and unrecorded revisions after cache warm-up: PASS
+capture overview
+capture tab
+capture tab_preweld
+capture tab_trimmed
+capture horn-block
+capture horn-center-section
+capture horn-section-moved
+capture anvil-center-section
+capture pouch-depth-section
+capture narrow
+PASS preview
+matrix demo 8
+matrix pouch-process 11
+matrix process-tooling-r4 14
+matrix pouch-phase1 14
+PASS static component and process matrix 47

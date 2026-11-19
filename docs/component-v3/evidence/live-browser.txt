@@ -1,0 +1,15 @@
+capture overview
+capture tab
+capture tab_preweld
+capture tab_trimmed
+capture foil-cut-edited
+capture horn-block
+capture horn-center-section
+capture horn-section-moved
+capture horn-block-edited
+capture anvil-center-section
+capture pouch-depth-section
+capture pouch-depth-edited
+capture pouch-radius-edited
+capture narrow
+PASS live

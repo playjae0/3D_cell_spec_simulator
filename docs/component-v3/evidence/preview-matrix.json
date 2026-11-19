@@ -1,0 +1,289 @@
+{
+  "sourceCommit": "ec14562ff50f51155fbf3359840b59f8f8b8a092",
+  "combinations": 47,
+  "results": [
+    {
+      "model": "demo",
+      "stage": "stacked",
+      "parts": 3,
+      "status": 200
+    },
+    {
+      "model": "demo",
+      "stage": "gathered",
+      "parts": 3,
+      "status": 200
+    },
+    {
+      "model": "demo",
+      "stage": "preweld",
+      "parts": 5,
+      "status": 200
+    },
+    {
+      "model": "demo",
+      "stage": "foil_trimmed",
+      "parts": 5,
+      "status": 200
+    },
+    {
+      "model": "demo",
+      "stage": "welded",
+      "parts": 11,
+      "status": 200
+    },
+    {
+      "model": "demo",
+      "stage": "assembly",
+      "parts": 13,
+      "status": 200
+    },
+    {
+      "model": "demo",
+      "stage": "packaged",
+      "parts": 23,
+      "status": 200
+    },
+    {
+      "model": "demo",
+      "stage": "finished",
+      "parts": 21,
+      "status": 200
+    },
+    {
+      "model": "pouch-process",
+      "stage": "stacked",
+      "parts": 3,
+      "status": 200
+    },
+    {
+      "model": "pouch-process",
+      "stage": "gathered",
+      "parts": 3,
+      "status": 200
+    },
+    {
+      "model": "pouch-process",
+      "stage": "preweld",
+      "parts": 5,
+      "status": 200
+    },
+    {
+      "model": "pouch-process",
+      "stage": "foil_trimmed",
+      "parts": 5,
+      "status": 200
+    },
+    {
+      "model": "pouch-process",
+      "stage": "welded",
+      "parts": 11,
+      "status": 200
+    },
+    {
+      "model": "pouch-process",
+      "stage": "assembly",
+      "parts": 13,
+      "status": 200
+    },
+    {
+      "model": "pouch-process",
+      "stage": "pouch_formed",
+      "parts": 4,
+      "status": 200
+    },
+    {
+      "model": "pouch-process",
+      "stage": "loaded",
+      "parts": 17,
+      "status": 200
+    },
+    {
+      "model": "pouch-process",
+      "stage": "sealed",
+      "parts": 37,
+      "status": 200
+    },
+    {
+      "model": "pouch-process",
+      "stage": "trimmed",
+      "parts": 37,
+      "status": 200
+    },
+    {
+      "model": "pouch-process",
+      "stage": "folded",
+      "parts": 37,
+      "status": 200
+    },
+    {
+      "model": "process-tooling-r4",
+      "stage": "stacked",
+      "parts": 3,
+      "status": 200
+    },
+    {
+      "model": "process-tooling-r4",
+      "stage": "gathered",
+      "parts": 3,
+      "status": 200
+    },
+    {
+      "model": "process-tooling-r4",
+      "stage": "preweld",
+      "parts": 21,
+      "status": 200
+    },
+    {
+      "model": "process-tooling-r4",
+      "stage": "foil_trimmed",
+      "parts": 21,
+      "status": 200
+    },
+    {
+      "model": "process-tooling-r4",
+      "stage": "welded",
+      "parts": 27,
+      "status": 200
+    },
+    {
+      "model": "process-tooling-r4",
+      "stage": "assembly",
+      "parts": 29,
+      "status": 200
+    },
+    {
+      "model": "process-tooling-r4",
+      "stage": "film_formed",
+      "parts": 5,
+      "status": 200
+    },
+    {
+      "model": "process-tooling-r4",
+      "stage": "assembly_loaded_open",
+      "parts": 18,
+      "status": 200
+    },
+    {
+      "model": "process-tooling-r4",
+      "stage": "package_closed",
+      "parts": 18,
+      "status": 200
+    },
+    {
+      "model": "process-tooling-r4",
+      "stage": "tab_sealed",
+      "parts": 24,
+      "status": 200
+    },
+    {
+      "model": "process-tooling-r4",
+      "stage": "gas_sealed",
+      "parts": 27,
+      "status": 200
+    },
+    {
+      "model": "process-tooling-r4",
+      "stage": "final_sealed",
+      "parts": 30,
+      "status": 200
+    },
+    {
+      "model": "process-tooling-r4",
+      "stage": "package_trimmed",
+      "parts": 21,
+      "status": 200
+    },
+    {
+      "model": "process-tooling-r4",
+      "stage": "package_folded",
+      "parts": 21,
+      "status": 200
+    },
+    {
+      "model": "pouch-phase1",
+      "stage": "stacked",
+      "parts": 3,
+      "status": 200
+    },
+    {
+      "model": "pouch-phase1",
+      "stage": "gathered",
+      "parts": 3,
+      "status": 200
+    },
+    {
+      "model": "pouch-phase1",
+      "stage": "preweld",
+      "parts": 21,
+      "status": 200
+    },
+    {
+      "model": "pouch-phase1",
+      "stage": "foil_trimmed",
+      "parts": 21,
+      "status": 200
+    },
+    {
+      "model": "pouch-phase1",
+      "stage": "welded",
+      "parts": 27,
+      "status": 200
+    },
+    {
+      "model": "pouch-phase1",
+      "stage": "assembly",
+      "parts": 29,
+      "status": 200
+    },
+    {
+      "model": "pouch-phase1",
+      "stage": "film_formed",
+      "parts": 5,
+      "status": 200
+    },
+    {
+      "model": "pouch-phase1",
+      "stage": "assembly_loaded_open",
+      "parts": 18,
+      "status": 200
+    },
+    {
+      "model": "pouch-phase1",
+      "stage": "package_closed",
+      "parts": 18,
+      "status": 200
+    },
+    {
+      "model": "pouch-phase1",
+      "stage": "tab_sealed",
+      "parts": 24,
+      "status": 200
+    },
+    {
+      "model": "pouch-phase1",
+      "stage": "gas_sealed",
+      "parts": 27,
+      "status": 200
+    },
+    {
+      "model": "pouch-phase1",
+      "stage": "final_sealed",
+      "parts": 30,
+      "status": 200
+    },
+    {
+      "model": "pouch-phase1",
+      "stage": "package_trimmed",
+      "parts": 21,
+      "status": 200
+    },
+    {
+      "model": "pouch-phase1",
+      "stage": "package_folded",
+      "parts": 21,
+      "status": 200
+    }
+  ],
+  "pageErrors": []
+}
