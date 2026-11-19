@@ -1,0 +1,178 @@
+{
+  "environment": "extracted Windows ZIP",
+  "offlineFirewall": true,
+  "offlineScope": "application/runtime/browser; runner control channel stays online",
+  "errors": [],
+  "externalRequests": [],
+  "sourceCommit": "b2f8a3694e19399dfe08708169a3cae68c2f6125",
+  "runtimeProvenance": {
+    "executable": "D:\\a\\_temp\\사내 시험 Cell Studio\\CellStudio-win-x64-b2f8a3694e19\\runtime\\python.exe",
+    "cadquery": "D:\\a\\_temp\\사내 시험 Cell Studio\\CellStudio-win-x64-b2f8a3694e19\\runtime\\Lib\\site-packages\\cadquery\\__init__.py",
+    "ocp": "D:\\a\\_temp\\사내 시험 Cell Studio\\CellStudio-win-x64-b2f8a3694e19\\runtime\\Lib\\site-packages\\OCP\\__init__.py",
+    "path": [
+      "D:\\a\\_temp\\사내 시험 Cell Studio\\CellStudio-win-x64-b2f8a3694e19\\runtime\\python312.zip",
+      "D:\\a\\_temp\\사내 시험 Cell Studio\\CellStudio-win-x64-b2f8a3694e19\\runtime",
+      "D:\\a\\_temp\\사내 시험 Cell Studio\\CellStudio-win-x64-b2f8a3694e19\\runtime\\Lib\\site-packages",
+      "D:\\a\\_temp\\사내 시험 Cell Studio\\CellStudio-win-x64-b2f8a3694e19\\app\\cad"
+    ],
+    "msvcModules": [
+      "D:\\a\\_temp\\사내 시험 Cell Studio\\CellStudio-win-x64-b2f8a3694e19\\runtime\\VCRUNTIME140.dll",
+      "D:\\a\\_temp\\사내 시험 Cell Studio\\CellStudio-win-x64-b2f8a3694e19\\runtime\\Lib\\site-packages\\cadquery_ocp.libs\\msvcp140-d3ce2816391b4e3c33a3dd22c147436b.dll",
+      "D:\\a\\_temp\\사내 시험 Cell Studio\\CellStudio-win-x64-b2f8a3694e19\\runtime\\VCRUNTIME140_1.dll",
+      "D:\\a\\_temp\\사내 시험 Cell Studio\\CellStudio-win-x64-b2f8a3694e19\\runtime\\Lib\\site-packages\\vtk.libs\\msvcp140-aa2e4bd331e46f2c89293d7086020d3a.dll",
+      "D:\\a\\_temp\\사내 시험 Cell Studio\\CellStudio-win-x64-b2f8a3694e19\\runtime\\Lib\\site-packages\\numpy.libs\\msvcp140-a4c2229bdc2a2a630acdc095b4d86008.dll",
+      "D:\\a\\_temp\\사내 시험 Cell Studio\\CellStudio-win-x64-b2f8a3694e19\\runtime\\MSVCP140.dll"
+    ],
+    "windowsSystemRuntime": [
+      "C:\\Windows\\System32\\ucrtbase.dll",
+      "C:\\Windows\\System32\\msvcp_win.dll"
+    ]
+  },
+  "runtimeExternalHttpsBlocked": true,
+  "launcher": {
+    "url": "http://127.0.0.1:18765",
+    "sourceCommit": "b2f8a3694e19399dfe08708169a3cae68c2f6125",
+    "health": {
+      "engine": "CadQuery",
+      "version": "2.7.0",
+      "unit": "mm",
+      "status": "ready",
+      "mode": "live-cad",
+      "schemaVersion": 4,
+      "capabilities": [
+        "rebuild",
+        "step",
+        "process-states"
+      ]
+    },
+    "pid": 2968,
+    "runtime": "D:\\a\\_temp\\사내 시험 Cell Studio\\CellStudio-win-x64-b2f8a3694e19\\runtime\\python.exe",
+    "log": "C:\\Users\\runneradmin\\AppData\\Local\\CellStudio\\logs\\cad-b2f8a3694e19-20261119-084615.log",
+    "defaultBrowserOpenRequested": true
+  },
+  "portConflictRejected": true,
+  "browserExternalHttpsBlocked": true,
+  "reviewCsvMatchesIntakeKit": true,
+  "savedModelIdentity": {
+    "modelId": "trial-virtual-cell",
+    "modelName": "공개 가상 시험셀 · 실제 제품값 아님",
+    "revision": "trial-1",
+    "baseRevision": null,
+    "assemblyType": "sheet_stacked",
+    "tabLayout": "opposite_ends",
+    "intakeVersion": "1.4",
+    "generator": {
+      "version": "windows-trial-1",
+      "baselineCommit": "b2f8a3694e19399dfe08708169a3cae68c2f6125"
+    }
+  },
+  "savedIntakeVersion": "1.4",
+  "relaunched": {
+    "url": "http://127.0.0.1:18765",
+    "sourceCommit": "b2f8a3694e19399dfe08708169a3cae68c2f6125",
+    "health": {
+      "engine": "CadQuery",
+      "version": "2.7.0",
+      "unit": "mm",
+      "status": "ready",
+      "mode": "live-cad",
+      "schemaVersion": 4,
+      "capabilities": [
+        "rebuild",
+        "step",
+        "process-states"
+      ]
+    },
+    "pid": 9188,
+    "runtime": "D:\\a\\_temp\\사내 시험 Cell Studio\\CellStudio-win-x64-b2f8a3694e19\\runtime\\python.exe",
+    "log": "C:\\Users\\runneradmin\\AppData\\Local\\CellStudio\\logs\\cad-b2f8a3694e19-20261119-084646.log",
+    "defaultBrowserOpenRequested": true
+  },
+  "CAD": {
+    "before": {
+      "datum": {
+        "name": "공칭 접촉 / 치끝 면",
+        "origin": [
+          -136.0,
+          -1.0,
+          0.2999999999999998
+        ],
+        "parent": "positive.tab.top",
+        "axisU": [
+          -1.0,
+          0.0,
+          0
+        ],
+        "axisV": [
+          0.0,
+          1.0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ],
+        "fixed": "치끝 접촉면 고정; 치근은 제품 반대 방향으로 높이만큼 이동",
+        "rootZ": 0.49999999999999983,
+        "tipZ": 0.2999999999999998,
+        "backZ": 3.5
+      },
+      "scope": "가상 지지 블록 · 치근부터 제품 반대 방향 · 실제 홀더/압착 해석 아님",
+      "dimensions": {
+        "bodyDepth": {
+          "a": "tool.positive.welded.horn.body.depth.a",
+          "b": "tool.positive.welded.horn.body.depth.b",
+          "value": 3,
+          "field": "processTooling.poles.positive.tools.welded.horn.bodyDepth"
+        }
+      }
+    },
+    "after": {
+      "datum": {
+        "name": "공칭 접촉 / 치끝 면",
+        "origin": [
+          -136.0,
+          -1.0,
+          0.2999999999999998
+        ],
+        "parent": "positive.tab.top",
+        "axisU": [
+          -1.0,
+          0.0,
+          0
+        ],
+        "axisV": [
+          0.0,
+          1.0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ],
+        "fixed": "치끝 접촉면 고정; 치근은 제품 반대 방향으로 높이만큼 이동",
+        "rootZ": 0.49999999999999983,
+        "tipZ": 0.2999999999999998,
+        "backZ": 4.5
+      },
+      "scope": "가상 지지 블록 · 치근부터 제품 반대 방향 · 실제 홀더/압착 해석 아님",
+      "dimensions": {
+        "bodyDepth": {
+          "a": "tool.positive.welded.horn.body.depth.a",
+          "b": "tool.positive.welded.horn.body.depth.b",
+          "value": 4,
+          "field": "processTooling.poles.positive.tools.welded.horn.bodyDepth"
+        }
+      }
+    },
+    "beforeGeometryId": "3db926b4643485660fac6f0abcba61efb1a4353aaa855c17994849e1edd8611b",
+    "afterGeometryId": "563abd4306722f9dab2f2ae5054838a9a959a5daa5afe7042f5080fb4787f199",
+    "reopenedGeometryId": "563abd4306722f9dab2f2ae5054838a9a959a5daa5afe7042f5080fb4787f199",
+    "oppositePoleUnchanged": true,
+    "reopenedBodyIdentical": true
+  },
+  "libraryScope": "fresh browser profile did not contain old library; saved cell JSON restored current model/annotations/intake",
+  "passed": true
+}
