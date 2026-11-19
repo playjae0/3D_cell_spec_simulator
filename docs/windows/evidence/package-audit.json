@@ -1,0 +1,59 @@
+{
+  "sourceCommit": "b2f8a3694e19399dfe08708169a3cae68c2f6125",
+  "zipBytes": 221043132,
+  "unpackedBytes": 762041968,
+  "zipSha256": "86114b529ca0b12d45690ae674cedd185a4eed0f9d7a850ad769aebe5a7a4c46",
+  "crcCheck": "pass",
+  "allowlistCheck": "pass",
+  "msvcRuntime": "14.44.35112",
+  "largestComponents": [
+    [
+      "runtime/Lib/site-packages/casadi",
+      200059398
+    ],
+    [
+      "runtime/Lib/site-packages/vtk.libs",
+      143618936
+    ],
+    [
+      "runtime/Lib/site-packages/OCP",
+      127319061
+    ],
+    [
+      "runtime/Lib/site-packages/cadquery_ocp.libs",
+      67594448
+    ],
+    [
+      "runtime/Lib/site-packages/vtkmodules",
+      41572868
+    ],
+    [
+      "runtime",
+      24176617
+    ],
+    [
+      "runtime/Lib/site-packages/numpy",
+      21758491
+    ],
+    [
+      "runtime/Lib/site-packages/numpy.libs",
+      20978768
+    ],
+    [
+      "runtime/Lib/site-packages/matplotlib",
+      19544314
+    ],
+    [
+      "_internal",
+      18926909
+    ],
+    [
+      "runtime/Lib/site-packages/PIL",
+      14765705
+    ],
+    [
+      "runtime/Lib/site-packages/ezdxf",
+      14621985
+    ]
+  ]
+}
