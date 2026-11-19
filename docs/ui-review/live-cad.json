@@ -1,0 +1,248 @@
+{
+  "model": {
+    "modelId": "virtual-pouch-phase1",
+    "revision": "phase1-1"
+  },
+  "engine": "CadQuery",
+  "engineVersion": "2.7.0",
+  "unit": "mm",
+  "input": {
+    "positiveGatherDistance": [
+      10,
+      11
+    ],
+    "positiveLeadWidth": [
+      36,
+      37.5
+    ],
+    "positiveUpperLowerBarR": [
+      3,
+      5
+    ]
+  },
+  "assembly": {
+    "baseline": {
+      "rootX": -120,
+      "gatherX": -130,
+      "foilTipX": -141,
+      "leadStartX": -132,
+      "tapeStartX": -133.5,
+      "jointStartX": -134,
+      "sealantStartX": -150,
+      "leadWidth": 36,
+      "sealantWidth": 40,
+      "sealantOverhang": 2
+    },
+    "gather": {
+      "rootX": -120,
+      "gatherX": -131,
+      "foilTipX": -141,
+      "leadStartX": -133,
+      "tapeStartX": -134.5,
+      "jointStartX": -135,
+      "sealantStartX": -151,
+      "leadWidth": 36,
+      "sealantWidth": 40,
+      "sealantOverhang": 2
+    },
+    "lead": {
+      "rootX": -120,
+      "gatherX": -130,
+      "foilTipX": -141,
+      "leadStartX": -132,
+      "tapeStartX": -133.5,
+      "jointStartX": -134,
+      "sealantStartX": -150,
+      "leadWidth": 37.5,
+      "sealantWidth": 41.5,
+      "sealantOverhang": 2
+    },
+    "radius": {
+      "rootX": -120,
+      "gatherX": -130,
+      "foilTipX": -141,
+      "leadStartX": -132,
+      "tapeStartX": -133.5,
+      "jointStartX": -134,
+      "sealantStartX": -150,
+      "leadWidth": 36,
+      "sealantWidth": 40,
+      "sealantOverhang": 2
+    },
+    "negativeAll": {
+      "rootX": 120,
+      "gatherX": 129,
+      "foilTipX": 141,
+      "leadStartX": 131.5,
+      "tapeStartX": 133,
+      "jointStartX": 134,
+      "sealantStartX": 150,
+      "leadWidth": 34,
+      "sealantWidth": 37,
+      "sealantOverhang": 1.5
+    }
+  },
+  "tabSeal": {
+    "baseline": {
+      "centerL": 38,
+      "transitionR": 3,
+      "widths": {
+        "left": 5,
+        "center": 3,
+        "right": 5
+      },
+      "productArea": 513.167184
+    },
+    "radius": {
+      "centerL": 38,
+      "transitionR": 5,
+      "widths": {
+        "left": 5,
+        "center": 3,
+        "right": 5
+      },
+      "productArea": 511.27864
+    },
+    "negativeAll": {
+      "centerL": 36,
+      "transitionR": 2.5,
+      "widths": {
+        "left": 4.8,
+        "center": 3,
+        "right": 4.8
+      },
+      "productArea": 502.595388
+    }
+  },
+  "foldedSeal": {
+    "baseline": {
+      "centerL": 38,
+      "transitionR": 3,
+      "widths": {
+        "left": 5,
+        "center": 3,
+        "right": 5
+      },
+      "productArea": 388.167184
+    },
+    "radius": {
+      "centerL": 38,
+      "transitionR": 5,
+      "widths": {
+        "left": 5,
+        "center": 3,
+        "right": 5
+      },
+      "productArea": 386.27864
+    },
+    "negativeBoth": {
+      "centerL": 36,
+      "transitionR": 2.5,
+      "widths": {
+        "left": 4.8,
+        "center": 3,
+        "right": 4.8
+      },
+      "productArea": 382.595388
+    }
+  },
+  "unchangedNegativePartIdsAtTabSeal": [
+    "negative.tab",
+    "negative.lead",
+    "negative.joint.main",
+    "negative.preweld.pre-1",
+    "negative.tape.yellow",
+    "negative.leadFilm",
+    "tool.seal.negative_upper",
+    "tool.seal.negative_lower",
+    "seal.negative"
+  ],
+  "stages": {
+    "film_formed": {
+      "status": "열린 필름 여유",
+      "opened": true,
+      "hasStack": false,
+      "activeSeals": [],
+      "filmEdgeY": 80
+    },
+    "assembly_loaded_open": {
+      "status": "수납 · 열린 여유",
+      "opened": true,
+      "hasStack": true,
+      "activeSeals": [],
+      "filmEdgeY": 80
+    },
+    "package_closed": {
+      "status": "닫힘 · 가스측 개구",
+      "opened": false,
+      "hasStack": true,
+      "activeSeals": [],
+      "filmEdgeY": 80
+    },
+    "tab_sealed": {
+      "status": "탭 실링 · 가스측 개구",
+      "opened": false,
+      "hasStack": true,
+      "activeSeals": [
+        "seal.positive",
+        "seal.negative"
+      ],
+      "filmEdgeY": 80
+    },
+    "gas_sealed": {
+      "status": "가스방 외곽 실링 · 몸체와 연통",
+      "opened": false,
+      "hasStack": true,
+      "activeSeals": [
+        "seal.positive",
+        "seal.negative",
+        "seal.gas"
+      ],
+      "filmEdgeY": 80
+    },
+    "final_sealed": {
+      "status": "최종 실링 · 가스방 격리",
+      "opened": false,
+      "hasStack": true,
+      "activeSeals": [
+        "seal.positive",
+        "seal.negative",
+        "seal.gas",
+        "seal.final"
+      ],
+      "filmEdgeY": 80
+    },
+    "package_trimmed": {
+      "status": "가스방 제거",
+      "opened": false,
+      "hasStack": true,
+      "activeSeals": [
+        "seal.positive",
+        "seal.negative",
+        "seal.final"
+      ],
+      "filmEdgeY": 50,
+      "foldTip": [
+        0,
+        50,
+        0.55
+      ]
+    },
+    "package_folded": {
+      "status": "절단 잔여 플랜지 폴딩",
+      "opened": false,
+      "hasStack": true,
+      "activeSeals": [
+        "seal.positive",
+        "seal.negative",
+        "seal.final"
+      ],
+      "filmEdgeY": 50,
+      "foldTip": [
+        0,
+        47.15512,
+        3.293994
+      ]
+    }
+  }
+}

@@ -1,0 +1,185 @@
+[
+  {
+    "observation": "Representative model overview and ordered CAD cards",
+    "stages": [
+      "stacked",
+      "gathered",
+      "preweld",
+      "welded",
+      "assembly",
+      "film_formed",
+      "assembly_loaded_open",
+      "package_closed",
+      "tab_sealed",
+      "gas_sealed",
+      "final_sealed",
+      "package_trimmed",
+      "package_folded"
+    ],
+    "engine": "읽기 전용 프리뷰 · 사전 계산 형상(95b1f78)",
+    "viewport": {
+      "width": 1194,
+      "height": 834
+    }
+  },
+  {
+    "observation": "S2 → seal design → same S2 and original product cards, independent page memory",
+    "model": "virtual-pouch-phase1 · phase1-1 · 가상 예제",
+    "application": "적용 제품 · S2 가용접 후 · 실링 적용 전 · 읽기 전용 · CAD 기록",
+    "components": [
+      "tab",
+      "lead",
+      "leadFilm",
+      "tapes",
+      "pouch",
+      "gathering",
+      "preweld",
+      "welded",
+      "laser",
+      "seal"
+    ],
+    "card_sha256": {
+      "stacked": "91ca1bf65b2f8b0e3b70e6d09219bb1292726c05ef8ac152db47d0d42c1a6ec4",
+      "gathered": "a2e9178cfccc2226d25bac9c71098cd1dbce34f8156fafa8c4b1def8b669199b",
+      "preweld": "33cd16d420bf6d0182d3ea2947acf9048243a2963110926ff0d5255e99f70769",
+      "welded": "affdb541626672d4e3288cf3482b022ae081cd783882712de14e39229e059893",
+      "assembly": "3b0a4085b9da84e94bcc9952d4637f0c2a2845b25a98be4d2aa493e4a1b3c6e0",
+      "film_formed": "ee66e37842b7306be386838aa32f3b9feb7696dcfda98ba10d627addf7238d97",
+      "assembly_loaded_open": "52f78b650c186c0ed43cb94fd73fe327e23415f0ae1386fbb47f4d8431dc573c",
+      "package_closed": "d49521b370c4afb719aa7ef06cd50eebded39422f50dc4ee52bf129b07f5863f",
+      "tab_sealed": "f35721c157c2a949df141856877e5e445ccc1dee241120677d779d2a1c85aef3",
+      "gas_sealed": "e63341f6b47edc7f54cb4583872fa4a4c15d61f0c9881687c2d467e74345f834",
+      "final_sealed": "d812a4bcc84fcd0d001ef21242c96aa2af96eefc864c2f72c861ef5eb1fdd170",
+      "package_trimmed": "cecb547d9d06c959d3ee8ec29ec0b50abfeb1ca4904137fc76e25cab432a6924",
+      "package_folded": "bc7401cb4b6c4feb226d82d2b1a831380cc4be7a7d6ae57fbfa2b3b2cf802f46"
+    }
+  },
+  {
+    "observation": "All ten component entries inspected on S2, both horn and anvil work faces and inactive laser",
+    "components": {
+      "tab": {
+        "fields": 9,
+        "state": "적용 제품 · S2 가용접 후 · 제품에 부품 있음 · 읽기 전용 · CAD 기록"
+      },
+      "lead": {
+        "fields": 6,
+        "state": "적용 제품 · S2 가용접 후 · 해당 공정에 부품 없음 · 읽기 전용 · CAD 기록"
+      },
+      "leadFilm": {
+        "fields": 5,
+        "state": "적용 제품 · S2 가용접 후 · 해당 공정에 부품 없음 · 읽기 전용 · CAD 기록"
+      },
+      "tapes": {
+        "fields": 9,
+        "state": "적용 제품 · S2 가용접 후 · 해당 공정에 부품 없음 · 읽기 전용 · CAD 기록"
+      },
+      "pouch": {
+        "fields": 23,
+        "state": "적용 제품 · S2 가용접 후 · 파우치 적용 전 · 읽기 전용 · CAD 기록"
+      },
+      "preweld": {
+        "fields": 15,
+        "state": "적용 제품 · S2 가용접 후 · 적용 공정 · 읽기 전용 · CAD 기록"
+      },
+      "welded": {
+        "fields": 15,
+        "state": "적용 제품 · S2 가용접 후 · 현재 공정에 공구 미적용 · 읽기 전용 · CAD 기록"
+      },
+      "laser": {
+        "fields": 41,
+        "state": "적용 제품 · S2 가용접 후 · 현재 공정에 공구 미적용 · 읽기 전용 · CAD 기록"
+      },
+      "gathering": {
+        "fields": 3,
+        "state": "적용 제품 · S2 가용접 후 · 적용 공정 · 읽기 전용 · CAD 기록"
+      },
+      "seal": {
+        "fields": 2,
+        "state": "적용 제품 · S2 가용접 후 · 실링 적용 전 · 읽기 전용 · CAD 기록"
+      }
+    }
+  },
+  {
+    "observation": "S4 positive group visibility restores pre-hidden sealant; negative and tools unchanged",
+    "group_hidden": [
+      "positive.contact.anvil",
+      "positive.contact.horn",
+      "positive.joint.main",
+      "positive.lead",
+      "positive.leadFilm",
+      "positive.preweld.pre-1",
+      "positive.tab",
+      "positive.tape.yellow"
+    ],
+    "independent": [
+      "negative.tab",
+      "negative.lead",
+      "negative.joint.main",
+      "negative.preweld.pre-1",
+      "negative.tape.yellow",
+      "negative.leadFilm",
+      "negative.contact.horn",
+      "negative.contact.anvil",
+      "tool.positive.welded.horn",
+      "tool.positive.welded.anvil",
+      "tool.negative.welded.horn",
+      "tool.negative.welded.anvil"
+    ]
+  },
+  {
+    "observation": "Single field owner opens from product references; direction and endpoints shown",
+    "guides": {
+      "positive.tab.gatherDistance": "뿌리→집속 거리\n부품 ID · positive.tab\n항목 경로 · positive.tab.gatherDistance\n단위 · mm\n기준: 조립체 끝면 / A / B\n고정/방향: 조립체 끝단에서 바깥 X 방향\n영향: 후속 집속·리드·용접·테이프",
+      "positive.lead.width": "리드 폭\n부품 ID · positive.lead\n항목 경로 · positive.lead.width\n단위 · mm\n기준: 집속 완료 단면·집속 중심\n고정/방향: Y 방향\n영향: 해당 단계 리드·겹침·용접",
+      "positive.leadFilm.overhang": "양쪽 Y 피복 여유\n부품 ID · positive.leadFilm\n항목 경로 · positive.leadFilm.overhang\n단위 · mm\n기준: 탭 부착 면 / 집속 완료 단면\n고정/방향: 리드 폭 대비\n영향: 해당 테이프/필름·연결 주석"
+    }
+  },
+  {
+    "observation": "Opaque R2 sealant outlined; camera axis projections unchanged. 3D hit opens pouch group",
+    "hit_name": "upper 성형 컵 · 닫힘 ·",
+    "projection": [
+      [
+        "118.79655007443344",
+        "160",
+        "503.2013416361825",
+        "160"
+      ],
+      [
+        "310.99894585530797",
+        "232.60979396162742",
+        "310.99894585530797",
+        "87.39020603837258"
+      ],
+      [
+        "310.99894585530797",
+        "160.00002402529947",
+        "310.99894585530797",
+        "159.99997597470053"
+      ]
+    ],
+    "input_method": "touch tap"
+  },
+  {
+    "observation": "Seal product result tracks pre-cut, trimmed and folded stages",
+    "statuses": {
+      "tab_sealed": "적용 제품 · R3 탭측 실링 · 가스측 개구 · 필름 위 공칭 접촉 영역 · 읽기 전용 · CAD 기록",
+      "final_sealed": "적용 제품 · R5 최종 실링 · 가스방 격리 · 필름 위 공칭 접촉 영역 · 읽기 전용 · CAD 기록",
+      "package_trimmed": "적용 제품 · R6 가스방 절단 · 플랜지 잔존 · 절단 외곽과 잔류 실링 · 읽기 전용 · CAD 기록",
+      "package_folded": "적용 제품 · R7 잔여 플랜지 폴딩 · 접힌 플랜지에 남은 실링 · 읽기 전용 · CAD 기록"
+    }
+  },
+  {
+    "observation": "Four model pictures; legacy P route and original vertex-defined R4 seal",
+    "models": [
+      "pouch-phase1",
+      "demo",
+      "pouch-process",
+      "process-tooling-r4"
+    ]
+  },
+  {
+    "observation": "Final overview stable; JavaScript exceptions checked",
+    "exceptions": [],
+    "api_posts": 0
+  }
+]
