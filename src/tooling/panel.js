@@ -96,7 +96,7 @@ export function mountTooling(api){
  let source=result;
  const needed=part==='seal' && (!source?.toolingResults?.seals?.[location+'_'+half] || toolOnly) ? r4Stages[appliedAt] :
    part==='ultrasonic' ? ws : part==='laser' ? 'welded' :
-   part==='pouch' && !source?.toolingResults?.packaging ? 'film_formed' :
+   part==='pouch' ? 'film_formed' :
    part==='gathering' && !source?.toolingResults?.poles?.[side] ? 'preweld' : null;
  $('r4-plan').replaceChildren();$('r4-results').replaceChildren();
  if(needed && needed!==source?.stage && api.isOpen()){

@@ -42,8 +42,11 @@ with sync_playwright() as pw:
  if not a.preview:
   field=edit('bodyDepth',4);expect(page.locator('#r4-message')).to_contain_text('미리보기 완료',timeout=180000);expect(page.locator(f'[data-r4-field="{field}"]')).to_have_value('4');shot('horn-block-edited');page.locator('#r4-apply').click();expect(page.locator('#status')).to_contain_text('CAD 확정',timeout=180000)
  card('welded','anvil');expect(page.locator('#component-dimension option')).to_have_count(8,timeout=180000);page.locator('#component-section-center').click();expect(page.locator('#component-section-drawing svg')).to_be_visible();shot('anvil-center-section')
- card('pouch');expect(page.locator('#component-dimension option')).to_have_count(14,timeout=180000)
- field=dim('sheets.lower.depth');page.locator(f'[data-r4-field="{field}"]').locator('xpath=..').click();expect(page.locator('#component-scene-status')).to_contain_text('깊이');page.locator('#component-section-center').click();expect(page.locator('#component-section-drawing svg')).to_be_visible();shot('pouch-depth-section')
+ card('pouch');expect(page.locator('#component-dimension option')).to_have_count(14,timeout=180000);expect(page.locator('#standalone-mode')).to_contain_text('R0 열린 두 컵')
+ field=dim('sheets.lower.depth')
+ if a.preview:expect(page.locator(f'[data-r4-field="{field}"]')).to_be_disabled()
+ else:page.locator(f'[data-r4-field="{field}"]').locator('xpath=..').click()
+ expect(page.locator('#component-scene-status')).to_contain_text('깊이');page.locator('#component-section-center').click();expect(page.locator('#component-section-drawing svg')).to_be_visible();shot('pouch-depth-section')
  if not a.preview:
   old=float(page.locator(f'[data-r4-field="{field}"]').input_value());edit('sheets.lower.depth',old+.2);expect(page.locator('#r4-message')).to_contain_text('미리보기 완료',timeout=180000);expect(page.locator('#component-section-axis')).to_have_value('x');shot('pouch-depth-edited');page.locator('#r4-apply').click();expect(page.locator('#status')).to_contain_text('CAD 확정',timeout=180000);expect(page.locator('#component-section-axis')).to_have_value('x');expect(page.locator('#component-section-drawing svg')).to_be_visible()
   field=dim('sheets.lower.floorR');old=float(page.locator(f'[data-r4-field="{field}"]').input_value());edit('sheets.lower.floorR',old+.1);expect(page.locator('#r4-message')).to_contain_text('미리보기 완료',timeout=180000);shot('pouch-radius-edited');page.locator('#r4-cancel').click()

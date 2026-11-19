@@ -90,7 +90,7 @@ export function mountComponentScenes(api) {
    source=m;selection=sel;const token=++generation;
    const key=JSON.stringify(sel);if(key!==displayedKey){section={axis:'none',position:0};$('component-section-axis').value='none';$('component-section-position').value=0;}if(reset||key!==displayedKey){application=false;$('application-toggle').textContent='적용 공정 보기';}const fit=reset||key!==displayedKey;displayedKey=key;
    $('standalone-title').textContent=sel.part==='ultrasonic'?`${sel.side==='positive'?'양극':'음극'} · ${api.stageLabel(sel.ws)} · ${sel.kind==='horn'?'혼':'엔빌'} 치형·지지 블록`:api.title();
-   $('standalone-mode').textContent=api.editable()?'실시간 CAD · 가상 예시 mm':'읽기 전용 · 사전 계산 CAD';
+   $('standalone-mode').textContent=(api.editable()?'실시간 CAD · 가상 예시 mm':'읽기 전용 · 사전 계산 CAD')+' · '+api.stageLabel(m.stage);
    const seal=sel.part==='seal';$('standalone-viewport').hidden=seal;$('component-plan').hidden=!seal;
    $('component-datum').textContent='';$('component-scene-status').textContent='';
    const sub=componentModel(m,sel);submodel=sub;active=componentDimensions(sub,api.product(),sel);
