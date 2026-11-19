@@ -14,7 +14,7 @@
         <span class="demo" id="data-origin">DEMO · 예시값</span>
       </div>
       <div class="header-actions">
-        <button id="open-overview" hidden>공정 한눈에 보기</button>
+
         <button id="undo" title="이전 설계">↶</button
         ><button id="redo" title="다음 설계">↷</button
         ><button id="save">셀 JSON 저장</button
@@ -26,14 +26,21 @@
         </button>
       </div>
     </header>
+    <nav class="review-nav" aria-label="작업 페이지">
+      <div class="page-tabs" aria-label="페이지"><button id="page-product" aria-pressed="true">제품 공정도</button><button id="page-parts" aria-pressed="false">부품·요소기술</button></div>
+      <div class="view-tabs"><button id="page-overview">전체보기</button><button id="page-detail">상세보기</button></div>
+      <button id="choose-model" aria-haspopup="dialog">모델 선택 <span id="current-model"></span></button>
+    </nav>
+    <dialog id="model-picker"><h2>모델 선택</h2><div id="model-choices"></div><button id="close-model-picker">닫기</button></dialog>
+    <section id="component-overview" hidden><h1>부품·요소기술 전체보기</h1><div id="component-list"></div></section>
     <section id="process-overview" aria-labelledby="overview-title">
       <div class="overview-heading">
-        <h1 id="overview-title">공정 한눈에 보기</h1>
+        <h1 id="overview-title">제품 공정도 전체보기</h1>
         <p id="overview-model"></p>
         <p id="overview-engine"></p>
         <p id="overview-message">CAD 엔진 연결을 확인하는 중입니다.</p>
-        <button id="overview-main" hidden>대표 셀 열기</button>
-        <button id="overview-legacy">기존 파우치 예제 열기</button>
+
+
       </div>
       <div id="overview-groups"></div>
     </section>
@@ -41,7 +48,7 @@
       <aside class="navigator">
         <div class="eyebrow">PROCESS / 공정 상태</div>
         <label class="sr-only" for="stage">공정 상태</label
-        ><select id="stage">
+        ><select id="stage" hidden>
           <option value="stacked">S0 적층체 / Jellyroll</option>
           <option value="gathered">S1 정렬·집속 / 용접 전</option>
           <option value="preweld">S2 가용접 후</option>
@@ -50,9 +57,9 @@
           <option value="packaged">S5 패키징 후</option>
           <option value="finished">S6 완성 셀 · 접힘 예시</option>
         </select>
-        <button id="phase1-example">대표 셀 열기</button>
-        <button id="pouch-example">기존 파우치 예제 열기</button>
-        <div class="model-caption">
+
+
+        <div id="detail-processes"></div><button id="open-seal">실링바 단품</button><div class="model-caption">
           낱장 적층형 · 양끝 리드<br />양극/음극 독립 설계 · mm
         </div>
         <div class="section-title">
@@ -83,7 +90,11 @@
           <div id="pouch-results" hidden></div>
         </details>
       </aside>
-      <section class="workspace">
+      <aside id="component-workbench" hidden>
+        <h2 id="component-title"></h2><label>단품 <select id="component-choice"></select></label>
+        <label id="component-polarity">극 <select id="component-side"><option value="positive">양극</option><option value="negative">음극</option></select></label>
+        <div id="component-drawing"></div><div id="component-host"></div></aside>
+      <section class="workspace"><div id="application-state" role="status" hidden></div>
         <div class="workspace-title">
           <div>
             <div class="eyebrow">DATUM-DRIVEN MODEL</div>
@@ -164,7 +175,7 @@
       </section>
       <aside class="inspector">
         <div class="tabs">
-          <button id="tooling-tab">요소기술</button><button id="design-tab" class="active">설계 치수</button
+          <button id="design-tab" class="active">설계 치수</button
           ><button id="measure-tab">
             치수 · 스펙 <span id="measure-count">0</span>
           </button>

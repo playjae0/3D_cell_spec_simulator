@@ -268,7 +268,8 @@ export class Viewer {
       );
       this.model.add(line);
     }
-    this.select(this.selected);
+    this.selectionEdges = new Map();
+    this.applyColors();
     this.draw();
   }
   visibleFeatures() {
@@ -342,7 +343,7 @@ export class Viewer {
       mesh.material.emissive?.set(
         id === this.highlight?.partId || this.highlight?.partIds?.includes(id)
           ? "#513810"
-          : id === this.selected
+          : this.selectedIds?.includes(id)
             ? "#173f40"
             : id === this.hovered
               ? "#263c55"
@@ -350,8 +351,9 @@ export class Viewer {
       );
     }
   }
-  select(id) {
+  select(id, members = id ? [id] : []) {
     this.selected = id;
+    this.selectedIds = members;
     this.applyColors();
     this.draw();
   }
@@ -433,6 +435,25 @@ export class Viewer {
       svg.append(sv("line", attrs));
       return [x, y];
     };
+    // Project the selected mesh edges above the enclosure, including in the CPU renderer.
+    for (const mesh of this.meshes) {
+      const id = mesh.userData.part.id;
+      if (!mesh.visible || !this.selectedIds?.includes(id)) continue;
+      let vertices = this.selectionEdges?.get(id);
+      if (!vertices) {
+        const edges = new T.EdgesGeometry(mesh.geometry, 22);
+        vertices = edges.attributes.position.array;
+        this.selectionEdges?.set(id, vertices);
+        edges.dispose();
+      }
+      const segments = [];
+      for (let i = 0; i < vertices.length; i += 6) {
+        const a = this.project(vertices.subarray(i,i+3)), b = this.project(vertices.subarray(i+3,i+6));
+        segments.push(`M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${b[0].toFixed(1)} ${b[1].toFixed(1)}`);
+      }
+      svg.append(sv("path", {"data-selection-outline":id,d:segments.join(""),fill:"none",
+        stroke:"#ab4b00","stroke-width":1.6,"stroke-linejoin":"round"}));
+    }
     const text = (p, label, color = "#146e6a") => {
       const [x, y] = this.project(p);
       svg.append(

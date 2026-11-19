@@ -7,11 +7,11 @@ export const groups = [
     ["preweld", "가용접"], ["welded", "메인 용접"], ["assembly", "테이프 부착"],
   ]],
   ["파우치 성형·수납", [
-    ["film_formed", "한 장 필름 · 열린 두 컵"], ["assembly_loaded_open", "조립체 수납"],
+    ["film_formed", "한 장 필름 · 열린 두 컵"], ["assembly_loaded_open", "열린 컵에 테이프 부착 조립체 수납"],
     ["package_closed", "브리지 닫힘"],
   ]],
   ["패키지 실링·마감", [
-    ["tab_sealed", "탭 실링 후"], ["gas_sealed", "가스방 외곽 실링"],
+    ["tab_sealed", "탭측 실링 · 가스측 개구"], ["gas_sealed", "가스방 외곽 실링"],
     ["final_sealed", "최종 실링 · 절단 전"], ["package_trimmed", "절단 후"],
     ["package_folded", "폴딩 · 완성셀"],
   ]],
@@ -30,6 +30,16 @@ const compatibility = [groups[0], ["기존 파우치 공정", [
 export function stageGroups(project) {
   if (project.product.processTooling) return groups;
   return project.product.pouchProcess ? legacy : compatibility;
+}
+
+const codeGroups = [
+  ["S", ["stacked","gathered","preweld","welded","assembly","packaged","finished"]],
+  ["P", legacy[1][1].map(([id]) => id)],
+  ["R", groups.slice(1).flatMap(([, entries]) => entries.map(([id]) => id))],
+];
+export function stageCode(stage) {
+  for (const [prefix, ids] of codeGroups) if (ids.includes(stage)) return prefix + ids.indexOf(stage);
+  return "";
 }
 
 export function mountOverview({ host, details, getProject, calculate, selectStage }) {
@@ -80,7 +90,7 @@ export function mountOverview({ host, details, getProject, calculate, selectStag
   function sync() {
     const project = structuredClone(getProject());
     const design = designIdentity(project);
-    host.querySelector("#overview-main").hidden = project.product.id === "virtual-pouch-phase1";
+
     if (design !== key) {
       generation++;
       key = design;
@@ -115,6 +125,7 @@ export function mountOverview({ host, details, getProject, calculate, selectStag
           caption.textContent = ready ? "CAD 형상 준비 중" : "형상 데이터 확인 중";
           const title = document.createElement("strong");
           title.textContent = name;
+          const code = document.createElement("small"); code.textContent = stageCode(stage); title.append(code);
           frame.append(image, caption);
           button.append(frame, title);
           row.append(button);

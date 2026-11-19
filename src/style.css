@@ -1010,3 +1010,40 @@ body.overview-open .header-actions { display: none; }
 #r4-plan .tab-seal-plan text { font-size: 2.55px; fill: #184c51; }
 #r4-plan .tab-seal-plan .radius-label { fill: #8a4d23; }
 #r4-plan .seal-legend { color: #c5d7df; font-size: .73rem; }
+
+/* Model navigation stays reachable in the overview and both detailed layouts. */
+.review-nav {position:sticky;top:0;z-index:8;display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:8px clamp(10px,2vw,32px);background:#f8fbfa;border-bottom:1px solid #cbdad7}
+.page-tabs,.view-tabs {display:flex;gap:3px}
+.review-nav [aria-pressed=true],#detail-processes [aria-current=true]{background:#176a62;color:white;border-color:#176a62}
+#choose-model{margin-left:auto}#current-model{font-size:12px;color:#48665e;margin-left:6px}
+#model-picker{width:min(740px,94vw);padding:24px}#model-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px}
+#model-choices button{display:grid;text-align:left;white-space:normal}#model-choices img{width:100%;height:85px;object-fit:contain}#model-choices small{color:#48665e}
+#component-overview{max-width:1180px;margin:auto;padding:28px 20px}#component-list section{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin-bottom:25px}
+#component-list h2{grid-column:1/-1;font-size:1rem}#component-list button{min-height:64px}
+#open-overview,#overview-main,#overview-legacy,#phase1-example,#pouch-example,#preview-demo,#r4-example,#tooling-tab,#r4-mode,#r4-side,#r4-wstage{display:none!important}
+#process-detail{height:calc(100dvh - 210px)}
+#detail-processes details{padding:4px 0;border-bottom:1px solid #e3ece9}#detail-processes summary{cursor:pointer;font-size:13px;padding:7px 0}
+#detail-processes button{display:block;margin:4px 0;width:100%;text-align:left;white-space:normal}
+#open-seal{margin:12px 0} .process-card small{margin-left:5px;color:#5e7374;font-weight:normal}
+.tree-header,.tree-row{display:flex;align-items:center;gap:2px;margin:2px 0}.tree-header{margin-top:7px;border-bottom:1px solid #dce7e4}
+.tree-header button,.tree-row button{border:0;background:transparent;padding:3px;white-space:normal;min-height:32px;font-size:12px}
+.tree-header [data-group],.tree-row [data-part]{flex:1;text-align:left}.tree-row [data-part]{display:flex;align-items:center;gap:4px}
+.tree-row img{width:31px;height:24px;object-fit:contain}.tree-header [aria-pressed=true]:not(.visibility-button),.tree-row [data-part][aria-pressed=true]{background:#dbefe8;color:#07594e}
+.visibility-button{min-width:32px}.visibility-button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.7}
+#component-workbench{overflow:auto;padding:16px;background:#fff;border-right:1px solid #ceddda}
+#component-workbench h2{margin:0 0 12px}#component-workbench>label{display:inline-block;margin:0 10px 8px 0}
+#component-workbench #design-pane>label:first-child{display:none}
+#component-workbench #design-pane>details{display:none}
+#component-drawing{background:#eff4f3;border-radius:5px}#component-drawing:empty{display:none}
+#component-drawing img,#component-drawing canvas{display:block;max-height:180px;width:100%;object-fit:contain}
+#component-drawing button{width:100%;background:transparent}
+#component-drawing p{padding:8px;margin:0}
+body.component-detail #process-detail{display:grid;grid-template-columns:minmax(280px,36%) minmax(0,1fr)}
+body.component-detail .navigator,body.component-detail .inspector{display:none}
+#application-state{position:absolute;top:0;left:0;right:0;z-index:2;padding:5px 10px;color:#12574e;background:#e6f3ef;font-size:12px}
+.component-detail .workspace-title{top:34px}.owner-ref{display:block;text-align:left;margin:4px 0;width:100%;white-space:normal}
+@media(pointer:coarse){.tree-row button,.tree-header button{min-height:44px}.visibility-button,[data-expand]{min-width:44px}}
+@media(max-width:1050px){#process-detail{height:auto}body.component-detail #component-workbench{max-height:650px}body.component-detail .workspace{height:650px}}
+@media(max-width:650px){.review-nav{gap:5px}#choose-model{margin:0}body.component-detail #process-detail{display:flex;flex-direction:column}body.component-detail .workspace{order:0;height:500px}body.component-detail #component-workbench{max-height:65vh}.header-actions{flex-wrap:wrap}}
+.chosen-guide path,.chosen-guide polyline{stroke:#bd4c00;stroke-width:.8}
+.chosen-guide text{font-weight:bold;fill:#903700}
