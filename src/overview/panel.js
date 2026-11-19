@@ -4,7 +4,7 @@ import { drawThumbnail, overviewFrame } from "./thumbnail.js";
 export const groups = [
   ["전극 조립·탭 용접", [
     ["stacked", "전극 적층"], ["gathered", "탭 정렬·집속"],
-    ["preweld", "가용접"], ["welded", "메인 용접"], ["assembly", "테이프 부착"],
+    ["preweld", "가용접"], ["foil_trimmed", "포일 커팅"], ["welded", "메인 용접"], ["assembly", "테이프 부착"],
   ]],
   ["파우치 성형·수납", [
     ["film_formed", "한 장 필름 · 열린 두 컵"], ["assembly_loaded_open", "열린 컵에 테이프 부착 조립체 수납"],
@@ -38,6 +38,7 @@ const codeGroups = [
   ["R", groups.slice(1).flatMap(([, entries]) => entries.map(([id]) => id))],
 ];
 export function stageCode(stage) {
+  if(stage === "foil_trimmed") return "S2C";
   for (const [prefix, ids] of codeGroups) if (ids.includes(stage)) return prefix + ids.indexOf(stage);
   return "";
 }

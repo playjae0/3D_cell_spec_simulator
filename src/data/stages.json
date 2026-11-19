@@ -11,6 +11,11 @@
     "label": "S2 가용접 후",
     "assembly": "preweld"
   },
+  "foil_trimmed": {
+    "label": "S2C 포일 커팅 후",
+    "assembly": "preweld",
+    "foilCut": true
+  },
   "welded": {
     "label": "S3 메인 용접 후",
     "assembly": "welded"

@@ -1,12 +1,12 @@
 import { modelImages } from "./part-images.js";
 
 export const components = {
-  tab: "포일 탭", lead: "리드 · 실런트 결합 단품", tapes: "보호 테이프",
-  pouch: "파우치 · 성형 컵과 가스방", gathering: "가용접 포일 집속",
+  tab: "포일 탭 · 집속 전", tab_preweld: "포일 탭 · 가용접 후", tab_trimmed: "포일 탭 · 커팅 후", lead: "리드 · 실런트 결합 단품", tapes: "보호 테이프",
+  pouch: "파우치 · 성형 컵과 가스방",
   preweld: "가용접 혼·엔빌", welded: "메인 용접 혼·엔빌", laser: "레이저 스팟 배열", seal:"실링바",
 };
-export const componentGroups = [["셀 구성 부품",["tab","lead","tapes","pouch"]],
-  ["공정 공구",["gathering","preweld","welded","laser","seal"]]];
+export const componentGroups = [["셀 구성 부품",["tab","tab_preweld","tab_trimmed","lead","tapes","pouch"]],
+  ["공정 공구",["preweld","welded","laser","seal"]]];
 export const modelChoices = {
   "pouch-phase1":["대표 셀","양방향 탭 · 한 장 필름 · 탭측 실링과 폴딩"],
   demo:["기본 가상 예제","적층 조립체와 탭·리드 치수"],

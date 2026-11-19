@@ -7,6 +7,7 @@ const ranks = {
   stacked: 0,
   gathered: 1,
   preweld: 2,
+  foil_trimmed: 2,
   welded: 3,
   assembly: 4,
   packaged: 5,

@@ -123,7 +123,7 @@ let selectedGroup = null;
 let pageName = "parts", component = "welded", componentSide = "positive", drawingGeneration = 0;
 const pageViews = { product:"overview", parts:"overview" };
 const inComponent = () => pageName === "parts" && pageViews.parts === "detail";
-const basicComponent = () => ["tab","lead","tapes","leadFilm"].includes(component) ||
+const basicComponent = () => ["tab","tab_preweld","tab_trimmed","lead","tapes","leadFilm"].includes(component) ||
   (component==="pouch" && !state.product.processTooling);
 let ownerTarget = null;
 const inspectionTools = mountInspection({
@@ -573,7 +573,7 @@ function renderFields() {
       row.className = "field";
       row.dataset.path = b.path;
       const label = document.createElement("label");
-      label.textContent = b.label;
+      label.textContent = b.label + (standalone && component==="tab_trimmed" && b.key==="gatheredLength" ? " · 절단 전" : "");
       const input = document.createElement(b.options ? "select" : "input");
       input.dataset.field = b.path;
       input.id = "field-" + b.path;
@@ -847,6 +847,7 @@ function focusField(path, focus = true) {
   updateHighlight();
 }
 function updateHighlight() {
+  if(inComponent()){if(activePath)componentScenes.selectField(activePath);return;}
   const b = activePath && bindingFor(draft, targetStage, activePath);
   for (const row of document.querySelectorAll(".field"))
     row.classList.toggle("active-field", row.dataset.path === activePath);
@@ -2153,13 +2154,14 @@ function inspectTabSeal(side) {
 }
 
 const componentScenes=mountComponentScenes({
-  project:()=>state, editable:()=>live, reference:referenceModel,
+  project:()=>state, product:()=>draft, editable:()=>live, reference:referenceModel,
   stageLabel:s=>stages[s]||s, title:()=>components[component],
-  fieldValue:path=>toolingTools.fieldValue(path), edit:(path,v)=>toolingTools.edit(path,v),
-  selectField:path=>{const el=document.querySelector(`[data-r4-field="${path}"]`);document.querySelectorAll('.chosen-field').forEach(x=>x.classList.remove('chosen-field'));if(el)el.closest('label').classList.add('chosen-field');},
+  fieldValue:path=>basicComponent()?readField(draft,path):toolingTools.fieldValue(path), edit:async(path,v)=>{if(basicComponent()){changeField(path,v);queue.flush();}else await toolingTools.edit(path,v);},
+  selectField:path=>{const el=document.querySelector(`[data-r4-field="${path}"],[data-field="${path}"]`);document.querySelectorAll('.chosen-field').forEach(x=>x.classList.remove('chosen-field'));if(el)(el.closest('.field')||el.closest('label')).classList.add('chosen-field');},
   pending:()=>dirty,
 });
 const toolingTools = mountTooling({
+  selectField:path=>componentScenes.selectField(path),
   component: (m,selection)=>componentScenes.show(m,selection),
   componentMode:()=>inComponent(),
   project: () => state, model: () => model, stageLabel: s => stages[s] || s,
@@ -2196,6 +2198,9 @@ const overview = mountOverview({
   },
 });
 function ownerStage() {
+  if(component==="tab")return "stacked";
+  if(component==="tab_preweld")return "preweld";
+  if(component==="tab_trimmed")return "foil_trimmed";
   if(component==="lead" && state.product[componentSide].leadFilm.enabled==null)return "welded";
   if (component==="pouch") return state.product.pouchProcess ? "pouch_formed" : "packaged";
   if (component==="lead" && state.stage==="preweld" && state.product[componentSide].preweldLead.included)
@@ -2265,7 +2270,7 @@ function matchesComponent(id) {
   if(component==="pouch")return id.startsWith("pouch.");
   if(component==="lead")return id===componentSide+".lead"||id===componentSide+".leadFilm";
   if(component==="tapes")return id.startsWith(componentSide+".tape.");
-  return id===componentSide+"."+component;
+  return id===componentSide+"."+(component.startsWith("tab")?"tab":component);
 }
 function openOwner(key,b) {
   if(!canNavigate())return;
@@ -2301,10 +2306,20 @@ function drawPartDetail() {
   if(basic || component==="pouch"){
     const target=model?.parts.find(p=>matchesComponent(p.id));
     ownerTarget=component==="pouch"?"pouch":target?.id ||
-      (component==="tapes"?componentSide+".tape."+state.product[componentSide].tapes[0]?.id:componentSide+"."+component);
+      (component==="tapes"?componentSide+".tape."+state.product[componentSide].tapes[0]?.id:componentSide+"."+(component.startsWith("tab")?"tab":component));
     if(basic){
       if(target){tree.reveal(target.id); selectedGroup=null;selected=target.id;viewer.select(target.id);}
       renderFields();
+      if(component.startsWith('tab') && component!=='tab' && draft.processTooling){
+        const path='processTooling.poles.'+componentSide+'.';
+        const extra=document.createElement('div');extra.className='foil-detail-inputs';
+        for(const [suffix,label,value] of [['gathering.depth','집속 침입 깊이',getToolField(draft,path+'gathering.depth')],...(component==='tab_trimmed'?[['foilCut.removedLength','가용접 포일 끝 절단량',getToolField(draft,path+'foilCut.removedLength')??0]]:[])]){
+          const row=document.createElement('label');row.textContent=label+' (mm)';const input=document.createElement('input');input.type='number';input.step='0.1';input.value=Number(value.toFixed(6));input.disabled=!live;input.dataset.field=path+suffix;input.setAttribute('aria-label',label);row.append(input);extra.append(row);
+          row.onclick=()=>componentScenes.selectField(path+suffix);
+          input.onchange=()=>{if(suffix.startsWith('foilCut')&&!draft.processTooling.poles[componentSide].foilCut)draft.processTooling.poles[componentSide].foilCut={removedLength:0};changeField(path+suffix,input.valueAsNumber);};
+        }
+        $('fields').append(extra);
+      }
       if(component==="leadFilm"){
         const pole=state.product[componentSide], ref=document.createElement("button");
         ref.className="owner-ref";ref.dataset.ownerPath=componentSide+".lead.width";

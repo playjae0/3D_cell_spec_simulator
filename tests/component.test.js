@@ -18,3 +18,17 @@ test('standalone subset keeps component IDs and world datum values without re-ce
  const m={parts:[{id:'positive.lead',bounds:{min:[3,4,5]}},{id:'positive.leadFilm'},{id:'negative.lead'}],paths:[],features:{'positive.lead.start':{partId:'positive.lead',point:[3,4,5]}}};
  const sub=componentModel(m,{part:'lead',side:'positive'});assert.equal(sub.parts.length,2);assert.equal(sub.parts[0],m.parts[0]);assert.equal(sub.features['positive.lead.start'],m.features['positive.lead.start']);
 });
+
+import {componentGroups,components} from '../src/overview/catalog.js';
+import {sectionCenter} from '../src/components/section.js';
+import {stageCode,groups} from '../src/overview/panel.js';
+test('foil states belong to cell parts and cutting retains the old process codes',()=>{
+ assert.deepEqual(componentGroups[0][1].slice(0,3),['tab','tab_preweld','tab_trimmed']);
+ assert.equal(componentGroups[1][1].includes('gathering'),false);
+ assert.equal(components.gathering,undefined);assert.equal(stageCode('welded'),'S3');assert.equal(stageCode('foil_trimmed'),'S2C');
+ assert.ok(groups[0][1].some(([s])=>s==='foil_trimmed'));
+});
+test('component section centers use tool datum or cup opening, not visual bounding boxes',()=>{
+ const m={parts:[{id:'tool.horn',meta:{datum:{origin:[-136,-1,.3]}}},{id:'pouch.lower.pocket',bounds:{min:[-100,-500,-5]}}],features:{'pouch.lower.pocket.opening':{point:[0,2,-1]}}};
+ assert.deepEqual(sectionCenter(m,'tool.horn'),[-136,-1,.3]);assert.deepEqual(sectionCenter(m,'pouch.lower.pocket'),[0,2,-1]);
+});

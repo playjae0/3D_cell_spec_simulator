@@ -13,11 +13,11 @@ export function placementField(path) {
 }
 export function componentParts(model, selection) {
   const {part,side,ws,kind}=selection;
-  return model.parts.filter(p=>part==='ultrasonic'?p.id===`tool.${side}.${ws}.${kind}.teeth`:
+  return model.parts.filter(p=>part==='ultrasonic'?[`.teeth`,`.body`].some(s=>p.id===`tool.${side}.${ws}.${kind}`+s):
     part==='pouch'?p.id.startsWith('pouch.'):
     part==='lead'?p.id===side+'.lead'||p.id===side+'.leadFilm':
     part==='tapes'?p.id.startsWith(side+'.tape.'):
-    part==='gathering'||part==='tab'?p.id===side+'.tab':
+    ['tab','tab_preweld','tab_trimmed','gathering'].includes(part)?p.id===side+'.tab':
     part==='laser'?p.id===side+'.lead'||p.id.startsWith(side+'.laser.'):false);
 }
 export function componentModel(model,selection) {
@@ -27,4 +27,4 @@ export function componentModel(model,selection) {
 export function dimensions(model) {
   return model.parts.flatMap(p=>Object.entries(p.meta?.dimensions||{}).map(([key,d])=>({key,...d,partId:p.id})));
 }
-export const dimensionNames={pitchU:'U 피치',pitchV:'V 피치',height:'치높이',length:'작업면 길이',width:'작업면 폭',knurlLength:'너링 길이',knurlWidth:'너링 폭'};
+export const dimensionNames={bodyDepth:'지지 블록 깊이',removedLength:'포일 끝 절단량',openingLength:'컵 입구 길이',openingWidth:'컵 입구 폭',depth:'컵 성형 깊이',floorR:'바닥 전이 R',rimR:'림 전이 R',planR:'평면 코너 R',filmThickness:'필름 두께',pitchU:'U 피치',pitchV:'V 피치',height:'치높이',length:'작업면 길이',width:'작업면 폭',knurlLength:'너링 길이',knurlWidth:'너링 폭'};

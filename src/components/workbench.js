@@ -1,6 +1,8 @@
 import { frameBounds } from '../viewer/framing.js';
 import { Viewer } from '../viewer/viewer.js';
 import { componentModel, dimensions, dimensionNames } from './contract.js';
+import { componentDimensions } from './dimensions.js';
+import {sectionCenter,renderSection} from './section.js';
 import { renderParts } from '../overview/part-images.js';
 import { designIdentity } from '../preview/identity.js';
 
@@ -8,11 +10,11 @@ export function mountComponentScenes(api) {
  const root=document.getElementById('component-scenes');
  root.innerHTML=`<header><h2 id="standalone-title">단품 CAD</h2><span id="standalone-mode"></span></header>
  <div class="component-viewbar"><button data-component-view="iso">입체</button><button data-component-view="work">작업면 정면</button><button data-component-view="side">측면</button><button id="component-fit">맞춤</button><select id="component-dimension" aria-label="단품 치수"></select><button id="component-edit">선택 치수 편집</button></div>
- <div id="standalone-viewport"></div><div id="component-plan" hidden></div><p id="component-datum"></p><p id="component-scene-status" role="status"></p>
+ <p id="component-mode-help"></p><div class="component-section-bar"><label>단면 <select id="component-section-axis" aria-label="부품 단면 방향"><option value="none">끄기</option><option value="x">X 법선 · YZ</option><option value="y">Y 법선 · XZ</option><option value="z">Z 법선 · XY</option></select></label><label>위치 mm <input id="component-section-position" aria-label="부품 단면 위치" type="number" step="0.1" value="0"></label><button id="component-section-center">중심 단면</button></div><div id="standalone-viewport"></div><div id="component-section-drawing"></div><div id="component-plan" hidden></div><p id="component-datum"></p><p id="component-scene-status" role="status"></p>
  <section class="finished-reference"><header><h3 id="reference-title">완성 셀 · 같은 모델 / 개정</h3><button id="application-toggle">적용 공정 보기</button></header><div id="reference-viewport"></div><p id="reference-status" role="status"></p></section>
  <dialog id="component-dimension-editor"><form id="component-dimension-form"><h3>3D 치수 편집</h3><label>연결 치수<select id="component-edit-field"></select></label><label>값 (mm)<input id="component-edit-value" type="number" step="any" required></label><p id="component-edit-basis"></p><button type="button" id="component-edit-cancel">취소</button><button id="component-edit-submit" type="submit">CAD 미리보기</button></form></dialog>`;
  const $=id=>document.getElementById(id);
- let selection=null, source=null, active=[],generation=0, application=false, displayedKey='',chosen=null;
+ let selection=null, source=null, active=[],generation=0, application=false, displayedKey='',chosen=null, submodel=null, section={axis:'none',position:0};
  const makeState=m=>({...api.project(),stage:m.stage,measurements:[],view:{...api.project().view,hidden:[],groupHidden:{},transparent:false,datums:false,internalOnly:false,showDimensions:true,section:{axis:'none',position:0}}});
  const viewer=new Viewer($('standalone-viewport'),{onSelect:(id,featureId)=>{const candidates=active.filter(d=>d.partId===id&&(!featureId||[d.a,d.b].includes(featureId)));if(candidates.length)choose(candidates[0].field);},onPick:()=>{},onEdit:hit=>edit(hit.measurement?.field,hit.featureId),onDimensionSelect:m=>choose(m.field)});
  const reference=new Viewer($('reference-viewport'),{onSelect:id=>reference.select(id),onPick:()=>{}});
@@ -23,11 +25,33 @@ export function mountComponentScenes(api) {
   else if(view==='side')viewer.view('side');
   if(view!=='iso')viewer.restore(frameBounds(viewer.data.parts.map(p=>p.bounds),viewer.getCamera(),[{width:$('standalone-viewport').clientWidth,height:$('standalone-viewport').clientHeight}]));
  }
+ function sectionUpdate(center=false) {
+  if(!submodel)return;
+  const axis=$('component-section-axis').value;
+  const k=['x','y','z'].indexOf(axis);
+  const dim=active.find(d=>d.field===chosen);
+  const position=center&&k>=0?sectionCenter(submodel,dim?.partId)[k]:Number($('component-section-position').value);
+  if(!Number.isFinite(position))return;
+  section={axis,position};$('component-section-position').value=position;
+  const state={...viewer.state,view:{...viewer.state.view,section}};viewer.setModel(submodel,state);
+  renderSection($('component-section-drawing'),submodel,axis,position);if(chosen)choose(chosen);
+ }
+ $('component-section-axis').onchange=()=>sectionUpdate(true);
+ $('component-section-position').oninput=()=>sectionUpdate();
+ $('component-section-center').onclick=()=>{if($('component-section-axis').value==='none')$('component-section-axis').value=selection?.part==='pouch'?'x':'y';sectionUpdate(true);};
  function choose(field) {
-  const dim=active.find(d=>d.field===field);if(!dim)return;
+  const dim=active.find(d=>d.field===field);if(!dim){
+   const half=field?.includes('.upper.')?'upper':'lower';
+   const ids=selection?.part==='pouch'?submodel.parts.filter(p=>p.id.startsWith('pouch.'+half+'.')).map(p=>p.id):submodel.parts.map(p=>p.id);
+   viewer.state.measurements=[];viewer.select(null,ids);viewer.selectedFeature=null;viewer.draw();
+   $('component-scene-status').textContent='선택 입력: '+field.split('.').at(-1)+' · 영향을 받는 부품 강조. 전용 치수선은 아직 지원하지 않습니다.';
+   api.selectField?.(field);return;
+  }
   chosen=field;$('component-dimension').value=field;
-  viewer.state.measurements=active.filter(d=>d.field===field).map(d=>({id:d.field,field:d.field,name:dimensionNames[d.key],stage:source.stage,visible:true,mode:'distance',a:{featureId:d.a},b:{featureId:d.b},offsetAxis:'y',offset:d.key==='height'?1:0.6}));
+  viewer.state.measurements=active.filter(d=>d.field===field).map(d=>({id:d.field,field:d.field,name:d.label,stage:source.stage,visible:true,mode:d.mode||'distance',a:{featureId:d.a},b:{featureId:d.b},offsetAxis:'y',offset:d.key==='height'?1:0.6}));
   viewer.select(null);viewer.selectedFeature=dim.a;viewer.draw();
+  $('component-scene-status').textContent=(dim.label||dim.key)+' · '+(dim.basis||'치끝 접촉면 고정 · 치근/블록은 제품 반대 방향')+' · '+dim.value+' mm';
+  viewer.select(dim.partId);viewer.selectedFeature=dim.a;viewer.draw();
   api.selectField?.(field);
  }
  function edit(field,featureId) {
@@ -35,8 +59,8 @@ export function mountComponentScenes(api) {
   if(!candidates.length)return;
   choose(candidates[0].field);
   if(!api.editable()){$('component-scene-status').textContent='읽기 전용 · 치수와 기준 선택 가능 · 편집은 로컬 CAD 앱에서 실행하세요.';return;}
-  $('component-edit-field').replaceChildren(...candidates.map(d=>new Option(dimensionNames[d.key]+' · '+d.field,d.field)));
-  const fill=()=>{const d=active.find(d=>d.field===$('component-edit-field').value);$('component-edit-value').value=api.fieldValue(d.field)??d.value;$('component-edit-basis').textContent='치끝 접촉면 고정 · 같은 극/공정/공구의 왼쪽 사양과 연결 · 가상값';};
+  $('component-edit-field').replaceChildren(...candidates.map(d=>new Option(d.label+' · '+d.field,d.field)));
+  const fill=()=>{const d=active.find(d=>d.field===$('component-edit-field').value);$('component-edit-value').value=api.fieldValue(d.field)??d.value;$('component-edit-basis').textContent=(d.basis||'치끝 접촉면 고정 · 같은 극/공정/공구의 왼쪽 사양과 연결')+' · 가상값';};
   $('component-edit-field').onchange=fill;fill();$('component-dimension-editor').showModal();
  }
  $('component-edit').onclick=()=>edit(chosen);
@@ -61,19 +85,22 @@ export function mountComponentScenes(api) {
  }
  $('application-toggle').onclick=()=>{application=!application;$('application-toggle').textContent=application?'완성 셀 보기':'적용 공정 보기';drawReference(++generation);};
  return {
-  viewer,
+  viewer, selectField:choose,
   async show(m,sel,{reset=false}={}) {
    source=m;selection=sel;const token=++generation;
-   const key=JSON.stringify(sel);if(reset||key!==displayedKey){application=false;$('application-toggle').textContent='적용 공정 보기';}const fit=reset||key!==displayedKey;displayedKey=key;
-   $('standalone-title').textContent=sel.part==='ultrasonic'?`${sel.side==='positive'?'양극':'음극'} · ${api.stageLabel(sel.ws)} · ${sel.kind==='horn'?'혼':'엔빌'} 접촉부`:api.title();
+   const key=JSON.stringify(sel);if(key!==displayedKey){section={axis:'none',position:0};$('component-section-axis').value='none';$('component-section-position').value=0;}if(reset||key!==displayedKey){application=false;$('application-toggle').textContent='적용 공정 보기';}const fit=reset||key!==displayedKey;displayedKey=key;
+   $('standalone-title').textContent=sel.part==='ultrasonic'?`${sel.side==='positive'?'양극':'음극'} · ${api.stageLabel(sel.ws)} · ${sel.kind==='horn'?'혼':'엔빌'} 치형·지지 블록`:api.title();
    $('standalone-mode').textContent=api.editable()?'실시간 CAD · 가상 예시 mm':'읽기 전용 · 사전 계산 CAD';
    const seal=sel.part==='seal';$('standalone-viewport').hidden=seal;$('component-plan').hidden=!seal;
    $('component-datum').textContent='';$('component-scene-status').textContent='';
-   const sub=componentModel(m,sel);active=dimensions(sub);
-   const state=makeState(m);viewer.setModel(sub,state);
-   $('component-dimension').replaceChildren(...active.map(d=>new Option(dimensionNames[d.key]+' · '+d.value+' mm',d.field)));
+   const sub=componentModel(m,sel);submodel=sub;active=componentDimensions(sub,api.product(),sel);
+   $('component-mode-help').textContent=api.editable()?'이 부품에서 치수를 선택·편집하세요. 왼쪽 항목과 3D 치수선이 같은 입력에 연결됩니다.':'읽기 전용 프리뷰: 치수 선택·단면은 사용 가능합니다. 값 변경은 scripts/start.ps1로 실행한 로컬 CAD 앱의 같은 부품 상세에서 가능합니다.';
+   root.querySelector('.component-section-bar').hidden=seal;
+   $('component-section-drawing').hidden=seal;
+   const state=makeState(m);state.view.section=section;viewer.setModel(sub,state);renderSection($('component-section-drawing'),sub,section.axis,section.position);
+   $('component-dimension').replaceChildren(...active.map(d=>new Option(d.label+' · '+d.value+' mm',d.field)));
    $('component-edit').disabled=!active.length||!api.editable();$('component-dimension').disabled=!active.length;
-   if(active.length){choose(active.find(d=>d.field===chosen)?.field||active[0].field);const meta=sub.parts[0].meta;$('component-datum').textContent=`${meta.datum.name} · 치끝 0.000 / 치근 ${(meta.datum.rootZ-meta.datum.tipZ).toFixed(3)} mm · ${meta.toothCount}개 · ${meta.scope}`;}
+   if(active.length){choose(active.find(d=>d.field===chosen)?.field||active[0].field);const meta=sub.parts.find(p=>p.meta?.toothCount)?.meta;if(meta?.datum)$('component-datum').textContent=`${meta.datum.name} · 치끝 0.000 / 치근 ${(meta.datum.rootZ-meta.datum.tipZ).toFixed(3)} mm · ${meta.toothCount}개 · ${meta.scope}`;}
    else if(sel.part==='laser'&&!sub.parts.some(p=>p.id.includes('.laser.')))$('component-scene-status').textContent='이 극의 적용 방식은 초음파입니다. 기록된 레이저 스팟 없음 · 신규 배열 편집은 후속 범위';
    else if(!seal&&!sub.parts.length)$('component-scene-status').textContent='이 설계·공정에는 단품 CAD 기록이 없습니다.';
    if(fit&&sub.parts.length)requestAnimationFrame(()=>{if(token===generation)camera();});
@@ -86,7 +113,7 @@ export function mountComponentScenes(api) {
 const imageCache=new Map();
 export async function populateComponentCards(host,api) {
  const key=designIdentity(api.project());host.dataset.design=key;
- const jobs=[['tab','assembly'],['lead','assembly'],['tapes','assembly'],['pouch','film_formed'],['gathering','preweld'],['preweld','preweld'],['welded','welded'],['laser','welded'],['seal','tab_sealed']];
+ const jobs=[['tab','stacked'],['tab_preweld','preweld'],['tab_trimmed','foil_trimmed'],['lead','assembly'],['tapes','assembly'],['pouch','film_formed'],['preweld','preweld'],['welded','welded'],['laser','welded'],['seal','tab_sealed']];
  for(const [part,stage] of jobs){
   const buttons=[...host.querySelectorAll(`[data-component="${part}"]`)];
   if(!buttons.length)continue;

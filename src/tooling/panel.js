@@ -16,6 +16,7 @@ export function mountTooling(api){
  function reset(){token++;project=clone(api.project());result=api.model();pending=false;working=false;validated=null;$('r4-apply').disabled=true;$('r4-preview').disabled=!editable();$('r4-message').textContent='';render();}
  function fields(object,prefix){return fieldsForObject(object,prefix).filter(f=>!['location','half','example','version'].includes(f.id.split('.').at(-1)) && (!api.componentMode() || !placementField(f.id)));}
  function input(f){const k=f.id.split('.').at(-1),opts=k==='method'?{ultrasonic:'초음파',laser:'레이저'}:k==='tooth'?{pyramid:'피라미드',ridge:'평행 리지'}:null;
+ if(f.id.startsWith('pouchProcess.sheets.'))f={...f,label:(f.id.includes('.upper.')?'상부 ':'하부 ')+(k==='depth'?'성형 깊이':f.label)};
  if(f.id.includes('.cups.')&&['x','y'].includes(k))f={...f,label:'필름 내 컵 중심 '+k.toUpperCase()+' · 필름 기준'};
  const name=esc(f.id);let control=opts?`<select data-r4-field="${name}" aria-label="${name}">${Object.entries(opts).map(([v,l])=>`<option value="${v}" ${v===f.value?'selected':''}>${l}</option>`).join('')}</select>`:typeof f.value==='boolean'?`<input type="checkbox" data-r4-field="${name}" aria-label="${name}" ${f.value?'checked':''}>`:`<input type="${typeof f.value==='number'?'number':'text'}" step="any" data-r4-field="${name}" aria-label="${name}" value="${esc(f.value)}" ${k==='id'?'readonly':''}>`;
  return `<label class="r4-field"><span>${esc(f.label)} <small>${f.unit}</small><code>${name.replace('processTooling.','')}</code></span>${control}</label>`;}
@@ -24,7 +25,7 @@ export function mountTooling(api){
  $('r4-side').hidden=['seal','pouch'].includes(part);$('r4-wstage').hidden=part!=='ultrasonic';$('r4-kind').hidden=part!=='ultrasonic';$('r4-location').hidden=part!=='seal';$('r4-half').hidden=part!=='seal';
  let fs=[],special='',basis='';const pre='processTooling.poles.'+side;
  if(part==='ultrasonic'){
-  fs=fields(q.poles[side].tools[ws][kind],pre+'.tools.'+ws+'.'+kind);basis=`${side} / ${ws} / ${kind} · 공칭 접촉/치끝 면 고정. 피치 격자는 작업면 중심에서 배열합니다. 접촉부 요철만 정의하며 제품 압흔은 해석하지 않습니다.`;
+  fs=fields({bodyDepth:3,...q.poles[side].tools[ws][kind]},pre+'.tools.'+ws+'.'+kind);basis=`${side} / ${ws} / ${kind} · 공칭 접촉/치끝 면 고정. 피치 격자는 작업면 중심에서 배열합니다. 치근 뒤에 지지 블록을 생성합니다. 블록 깊이는 가상 예시이며 제품 압흔은 해석하지 않습니다.`;
   special=api.componentMode()?'':'<button id="r4-half-pitch">선택 공구만 +½ U 피치 이동</button>';
  }else if(part==='gathering'){
   fs=fields(q.poles[side].gathering,pre+'.gathering');basis='집속 잔류 두께와 포일 경로 · smoothstep 포락 예시, 실제 변형 해석 아님';
@@ -80,7 +81,7 @@ export function mountTooling(api){
  for(const label of root.querySelectorAll('.r4-field')){
    const el=label.querySelector('[data-r4-field]');
    const key=el?.dataset.r4Field.split('.').at(-1);
-   if(!['transitionR','centerLength'].includes(key))continue;
+   if(!['transitionR','centerLength'].includes(key)){label.onclick=el.onfocus=()=>api.selectField?.(el.dataset.r4Field);continue;}
    const emphasize=()=>{for(const g of root.querySelectorAll('[data-seal-guide]'))
      g.classList.toggle('chosen-guide',g.dataset.sealGuide===key);};
    label.onclick=el.onfocus=emphasize;
@@ -146,6 +147,7 @@ export function mountTooling(api){
   if(part==='ultrasonic')project.stage=ws;
   if(part==='gathering')project.stage='preweld';
   if(part==='laser')project.stage='welded';
+  if(part==='pouch')project.stage='film_formed';
   if(part==='seal'){const min=location==='gas'?4:location==='final'?5:3;if(r4Stages.indexOf(project.stage)<min)project.stage=r4Stages[min];}
   const r=await api.preview(clone(project));if(id!==token)return;result=r;pending=true;validated=JSON.stringify(project);api.showPreview(result,project);$('r4-message').textContent='미리보기 완료 · 아직 저장되지 않았습니다. 3D 치수는 현재 계산 결과입니다. 취소/적용을 선택하세요.';$('r4-apply').disabled=false;draw();
  }catch(e){if(id===token){validated=null;$('r4-message').textContent=e.message;}}finally{if(id===token){working=false;$('r4-preview').disabled=false;}}}
@@ -161,7 +163,7 @@ export function mountTooling(api){
   async edit(path,v){
     if(!editable())return;
     const prefix='processTooling.poles.'+side+'.tools.'+ws+'.'+kind+'.';
-    if(!path.startsWith(prefix))throw Error('현재 공구와 다른 필드 ID');
+    if(!(part==='ultrasonic'&&path.startsWith(prefix))&&!(part==='pouch'&&/^pouchProcess\.sheets\.(upper|lower)\./.test(path)))throw Error('현재 단품과 다른 필드 ID');
     set(project.product,path,v);mark();render();await preview();
   },
   open(mode, pole, stage, sealSide) {

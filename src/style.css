@@ -1066,3 +1066,13 @@ body.component-detail .workspace{display:none}
 #component-dimension-editor{max-width:520px}#component-edit-field{max-width:100%}
 @media(max-width:1050px){body.component-detail #component-workbench{max-height:none}#standalone-viewport{height:360px}}
 @media(max-width:650px){body.component-detail #process-detail{display:flex;flex-direction:column}#component-scenes{order:0}#component-workbench{order:1;max-height:none!important}#standalone-viewport{height:310px}#reference-viewport{height:170px}}
+
+.component-section-bar { display:flex; gap:0.7rem; align-items:end; flex-wrap:wrap; padding:.6rem 0; }
+.component-section-bar label { display:flex; gap:.4rem; align-items:center; }
+.component-section-bar input { width:7rem; }
+#component-mode-help { padding:.7rem; background:#e6f2ee; color:#24584e; border-radius:.4rem; }
+#component-section-drawing:empty { display:none; }
+#component-section-drawing { background:#fff; padding:1rem; border:1px solid #cbd9d6; border-radius:.5rem; }
+#component-section-drawing svg { width:100%; height:220px; }
+.foil-detail-inputs { display:grid; gap:.6rem; margin:1rem 0; }
+.foil-detail-inputs label { display:grid; grid-template-columns:1fr 6rem; gap:.5rem; }

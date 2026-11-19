@@ -452,7 +452,8 @@
                 "pitchV": 1,
                 "direction": 0,
                 "height": 0.2,
-                "tooth": "pyramid"
+                "tooth": "pyramid",
+                "bodyDepth": 3.0
               },
               "anvil": {
                 "id": "positive-preweld-anvil",
@@ -469,7 +470,8 @@
                 "pitchV": 1,
                 "direction": 0,
                 "height": 0.15,
-                "tooth": "pyramid"
+                "tooth": "pyramid",
+                "bodyDepth": 3.0
               }
             },
             "welded": {
@@ -488,7 +490,8 @@
                 "pitchV": 1,
                 "direction": 0,
                 "height": 0.2,
-                "tooth": "pyramid"
+                "tooth": "pyramid",
+                "bodyDepth": 3.0
               },
               "anvil": {
                 "id": "positive-welded-anvil",
@@ -505,7 +508,8 @@
                 "pitchV": 1,
                 "direction": 0,
                 "height": 0.15,
-                "tooth": "pyramid"
+                "tooth": "pyramid",
+                "bodyDepth": 3.0
               }
             }
           },
@@ -564,6 +568,9 @@
                 "dy": 0
               }
             ]
+          },
+          "foilCut": {
+            "removedLength": 1.0
           }
         },
         "negative": {
@@ -590,7 +597,8 @@
                 "pitchV": 1,
                 "direction": 0,
                 "height": 0.2,
-                "tooth": "pyramid"
+                "tooth": "pyramid",
+                "bodyDepth": 3.0
               },
               "anvil": {
                 "id": "negative-preweld-anvil",
@@ -607,7 +615,8 @@
                 "pitchV": 1,
                 "direction": 0,
                 "height": 0.15,
-                "tooth": "pyramid"
+                "tooth": "pyramid",
+                "bodyDepth": 3.0
               }
             },
             "welded": {
@@ -626,7 +635,8 @@
                 "pitchV": 1,
                 "direction": 0,
                 "height": 0.2,
-                "tooth": "pyramid"
+                "tooth": "pyramid",
+                "bodyDepth": 3.0
               },
               "anvil": {
                 "id": "negative-welded-anvil",
@@ -643,7 +653,8 @@
                 "pitchV": 1,
                 "direction": 0,
                 "height": 0.15,
-                "tooth": "pyramid"
+                "tooth": "pyramid",
+                "bodyDepth": 3.0
               }
             }
           },
@@ -702,6 +713,9 @@
                 "dy": 0
               }
             ]
+          },
+          "foilCut": {
+            "removedLength": 0.6
           }
         }
       },
