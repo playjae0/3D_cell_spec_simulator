@@ -81,6 +81,9 @@ def run():
     env={k:v for k,v in os.environ.items() if not k.startswith(('PYTHON','CONDA','VIRTUAL_ENV'))}
     env['POUCH_PORT']=str(port)
     env['POUCH_AUTO_PORT']='1' if automatic else '0'
+    # Desktop EXE remains local even if the machine also runs an intranet server.
+    env['POUCH_HOST']='127.0.0.1'
+    env.pop('POUCH_ALLOWED_ORIGINS',None)
     env['PATH']=os.pathsep.join([str(runtime.parent),str(Path(os.environ.get('SystemRoot','C:/Windows'))/'System32')])
     url=None
     child=None;job=None

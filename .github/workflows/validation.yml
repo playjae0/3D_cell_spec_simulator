@@ -29,6 +29,8 @@ jobs:
       - run: npm run build
       - run: python -m pip install -r cad/requirements.lock.txt
       - run: python -m unittest discover -s tests -p 'test_launcher_ports.py' -v
+      - run: python -m unittest discover -s tests -p 'test_server_access.py' -v
+      - run: python scripts/check_server_access.py
       - run: python -m unittest discover -s tests -p '*geometry*.py' -v
   windows-package:
     if: github.event_name == 'workflow_dispatch'
