@@ -126,12 +126,14 @@ jobs:
             if ($LASTEXITCODE -ne 0) { throw 'Extracted EXE acceptance failed' }
           } finally {
             Get-NetFirewallRule -DisplayName $rule -ErrorAction SilentlyContinue | Remove-NetFirewallRule
-            if (Test-Path "$env:LOCALAPPDATA/CellStudio/logs") { Copy-Item "$env:LOCALAPPDATA/CellStudio/logs" trial-evidence/cad-logs -Recurse -Force }
+            if (Test-Path 'trial-evidence/local-profile/CellStudio/logs') { Copy-Item 'trial-evidence/local-profile/CellStudio/logs' trial-evidence/cad-logs -Recurse -Force }
           }
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: CellStudio-Windows-evidence-${{ needs.windows-package.outputs.short }}
-          path: trial-evidence/
+          path: |
+            trial-evidence/
+            !trial-evidence/local-profile/**
           if-no-files-found: error
           retention-days: 30
