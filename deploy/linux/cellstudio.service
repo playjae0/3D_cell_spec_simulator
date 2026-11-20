@@ -1,0 +1,21 @@
+[Unit]
+Description=CellStudio CAD and web
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=cellstudio
+WorkingDirectory=/opt/cellstudio
+EnvironmentFile=/etc/cellstudio.env
+ExecStart=/bin/sh /opt/cellstudio/scripts/start-server.sh
+Restart=on-failure
+RestartSec=5
+KillMode=control-group
+TimeoutStopSec=30
+NoNewPrivileges=true
+PrivateTmp=true
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

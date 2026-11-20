@@ -1,11 +1,13 @@
-"""Local-only geometry API + production static host. No network dependency at runtime."""
-from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
+"""Local CAD API + static host; optional explicitly configured intranet listener."""
+from http.server import SimpleHTTPRequestHandler
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import json, hashlib, threading, traceback, os
 import cadquery as cq
 from model import build, serialize, ModelError
 from process import STAGES
+from local_host import bind_local, publish_bound_port
+from server_config import ServerConfig
 
 ROOT=Path(__file__).resolve().parents[1]
 LOCK=threading.Lock()
@@ -23,16 +25,21 @@ def model_for(project):
 class Handler(SimpleHTTPRequestHandler):
     def __init__(self,*a,**kw): super().__init__(*a,directory=str(ROOT/'dist'),**kw)
     def log_message(self,*args): pass
+    def permitted(self):
+        config=getattr(self.server,'access_config',ServerConfig('127.0.0.1',()))
+        if config.permits(self.headers.get('Host',''),self.headers.get('Origin',''),self.server.server_port):return True
+        self.send_json(403,{'error':'허용되지 않은 접속 주소 또는 Origin'});return False
     def send_json(self,code,data):
         body=json.dumps(data,ensure_ascii=False,allow_nan=False).encode();self.send_response(code);self.send_header('Content-Type','application/json; charset=utf-8');self.send_header('Content-Length',str(len(body)));self.send_header('Cache-Control','no-store');self.end_headers();self.wfile.write(body)
     def do_GET(self):
+        if not self.permitted():return
         if self.path=='/api/health': return self.send_json(200,{'engine':'CadQuery','version':cq.__version__,'unit':'mm','status':'ready','mode':'live-cad','schemaVersion':4,'capabilities':['rebuild','step','process-states']})
         super().do_GET()
+    def do_HEAD(self):
+        if self.permitted():super().do_HEAD()
     def do_POST(self):
         try:
-            # Same-origin local app only. No wildcard CORS / remote URL/file ingestion.
-            origin=self.headers.get('Origin','')
-            if origin and origin not in [f'http://{host}:{port}' for host in ['127.0.0.1','localhost'] for port in [5174,5175,self.server.server_port]]: return self.send_json(403,{'error':'허용되지 않은 Origin'})
+            if not self.permitted():return
             size=int(self.headers.get('Content-Length','0'))
             if not 0<size<=12*1024*1024: return self.send_json(413,{'error':'요청 파일은 12 MB 이하'})
             req=json.loads(self.rfile.read(size)); project=req['project']; revision=req.get('revision',0)
@@ -53,7 +60,11 @@ class Handler(SimpleHTTPRequestHandler):
             traceback.print_exc();self.send_json(422,{'errors':['CAD 생성 실패: '+str(e)]})
 
 if __name__=='__main__':
+    config=ServerConfig.from_environment()
     port=int(os.environ.get('POUCH_PORT','8765'))
-    with ThreadingHTTPServer(('127.0.0.1',port), Handler) as server:
-        print(f'Pouch Cell CAD + web: http://127.0.0.1:{server.server_port}', flush=True)
+    with bind_local(Handler, port, automatic=os.environ.get('POUCH_AUTO_PORT')=='1',host=config.host) as server:
+        server.access_config=config
+        publish_bound_port(server, os.environ.get('POUCH_LAUNCH_READY'))
+        print(f'Pouch Cell CAD + web listening: {config.host}:{server.server_port}', flush=True)
+        print('접속 URL: '+(', '.join(config.origins) or f'http://127.0.0.1:{server.server_port}'),flush=True)
         server.serve_forever()

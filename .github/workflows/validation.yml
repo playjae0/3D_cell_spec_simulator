@@ -28,6 +28,9 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: python -m pip install -r cad/requirements.lock.txt
+      - run: python -m unittest discover -s tests -p 'test_launcher_ports.py' -v
+      - run: python -m unittest discover -s tests -p 'test_server_access.py' -v
+      - run: python scripts/check_server_access.py
       - run: python -m unittest discover -s tests -p '*geometry*.py' -v
   windows-package:
     if: github.event_name == 'workflow_dispatch'
@@ -60,6 +63,7 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: python -m pip install pyinstaller==6.16.0
+      - run: python -m unittest discover -s tests -p 'test_launcher_ports.py' -v
       - run: npm run build:windows
       - uses: actions/upload-artifact@v4
         with:
@@ -124,12 +128,14 @@ jobs:
             if ($LASTEXITCODE -ne 0) { throw 'Extracted EXE acceptance failed' }
           } finally {
             Get-NetFirewallRule -DisplayName $rule -ErrorAction SilentlyContinue | Remove-NetFirewallRule
-            if (Test-Path "$env:LOCALAPPDATA/CellStudio/logs") { Copy-Item "$env:LOCALAPPDATA/CellStudio/logs" trial-evidence/cad-logs -Recurse -Force }
+            if (Test-Path 'trial-evidence/local-profile/CellStudio/logs') { Copy-Item 'trial-evidence/local-profile/CellStudio/logs' trial-evidence/cad-logs -Recurse -Force }
           }
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: CellStudio-Windows-evidence-${{ needs.windows-package.outputs.short }}
-          path: trial-evidence/
+          path: |
+            trial-evidence/
+            !trial-evidence/local-profile/**
           if-no-files-found: error
           retention-days: 30
