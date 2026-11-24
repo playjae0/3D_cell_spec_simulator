@@ -269,3 +269,27 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+#prism #scene-options {
+  margin: 0 0 9px;
+}
+#prism #parallel {
+  margin-top: 16px;
+}
+#prism #parts {
+  display: flex;
+  flex-wrap: wrap;
+}
+#prism #parts button {
+  font-size: 13px;
+}
+#prism #parallel-cap {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 5px 14px 5px 5px;
+}
+#prism #parallel-art {
+  width: 125px;
+  height: 40px;
+  background: #edf2f3;
+}

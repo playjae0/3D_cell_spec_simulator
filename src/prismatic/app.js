@@ -10,6 +10,8 @@ import {
 } from "../product-route.js";
 import {
   components,
+  componentParts,
+  capIds,
   dimensions,
   initial,
   recordedExamples,
@@ -31,14 +33,14 @@ app.innerHTML = `
 <div class="actions"><span id="engine" role="status">CAD 연결 중</span><button id="undo">되돌리기</button><button id="redo">다시 하기</button><button id="save">셀 JSON 저장</button><button id="open">불러오기</button><input type="file" accept=".json" id="file" hidden></div></header>
 <nav class="work-nav"><div><button id="process">제품 공정도</button><button id="components">부품·요소기술</button></div><div><button id="overview">전체보기</button><button id="detail">상세보기</button></div></nav>
 <div id="errors" role="alert" hidden></div>
-<section id="gallery"><h2></h2><div id="cards"></div></section>
+<section id="gallery"><h2></h2><div id="cards"></div><div id="parallel" hidden><button id="parallel-cap"><canvas id="parallel-art" width="250" height="80"></canvas><span>병행 준비 · 캡 조립체 보기</span></button></div></section>
 <section id="workspace" hidden><aside id="tree"><h2></h2><div id="siblings"></div><h3>현재 장면 부품</h3><div id="parts"></div></aside>
 <article><div class="scene-title"><h2 id="scene-title"></h2><span id="approval"></span></div>
-<div id="canvas"></div><div class="view-tools"><button id="fit">화면 맞춤</button><label>중심 단면 <select id="section"><option value="">전체 형상</option><option value="x">Y–Z 단면</option><option value="y">X–Z 단면</option><option value="z">X–Y 단면</option></select></label></div>
+<div id="scene-options" class="view-tools"></div><div id="canvas"></div><div class="view-tools"><button id="fit">화면 맞춤</button><button id="labels" aria-pressed="true">치수·라벨</button><label>중심 단면 <select id="section"><option value="">전체 형상</option><option value="x">Y–Z 단면</option><option value="y">X–Z 단면</option><option value="z">X–Y 단면</option></select></label></div>
 <div id="section-panel" hidden><strong id="section-title"></strong><canvas id="cross" width="720" height="180"></canvas><small id="section-key"></small></div>
 <div id="measure-label" aria-live="polite"></div><div id="diagnostics"></div></article>
 <aside id="inspection"><h2>치수와 기준</h2><div id="positions"></div><form id="dimensions"></form></aside></section>
-<footer><span id="model-id"></span><span>가상 치수 · mm</span><details><summary>모델 근거와 한계</summary>삼성SDI 공개 공정의 스택·접합·절연·삽입·둘레 용접 순서를 표현합니다. BMW iX Gen.5 자료는 외관 참고용입니다. 실제 스택 수, 극별 내부 연결, 반대편 집전체와 용입 형상은 미확인입니다. 접촉면과 직벽 캔은 치수 검토용 단순화 형상입니다. 절연 이음·코너 및 양산 삽입성은 미판정입니다.</details></footer>`;
+<footer><span id="model-id"></span><span>가상 치수 · mm</span><details><summary>모델 근거와 한계</summary>삼성SDI 공개 공정의 스택·접합·절연·삽입·둘레 용접 순서를 표현합니다. BMW iX Gen.5 자료는 외관 참고용입니다. 실제 스택 수, 극별 내부 연결, 반대편 집전체와 용입 형상은 미확인입니다. 포일 띠의 수와 단면, 터미널 A/B의 형상·치수, 중앙 윤곽과 집전체 두께는 가상 예시입니다. 단자 극성·체결법과 중앙 윤곽의 기능은 미확인입니다. 절연 이음·코너 및 양산 삽입성은 미판정입니다.</details></footer>`;
 const $ = (id) => document.getElementById(id);
 const ids = Object.keys(stages);
 const format = (v) => (Math.abs(v) < 0.000001 ? 0 : v).toFixed(2);
@@ -57,7 +59,15 @@ let page = "process",
   selected = "",
   measure = "",
   axis = "";
-let view;
+let view,
+  labels = true;
+let presentation = "assembly",
+  uncover = false;
+function preset() {
+  if (page === "components" && component === "cap") return "top";
+  if (page === "components" && component === "tab") return "foil";
+  return "standard";
+}
 rememberProduct("prismatic", () => (model && live ? project : null));
 function button(label, handler, attrs = {}) {
   const b = document.createElement("button");
@@ -75,7 +85,7 @@ function toolbar() {
   // A navigation click during an edit must not issue a new CAD request from
   // the previous project and silently discard the submitted dimensions.
   for (const button of app.querySelectorAll(
-    ".work-nav button,#cards button,#siblings button,#positions button",
+    ".work-nav button,#cards button,#parallel-cap,#siblings button,#positions button",
   ))
     button.disabled = pending;
   $("undo").disabled = pending || !history.undoList.length;
@@ -115,7 +125,9 @@ async function change(next, action = "push", fit = true) {
     if (action === "push") history.push(before);
     ({ project, page, detail, component } = next);
     model = result;
-    selected = page === "components" ? component : "";
+    presentation = "assembly";
+    uncover = false;
+    selected = "";
     measure = "";
     axis = "";
     render(fit);
@@ -138,7 +150,7 @@ function stage(id) {
   return go(
     { page: "process", detail: true, project: { ...project, stage: id } },
     "push",
-    !detail,
+    true,
   );
 }
 function part(id) {
@@ -160,16 +172,124 @@ function choosePart(id) {
     b.setAttribute("aria-pressed", b.dataset.part === selected);
   draw(false);
 }
-const visible = () =>
-  page === "components"
-    ? model.parts.filter((p) => p.id === component)
-    : model.parts;
+function visible() {
+  if (page === "components") return componentParts(model.parts, component);
+  return model.parts.filter((p) => {
+    if (uncover && capIds.includes(p.id)) return false;
+    if (
+      presentation === "internal" &&
+      ["can", "insulation", "weld"].includes(p.id)
+    )
+      return false;
+    if (presentation === "empty") return p.id === "can";
+    if (presentation === "bare") return p.id !== "insulation";
+    if (presentation === "before") return !["joint", "contact"].includes(p.id);
+    return true;
+  });
+}
+function options() {
+  const host = $("scene-options");
+  host.replaceChildren();
+  const control = (id, label, fn, state) =>
+    host.append(
+      button(label, fn, {
+        "data-view": id,
+        ...(state === undefined ? {} : { "aria-pressed": state }),
+      }),
+    );
+  const camera = (id, label) => control(id, label, () => view.fit(id));
+  const mode = (id, label, fit) =>
+    control(
+      id,
+      label,
+      () => {
+        presentation = id;
+        axis = "";
+        measure = "";
+        selected = "";
+        render(fit);
+      },
+      presentation === id,
+    );
+  if (page === "components" && component === "cap") {
+    camera("top", "캡 상면");
+    camera("bottom", "캡 하면");
+    camera("underside", "하면 집전체 확대");
+  }
+  if (
+    (page === "components" && ["stack", "tab"].includes(component)) ||
+    (page === "process" && project.stage === "prism-stack")
+  )
+    camera("foil", "포일 끝 확대");
+  if (page !== "process") return;
+  if (project.stage === "prism-join") {
+    mode("before", "용접 전 정렬", "joint");
+    mode("assembly", "접합 후", "joint");
+    mode("interface", "접촉면 투시", "joint");
+    camera("joint", "접합부 확대");
+  }
+  if (project.stage === "prism-weld") {
+    mode("assembly", "완성 외관", true);
+    if (model.approval.welded) {
+      control("seam", "둘레 용접 확대", () => {
+        presentation = "assembly";
+        selected = "weld";
+        render("seam");
+      });
+    }
+    if (model.approval.joined) mode("internal", "내부 접합 확인", "joint");
+  }
+  if (project.stage === "prism-insulate") {
+    mode("bare", "절연 전", false);
+    mode("assembly", "절연 후", false);
+    camera("top", "상면");
+    camera("bottom", "바닥");
+    host.append(
+      button(
+        "상면 확인 · 캡 숨김",
+        () => {
+          uncover = !uncover;
+          render(false);
+        },
+        {
+          id: "uncover",
+          "aria-pressed": uncover,
+        },
+      ),
+    );
+  }
+  if (project.stage === "prism-insert") {
+    mode("empty", "빈 캔", "opening");
+    mode("assembly", "조립체와 캔", true);
+  }
+}
 function draw(fit) {
   if (!model || !detail) return;
   view ??= new PrismView($("canvas"), choosePart);
-  const feature = model.features[measure],
+  const measured =
+    measure === "A06" && model.features.A01.value > 0
+      ? model.currentBottomGap
+      : model.features[measure];
+  const feature =
+      labels &&
+      presentation !== "before" &&
+      presentation !== "empty" &&
+      measured,
     def = dimensions.find((d) => d.id === measure);
-  view.show(model, visible(), { selected, axis, measure: feature, fit });
+  const before = presentation === "before";
+  const offsets = before
+    ? Object.fromEntries(capIds.map((id) => [id, [10, 0, 10]]))
+    : {};
+  view.show(model, visible(), {
+    selected,
+    axis,
+    measure: feature,
+    fit: fit === true ? preset() : fit,
+    offsets,
+    muted: presentation === "interface" ? ["collector", "joint"] : [],
+  });
+  $("labels").setAttribute("aria-pressed", labels);
+  $("section").disabled = before || presentation === "empty";
   $("section").value = axis;
   $("section-panel").hidden = !axis;
   if (axis) {
@@ -182,7 +302,8 @@ function draw(fit) {
       .filter((p) => model.sections[axis]?.[p.id]?.length)
       .map((p) => p.name);
     $("section-key").textContent =
-      colors.join(" · ") + (measure === "A06" ? " · 안착 기준 투영" : "");
+      colors.join(" · ") +
+      (measure === "A06" ? " · 절연 바닥 ↔ 캔 내측 바닥" : "");
     sectionDrawing(
       $("cross"),
       model,
@@ -191,22 +312,29 @@ function draw(fit) {
       feature && { ...feature, id: measure },
     );
   }
-  $("measure-label").textContent = def
-    ? measure +
-      "  " +
-      def.name +
-      "  " +
-      format(feature.value) +
-      " mm　｜　" +
-      def.datum +
-      "　·　" +
-      def.direction
-    : "";
+  $("measure-label").textContent =
+    def && feature
+      ? measure +
+        "  " +
+        (measure === "A06" && model.features.A01.value > 0
+          ? "현재 위치 바닥 간극 (안착 기준 " +
+            format(model.features.A06.value) +
+            " mm)"
+          : def.name) +
+        "  " +
+        format(feature.value) +
+        " mm　｜　" +
+        def.datum +
+        "　·　" +
+        def.direction
+      : "";
 }
 function highlight(id) {
-  if (id === measure) return;
+  if (id === measure || presentation === "empty" || presentation === "before")
+    return;
   measure = id;
   const f = model.features[id];
+  if (id === "A01") axis = "x";
   if (/^A0[2-7]$/.test(id)) axis = f.axis === 0 ? "y" : "x";
   for (const row of $("dimensions").querySelectorAll("[data-measure]"))
     row.classList.toggle("active", row.dataset.measure === id);
@@ -231,6 +359,7 @@ function drawFields() {
   if (page === "process" && n === 4) {
     for (const [name, u] of [
       ["삽입 직전 · 95 mm", 95],
+      ["삽입 중간 · 45 mm", 45],
       ["안착 위치 · 0 mm", 0],
     ]) {
       $("positions").append(
@@ -343,12 +472,22 @@ function render(fit) {
   $("gallery").hidden = detail;
   $("workspace").hidden = !detail;
   const entries = page === "components" ? components : stages;
+  $("parallel").hidden = detail || page !== "process";
   if (!detail) {
     $("gallery").querySelector("h2").textContent =
       page === "components" ? "부품·요소기술 전체보기" : "제품 공정도 전체보기";
     const host = $("cards");
     host.replaceChildren();
     const current = generation;
+    if (page === "process")
+      calculate({ ...project, stage: "prism-join" })
+        .then((m) => {
+          if (generation === current)
+            thumbnail($("parallel-art"), componentParts(m.parts, "cap"));
+        })
+        .catch((e) => {
+          if (generation === current) $("parallel-cap").title = e.message;
+        });
     for (const [id, label] of Object.entries(entries)) {
       const isPart = page === "components";
       const card = button("", () => (isPart ? part(id) : stage(id)), {
@@ -366,10 +505,7 @@ function render(fit) {
       calculate({ ...project, stage: isPart ? label[1] : id })
         .then((m) => {
           if (current !== generation) return;
-          thumbnail(
-            canvas,
-            isPart ? m.parts.filter((p) => p.id === id) : m.parts,
-          );
+          thumbnail(canvas, isPart ? componentParts(m.parts, id) : m.parts);
           status.textContent = isPart
             ? dimensions.filter((d) => d.owner === id).length + "개 형상 입력"
             : approvalText(m);
@@ -400,7 +536,15 @@ function render(fit) {
     $("scene-title").textContent = isPart
       ? components[component][0]
       : number(project.stage) + "  " + stages[project.stage];
-    $("approval").textContent = isPart ? "단품" : approvalText(model);
+    $("approval").textContent = isPart
+      ? "단품"
+      : ({
+          internal: "외장·절연 숨김 · 내부 탭 접합",
+          before: "정렬 분해도 · 표시 간격 X/Z +10 mm",
+          bare: "절연 전",
+          empty: "빈 캔",
+          interface: "집전체 투시 · 접촉면 확인",
+        }[presentation] ?? approvalText(model));
     $("diagnostics").replaceChildren(
       ...model.diagnostics.map((d) => {
         const p = document.createElement("p");
@@ -408,6 +552,7 @@ function render(fit) {
         return p;
       }),
     );
+    options();
     drawFields();
     draw(fit);
   }
@@ -421,7 +566,12 @@ $("components").onclick = () => go({ page: "components", detail: false });
 $("overview").onclick = () => go({ detail: false });
 $("detail").onclick = () =>
   page === "components" ? part(component) : stage(project.stage);
-$("fit").onclick = () => view?.fit();
+$("parallel-cap").onclick = () => part("cap");
+$("labels").onclick = () => {
+  labels = !labels;
+  draw(false);
+};
+$("fit").onclick = () => view?.fit(preset());
 $("section").onchange = (e) => {
   axis = e.target.value;
   draw(false);

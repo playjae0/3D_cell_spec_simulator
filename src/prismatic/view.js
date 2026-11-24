@@ -3,7 +3,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { drawThumbnail } from "../overview/thumbnail.js";
 
 const v = (p) => new T.Vector3(...p);
-const cameraDirection = new T.Vector3(0.48, -1, 0.23).normalize();
+const cameraDirection = new T.Vector3(0.59, -1, 0.46).normalize();
 const neutral = "#edf2f3";
 
 export function thumbnail(canvas, parts) {
@@ -112,27 +112,72 @@ export class PrismView {
   paint() {
     this.renderer.render(this.scene, this.camera);
   }
-  fit() {
-    const b = new T.Box3().setFromObject(this.solids);
+  fit(preset = "standard") {
+    const detail = ["joint", "foil", "underside"].includes(preset);
+    const targets = detail
+      ? this.solids.children.filter(
+          (o) =>
+            o.isMesh &&
+            (preset === "underside"
+              ? ["collector"]
+              : preset === "foil"
+                ? ["foil-root", "foil-gather", "tab"]
+                : ["foil-root", "foil-gather", "tab", "collector", "joint"]
+            ).includes(o.userData.id),
+        )
+      : this.solids.children;
+    const b = new T.Box3();
+    for (const obj of targets) b.expandByObject(obj);
     if (b.isEmpty()) return;
+    if (preset === "seam") {
+      const corner = b.max.clone();
+      corner.y = b.min.y;
+      const radius = Math.max(4, (b.max.y - b.min.y) * 0.5);
+      b.set(
+        corner.clone().add(v([-radius, -radius, -radius])),
+        corner.clone().add(v([radius, radius, radius])),
+      );
+    }
+    const direction = (
+      {
+        top: v([0.17, -0.48, 1]),
+        bottom: v([0.38, -0.55, -1]),
+        underside: v([0.7, -0.8, -0.75]),
+        joint: v([0.92, -0.55, 0.2]),
+        foil: v([0.8, -0.65, 0.72]),
+        opening: v([0.45, -0.74, 1.05]),
+      }[preset] ?? cameraDirection
+    )
+      .clone()
+      .normalize();
+    const right = v([0, 0, 1]).cross(direction).normalize(),
+      up = direction.clone().cross(right);
     const size = b.getSize(new T.Vector3()),
       center = b.getCenter(new T.Vector3());
+    const projected = (axis) =>
+      Math.abs(axis.x) * size.x +
+      Math.abs(axis.y) * size.y +
+      Math.abs(axis.z) * size.z;
     this.span =
       Math.max(
-        14,
-        size.z * 1.1 + (size.x * 0.2 + size.y * 0.36),
-        (size.x + size.y * 0.4) /
-          Math.max(0.5, this.host.clientWidth / (this.host.clientHeight || 1)),
-      ) * 1.19;
+        6,
+        projected(up),
+        projected(right) /
+          Math.max(0.3, this.host.clientWidth / (this.host.clientHeight || 1)),
+      ) * (detail ? 1.65 : 1.18);
     this.controls.target.copy(center);
     this.camera.position
       .copy(center)
-      .addScaledVector(cameraDirection, Math.max(400, this.span * 2));
+      .addScaledVector(direction, Math.max(400, this.span * 2));
     this.camera.zoom = 1;
     this.controls.update();
     this.resize();
   }
-  show(model, parts, { selected, axis, measure, fit }) {
+  show(
+    model,
+    parts,
+    { selected, axis, measure, fit, offsets = {}, muted = [] },
+  ) {
     dispose(this.solids);
     dispose(this.guides);
     const normal = { x: [-1, 0, 0], y: [0, 1, 0], z: [0, 0, -1] }[axis];
@@ -159,16 +204,39 @@ export class PrismView {
         polygonOffsetFactor: 1,
         polygonOffsetUnits: 1,
       });
+      if (part.role === "region") {
+        material.polygonOffsetFactor = -2;
+        material.polygonOffsetUnits = -2;
+      }
       const mesh = new T.Mesh(geom, material);
       mesh.userData.id = part.id;
+      if (muted.includes(part.id)) {
+        material.transparent = true;
+        material.opacity = 0.18;
+        material.depthWrite = false;
+      }
+      if (offsets[part.id]) mesh.position.fromArray(offsets[part.id]);
       const outline = new T.LineSegments(
         new T.EdgesGeometry(geom, 20),
         new T.LineBasicMaterial({
-          color: part.id === selected ? "#975100" : "#475d65",
+          color:
+            part.id === "weld"
+              ? "#c88313"
+              : part.id === selected
+                ? "#975100"
+                : "#475d65",
           clippingPlanes,
         }),
       );
+      outline.position.copy(mesh.position);
       this.solids.add(mesh, outline);
+    }
+    if (parts.some((p) => p.id === "weld") && !axis) {
+      this.line(
+        model.features.W02.path,
+        selected === "weld" ? "#eb7d10" : "#b88024",
+        false,
+      );
     }
     if (axis && model.sections[axis]) {
       for (const part of parts)
@@ -180,7 +248,7 @@ export class PrismView {
           );
     }
     if (measure) this.guide(measure);
-    if (fit || !this.span) this.fit();
+    if (fit || !this.span) this.fit(typeof fit === "string" ? fit : "standard");
     else this.paint();
   }
   line(points, color, overlay = true) {

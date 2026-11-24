@@ -50,6 +50,8 @@ def main():
     # Explicit app resources only. No repository docs, examples, snapshots or caches.
     for file in sorted((ROOT/'cad').glob('*.py')):shutil.copy2(file,app/'cad'/file.name)
     shutil.copy2(ROOT/'src/data/stages.json',app/'src/data/stages.json')
+    (app/'src/prismatic').mkdir()
+    shutil.copy2(ROOT/'src/prismatic/hardware.json',app/'src/prismatic/hardware.json')
     shutil.copytree(ROOT/'dist',app/'dist')
     if any(p.suffix=='.map' or 'preview-data' in p.parts for p in (app/'dist').rglob('*')):raise RuntimeError('개발/프리뷰 자산이 일반 빌드에 포함됨')
     version={'sourceCommit':sha,'platform':'win-x64','python':PYTHON,'cadquery':'2.7.0','msvcRuntime':crt.parents[1].name,'runtimeSource':url,'runtimeArchiveSha256':hashlib.sha256(embed.read_bytes()).hexdigest(),'buildRun':os.environ.get('GITHUB_SERVER_URL','')+'/'+os.environ.get('GITHUB_REPOSITORY','')+'/actions/runs/'+os.environ.get('GITHUB_RUN_ID','local')}

@@ -63,9 +63,9 @@ with sync_playwright() as pw, TemporaryDirectory() as temp:
 
     def part(key):
         by("#components").click()
-        expect(by("[data-card]")).to_have_count(6)
+        expect(by("[data-card]")).to_have_count(8)
         by('[data-card="' + key + '"]').click()
-        expect(by("#parts button")).to_have_count(1)
+        expect(by("[data-part="+key+"]")).to_be_visible()
 
     def input_value(key, value):
         by('[name="' + key + '"]').fill(str(value))

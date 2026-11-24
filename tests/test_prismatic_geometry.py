@@ -7,11 +7,12 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "cad"))
 from server import model_for
 from model import ModelError
-from prismatic import STAGES
+from prismatic import STAGES, HARDWARE
 
 
 def calculate(changes=None, stage="prism-insert"):
     p = json.loads((ROOT / "examples/prismatic.json").read_text())
+    p["product"]["values"].update({d["id"]: d["default"] for d in HARDWARE})
     p["product"]["values"].update(changes or {})
     p["stage"] = stage
     return model_for(p)[2]
@@ -35,7 +36,7 @@ class PrismaticGeometry(unittest.TestCase):
                 self.assertEqual(
                     "weld" in [p["id"] for p in m["parts"]], m["approval"]["welded"]
                 )
-                self.assertEqual(len(m["features"]), 40)
+                self.assertEqual(len(m["features"]), 51)
 
     def test_width_and_datum(self):
         a, b = calculate(), calculate({"S02": 30})
@@ -53,7 +54,7 @@ class PrismaticGeometry(unittest.TestCase):
 
     def test_stage_and_rigid_travel(self):
         self.assertEqual(
-            [len(calculate(stage=s)["parts"]) for s in STAGES], [2, 4, 5, 6, 7]
+            [len(calculate(stage=s)["parts"]) for s in STAGES], [4, 11, 12, 13, 14]
         )
         seat, approach = calculate(), calculate({"A01": 95})
         for a, b in zip(seat["parts"], approach["parts"]):
@@ -81,3 +82,55 @@ class PrismaticGeometry(unittest.TestCase):
         ]:
             with self.subTest(changes=changes), self.assertRaises(ModelError):
                 calculate(changes)
+
+    def test_terminal_rise_through_all_descendants(self):
+        for stage in STAGES[1:]:
+            with self.subTest(stage=stage):
+                a, b = calculate(stage=stage), calculate({"T05": 5}, stage)
+                aa, bb = ({part["id"]: part for part in m["parts"]} for m in (a, b))
+                self.assertEqual(
+                    {key for key in aa if aa[key] != bb[key]}, {"terminal-a"}
+                )
+                self.assertEqual(
+                    aa["terminal-a"]["bounds"]["min"], bb["terminal-a"]["bounds"]["min"]
+                )
+                self.assertAlmostEqual(
+                    bb["terminal-a"]["bounds"]["max"][2]
+                    - aa["terminal-a"]["bounds"]["max"][2],
+                    1,
+                )
+                self.assertEqual(a["approval"], b["approval"])
+                self.assertEqual(a["datums"], b["datums"])
+                for key in ("K03", "T10", "A06", "A07", "J04", "J05"):
+                    self.assertEqual(a["features"][key], b["features"][key])
+                self.assertEqual(
+                    (a["features"]["T05"]["value"], b["features"]["T05"]["value"]),
+                    (4, 5),
+                )
+
+    def test_physical_collector_and_moving_endpoints(self):
+        thick = calculate({"K08": 2.5})
+        self.assertAlmostEqual(thick["features"]["A07"]["value"], 2)
+        self.assertFalse(thick["approval"]["seated"])
+        self.assertTrue(
+            any("집전체 +X -0.50" in d["message"] for d in thick["diagnostics"])
+        )
+        for stroke in (0, 45, 95):
+            m = calculate({"A01": stroke})
+            self.assertAlmostEqual(m["currentBottomGap"]["value"], 1.75 + stroke)
+            self.assertAlmostEqual(m["features"]["A06"]["value"], 1.75)
+            by_id = {p["id"]: p for p in m["parts"]}
+            self.assertEqual(
+                m["currentBottomGap"]["end"][2], by_id["insulation"]["bounds"]["min"][2]
+            )
+            self.assertEqual(
+                m["features"]["A01"]["end"][2], by_id["cap"]["bounds"]["min"][2]
+            )
+            self.assertEqual(
+                m["features"]["A01"]["start"][2], by_id["can"]["bounds"]["max"][2]
+            )
+
+    def test_legacy_geometry(self):
+        project = json.loads((ROOT / "examples/prismatic.json").read_text())
+        project["stage"] = "prism-join"
+        self.assertEqual(model_for(project)[2], calculate(stage="prism-join"))
