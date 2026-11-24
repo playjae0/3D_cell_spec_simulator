@@ -395,10 +395,10 @@ def build(p,stage='assembly'):
     mark_unavailable(source,stage,features)
     return {'stage':stage,'parts':parts,'features':features,'paths':paths,'diagnostics':[{'level':'warning','message':w} for w in warnings]}
 
-def serialize(model,tolerance=.12):
+def serialize(model,tolerance=.12, *, precise_bounds=False):
     out={k:v for k,v in model.items() if k!='parts'};out['parts']=[]
     for part in model['parts']:
-        shape=part['shape']; vertices,triangles=part.get('displayShape',shape).tessellate(tolerance,.3); b=exact_bounds(shape) if model.get('processCapabilities') else shape.BoundingBox()
+        shape=part['shape']; vertices,triangles=part.get('displayShape',shape).tessellate(tolerance,.3); b=exact_bounds(shape) if precise_bounds or model.get('processCapabilities') else shape.BoundingBox()
         out['parts'].append({**{k:v for k,v in part.items() if k not in ['shape','displayShape']},'mesh':{'positions':[round(c,7) for v in vertices for c in v.toTuple()],'indices':[i for tri in triangles for i in tri]},'bounds':{'min':[b.xmin,b.ymin,b.zmin],'max':[b.xmax,b.ymax,b.zmax]},'volume':shape.Volume() if part['role']!='region' else 0})
     return out
 

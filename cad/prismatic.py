@@ -4,7 +4,8 @@ import math
 
 import cadquery as cq
 
-from model import ModelError
+from geometry_metrics import exact_bounds
+from process import ModelError
 
 STAGES = ("prism-stack", "prism-join", "prism-insulate", "prism-insert", "prism-weld")
 GROUPS = {"S": 7, "K": 7, "J": 2, "I": 2, "C": 5, "A": 1, "W": 1}
@@ -86,8 +87,8 @@ def build(product, stage):
     outer = box(-ox, ox, -oy, oy, -depth - floor, 0)
     cavity = box(-nx, nx, -ny, ny, -depth, 0)
     can = outer.cut(cavity)
-    sb, tb, kb, jb = [s.BoundingBox() for s in (stack, tab, cap, collector)]
-    ib, nb, ob = [s.BoundingBox() for s in (insulation, cavity, can)]
+    sb, tb, kb, jb = [exact_bounds(s) for s in (stack, tab, cap, collector)]
+    ib, nb, ob = [exact_bounds(s) for s in (insulation, cavity, can)]
     measurements = {}
 
     def line(key, axis, start, end, at, sign=1):

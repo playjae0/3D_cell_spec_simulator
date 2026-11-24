@@ -59,7 +59,8 @@ class PrismaticGeometry(unittest.TestCase):
         for a, b in zip(seat["parts"], approach["parts"]):
             for side in ("min", "max"):
                 x, y, z = a["bounds"][side]
-                self.assertEqual(b["bounds"][side][:2], [x, y])
+                self.assertAlmostEqual(b["bounds"][side][0], x, places=7)
+                self.assertAlmostEqual(b["bounds"][side][1], y, places=7)
                 self.assertAlmostEqual(
                     b["bounds"][side][2] - z, 0 if a["id"] == "can" else 95
                 )

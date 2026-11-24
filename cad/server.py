@@ -28,7 +28,7 @@ def model_for(project):
     if key not in CACHE:
         builder = prismatic.build if prism else build
         result = builder(project['product'],project['stage'])
-        CACHE[key]=(result,serialize(result))
+        CACHE[key]=(result,serialize(result, precise_bounds=prism))
         if len(CACHE)>8: CACHE.pop(next(iter(CACHE)))
     return key,*CACHE[key]
 
