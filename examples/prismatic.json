@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 4,
+  "modelVersion": "prismatic-stacked-cad-1",
+  "productType": "prismatic",
+  "unit": "mm",
+  "stage": "prism-stack",
+  "modelIdentity": {
+    "modelId": "prismatic-demo",
+    "revision": "1"
+  },
+  "product": {
+    "id": "prismatic-demo",
+    "name": "삼성SDI 공개 공정 기반 적층 각형 가상 예제",
+    "values": {
+      "S01": 150,
+      "S02": 28,
+      "S03": 85,
+      "S04": 2,
+      "S05": 1,
+      "S06": 4,
+      "S07": 18,
+      "K01": 159,
+      "K02": 33,
+      "K03": 2,
+      "K04": 77,
+      "K05": 4,
+      "K06": 5,
+      "K07": 20,
+      "J01": 0.3,
+      "J02": 3,
+      "I01": 0.25,
+      "I02": 0,
+      "C01": 158,
+      "C02": 32,
+      "C03": 90,
+      "C04": 0.5,
+      "C05": 0.8,
+      "A01": 0,
+      "W01": 0.5
+    }
+  }
+}

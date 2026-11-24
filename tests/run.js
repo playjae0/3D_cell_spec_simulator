@@ -16,3 +16,4 @@ import "./preview.test.js";
 
 import "./component.test.js";
 import "./trial-intake.test.js";
+import "./prismatic.test.js";

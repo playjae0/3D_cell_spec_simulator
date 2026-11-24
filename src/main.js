@@ -1,3 +1,4 @@
+import { switchFile, takeFile, rememberProduct } from "./product-route.js";
 import { mountComponentScenes, populateComponentCards } from "./components/workbench.js";
 import { placementField } from "./components/contract.js";
 import { fieldsForObject, get as getToolField, set as setToolField } from "./tooling/contract.js";
@@ -90,6 +91,7 @@ let state = previewExamples["pouch-phase1"](),
   replacement = null;
 state.measurements = demoMeasurements(state.stage, state.product);
 const history = new History();
+rememberProduct("pouch", () => live && ready ? state : null);
 const viewer = new Viewer($("viewport"), {
   onSelect: (...hit) => { if (!toolingPreview) selectPart(...hit); },
   onPick: hit => { if (!toolingPreview) picked(hit); },
@@ -1639,7 +1641,7 @@ $("save").onclick = () => {
     state.view.camera = viewer.getCamera();
     validateProject(state);
     download(
-      new Blob([JSON.stringify(state, null, 2)], { type: "application/json" }),
+      new Blob([JSON.stringify({ ...state, productType: "pouch" }, null, 2)], { type: "application/json" }),
       (state.modelIdentity?.modelId || "pouch-cell") + "-v1.5.json",
     );
     status("JSON 저장 · 입력/공정/기준/스펙/카메라 포함");
@@ -1657,7 +1659,8 @@ $("file").onchange = async (e) => {
     if (text.length > 12 * 1024 * 1024)
       throw Error("12 MB 이하 파일만 지원합니다");
     const raw = JSON.parse(text);
-    if (raw.format === "pouch-cell-intake") models.openIntake(raw);
+    if (raw.productType === "prismatic") switchFile(raw, "prismatic");
+    else if (raw.format === "pouch-cell-intake") models.openIntake(raw);
     else if (inspectLegacy(raw)) showMigration(raw);
     else {
       const next = parseProject(text);
@@ -1935,6 +1938,16 @@ async function boot() {
     }
   }
   ready = true;
+  const transferred = takeFile();
+  if (transferred && live) {
+    try {
+      state = parseProject(JSON.stringify(transferred));
+      draft = clone(state.product);
+      targetStage = state.stage;
+    } catch (error) {
+      status("파일을 열 수 없습니다", "error", error.message);
+    }
+  }
   if (!preview) models = createModels();
   renderFields();
   setDirty(false);

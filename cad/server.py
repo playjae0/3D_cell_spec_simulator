@@ -6,16 +6,28 @@ import json, hashlib, threading, traceback, os
 import cadquery as cq
 from model import build, serialize, ModelError
 from process import STAGES
+import prismatic
 
 ROOT=Path(__file__).resolve().parents[1]
 LOCK=threading.Lock()
 CACHE={}
 def model_for(project):
-    if project.get('schemaVersion') not in [3,4] or project.get('modelVersion')!='pouch-process-cad-2' or project.get('unit')!='mm': raise ModelError(['지원하지 않는 프로젝트 버전 또는 단위'])
-    if project.get('stage') not in STAGES: raise ModelError(['지원하지 않는 상태'])
-    key=hashlib.sha256(json.dumps([project['product'],project['stage']],sort_keys=True,allow_nan=False).encode()).hexdigest()
+    kind = project.get('productType', 'pouch')
+    if kind not in ('pouch', 'prismatic'):
+        raise ModelError(['지원하지 않는 제품 타입'])
+    prism = kind == 'prismatic'
+    version = 'prismatic-stacked-cad-1' if prism else 'pouch-process-cad-2'
+    if project.get('schemaVersion') not in [3,4] or project.get('modelVersion') != version or project.get('unit') != 'mm':
+        raise ModelError(['지원하지 않는 프로젝트 버전 또는 단위'])
+    if project.get('stage') not in (prismatic.STAGES if prism else STAGES):
+        raise ModelError(['지원하지 않는 상태'])
+    identity = [project['product'],project['stage']]
+    if prism:
+        identity.insert(0, kind)
+    key=hashlib.sha256(json.dumps(identity,sort_keys=True,allow_nan=False).encode()).hexdigest()
     if key not in CACHE:
-        result=build(project['product'],project['stage'])
+        builder = prismatic.build if prism else build
+        result = builder(project['product'],project['stage'])
         CACHE[key]=(result,serialize(result))
         if len(CACHE)>8: CACHE.pop(next(iter(CACHE)))
     return key,*CACHE[key]

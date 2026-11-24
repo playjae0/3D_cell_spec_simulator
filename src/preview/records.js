@@ -7,7 +7,7 @@ const hash = value => typeof value === "string" && /^[a-f0-9]{64}$/.test(value);
 const unavailable = () => Error("기록되지 않은 설계·모델 개정·공정입니다. 로컬 CAD 서버에서 열어주세요.");
 const corrupt = message => Error("프리뷰 데이터 로딩 오류 · " + message);
 const decode = new TextDecoder("utf-8", { fatal: true });
-const validStageTable = table => table && Object.keys(table).length === stageIds.length &&
+const validStageTable = (table, stageIds) => table && Object.keys(table).length === stageIds.length &&
   stageIds.every(stage => [200, 422].includes(table[stage]));
 
 async function fetchBytes(url) {
@@ -16,33 +16,34 @@ async function fetchBytes(url) {
   return new Uint8Array(await response.arrayBuffer());
 }
 
-export async function loadPreview(base) {
+export async function loadPreview(base, examples = previewExamples, stages = stageIds) {
   try {
     const manifest = JSON.parse(decode.decode(await fetchBytes(new URL("manifest.json", base))));
     if (manifest.formatVersion !== 1 || !/^[a-f0-9]{40}$/.test(manifest.sourceCommit) ||
         typeof manifest.cadQueryVersion !== "string" || !Number.isFinite(Date.parse(manifest.generatedAt)) ||
-        !Array.isArray(manifest.designs) || manifest.designs.length !== Object.keys(previewExamples).length)
+        !Array.isArray(manifest.designs) || manifest.designs.length !== Object.keys(examples).length)
       throw Error("매니페스트 형식 불일치");
     const designs = new Map(), names = new Set();
     for (const entry of manifest.designs) {
-      if (!Object.hasOwn(previewExamples, entry.name) || names.has(entry.name) ||
+      if (!Object.hasOwn(examples, entry.name) || names.has(entry.name) ||
           designs.has(entry.designId) || !hash(entry.designId) || !hash(entry.sha256) ||
-          entry.file !== entry.name + ".json" || !validStageTable(entry.stages))
+          entry.file !== entry.name + ".json" || !validStageTable(entry.stages, stages))
         throw Error("설계 매니페스트 항목 오류");
       designs.set(entry.designId, entry);
       names.add(entry.name);
     }
-    return new PreviewRecords(manifest, designs, base);
+    return new PreviewRecords(manifest, designs, base, stages);
   } catch (error) {
     throw corrupt(error.message);
   }
 }
 
 class PreviewRecords {
-  constructor(manifest, designs, base) {
+  constructor(manifest, designs, base, stages) {
     this.manifest = manifest;
     this.designs = designs;
     this.base = base;
+    this.stages = stages;
     this.files = new Map();
   }
 
@@ -62,7 +63,7 @@ class PreviewRecords {
     const data = JSON.parse(decode.decode(bytes));
     if (data.formatVersion !== 1 || data.designId !== design.designId ||
         !data.parts || Array.isArray(data.parts) || !data.stages ||
-        !stageIds.every(stage => data.stages[stage]?.status === design.stages[stage]))
+        !this.stages.every(stage => data.stages[stage]?.status === design.stages[stage]))
       throw Error("설계 파일 형식 불일치");
     return data;
   }

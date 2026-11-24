@@ -1,0 +1,322 @@
+[
+  {
+    "id": "S01",
+    "name": "스택 길이",
+    "datum": "S_X와 ±X 끝면",
+    "direction": "−X 끝면 → +X 끝면, +X",
+    "owner": "stack",
+    "stage": 1
+  },
+  {
+    "id": "S02",
+    "name": "스택 폭",
+    "datum": "S_Y와 ±Y 측면",
+    "direction": "−Y 측면 → +Y 측면, +Y",
+    "owner": "stack",
+    "stage": 1
+  },
+  {
+    "id": "S03",
+    "name": "스택 높이",
+    "datum": "S_A, 바닥",
+    "direction": "바닥 → 스택 상면, +Z",
+    "owner": "stack",
+    "stage": 1
+  },
+  {
+    "id": "S04",
+    "name": "탭 접촉면 돌출량",
+    "datum": "+X 스택 끝면",
+    "direction": "+X 끝면 → 탭 도식 접촉면 T_X, +X",
+    "owner": "tab",
+    "stage": 1
+  },
+  {
+    "id": "S05",
+    "name": "탭 접촉대 고도",
+    "datum": "S_A",
+    "direction": "스택 상면 → 접촉대 위쪽 끝, −Z",
+    "owner": "tab",
+    "stage": 1
+  },
+  {
+    "id": "S06",
+    "name": "탭 접촉대 높이",
+    "datum": "탭 접촉대 위·아래 끝",
+    "direction": "접촉대 위쪽 끝 → 아래쪽 끝, −Z",
+    "owner": "tab",
+    "stage": 1
+  },
+  {
+    "id": "S07",
+    "name": "탭 접촉대 폭",
+    "datum": "S_Y; 좌우 대칭 프록시",
+    "direction": "탭 −Y 끝 → +Y 끝, +Y",
+    "owner": "tab",
+    "stage": 1
+  },
+  {
+    "id": "K01",
+    "name": "캡 몸체 길이",
+    "datum": "K_X와 ±X 끝면",
+    "direction": "캡 −X 끝 → +X 끝, +X",
+    "owner": "cap",
+    "stage": 2
+  },
+  {
+    "id": "K02",
+    "name": "캡 몸체 폭",
+    "datum": "K_Y와 ±Y 옆면",
+    "direction": "캡 −Y 옆면 → +Y 옆면, +Y",
+    "owner": "cap",
+    "stage": 2
+  },
+  {
+    "id": "K03",
+    "name": "캡 몸체 두께",
+    "datum": "K_A, 상면",
+    "direction": "캡 닫힘 기준 아래면 → 몸체 상면, +Z",
+    "owner": "cap",
+    "stage": 2
+  },
+  {
+    "id": "K04",
+    "name": "집전체 접촉면 X",
+    "datum": "K_X",
+    "direction": "K_X → 보이는 쪽 도식 접촉면 J_X, +X 부호",
+    "owner": "collector",
+    "stage": 2
+  },
+  {
+    "id": "K05",
+    "name": "집전체 접촉대 고도",
+    "datum": "K_A",
+    "direction": "캡 닫힘면 → 집전체 접촉대 위쪽 끝, −Z",
+    "owner": "collector",
+    "stage": 2
+  },
+  {
+    "id": "K06",
+    "name": "집전체 접촉대 높이",
+    "datum": "집전체 접촉대 위·아래 끝",
+    "direction": "접촉대 위쪽 끝 → 아래쪽 끝, −Z",
+    "owner": "collector",
+    "stage": 2
+  },
+  {
+    "id": "K07",
+    "name": "집전체 접촉대 폭",
+    "datum": "K_Y; 좌우 대칭 프록시",
+    "direction": "집전체 −Y 끝 → +Y 끝, +Y",
+    "owner": "collector",
+    "stage": 2
+  },
+  {
+    "id": "J01",
+    "name": "스택 폭방향 편심",
+    "datum": "K_Y, S_Y",
+    "direction": "K_Y → S_Y, +Y 부호",
+    "owner": "prism-join",
+    "stage": 2
+  },
+  {
+    "id": "J02",
+    "name": "캡 아래 스택 상면 위치",
+    "datum": "K_A, S_A",
+    "direction": "캡 닫힘면 → 스택 상면, −Z",
+    "owner": "prism-join",
+    "stage": 2
+  },
+  {
+    "id": "J03",
+    "name": "스택 길이방향 편심",
+    "datum": "K_X, S_X; J_X/T_X 일치",
+    "direction": "K_X → S_X, +X 부호",
+    "owner": null,
+    "stage": 2
+  },
+  {
+    "id": "J04",
+    "name": "탭–집전체 높이 겹침",
+    "datum": "공통 −Z 축; K_A 원점",
+    "direction": "두 접촉대 교집합 위끝 → 아래끝, −Z",
+    "owner": null,
+    "stage": 2
+  },
+  {
+    "id": "J05",
+    "name": "탭–집전체 폭 겹침",
+    "datum": "공통 +Y 축; K_Y 원점",
+    "direction": "두 접촉대 교집합 −Y 끝 → +Y 끝, +Y",
+    "owner": null,
+    "stage": 2
+  },
+  {
+    "id": "I01",
+    "name": "5면 절연층 유효 두께",
+    "datum": "스택 측·하부 5면",
+    "direction": "각 모재 면 → 해당 절연 외표면, 바깥 법선",
+    "owner": "insulation",
+    "stage": 3
+  },
+  {
+    "id": "I02",
+    "name": "절연 위끝 후퇴량",
+    "datum": "S_A",
+    "direction": "스택 상면 → 절연 위끝, −Z; 기본 0",
+    "owner": "insulation",
+    "stage": 3
+  },
+  {
+    "id": "I03",
+    "name": "절연 후 몸체 길이",
+    "datum": "S_X; 측면 절연 외곽",
+    "direction": "−X 절연 외면 → +X 절연 외면, +X",
+    "owner": null,
+    "stage": 3
+  },
+  {
+    "id": "I04",
+    "name": "절연 후 몸체 폭",
+    "datum": "S_Y; 측면 절연 외곽",
+    "direction": "−Y 절연 외면 → +Y 절연 외면, +Y",
+    "owner": null,
+    "stage": 3
+  },
+  {
+    "id": "I05",
+    "name": "절연 후 몸체 높이",
+    "datum": "S_A; 절연 바닥",
+    "direction": "절연 바닥 → 노출 스택 상면, +Z",
+    "owner": null,
+    "stage": 3
+  },
+  {
+    "id": "C01",
+    "name": "캔 내부 길이",
+    "datum": "N_X; 개구 긴 방향",
+    "direction": "개구 −X 내벽 → +X 내벽, +X",
+    "owner": "can",
+    "stage": 4
+  },
+  {
+    "id": "C02",
+    "name": "캔 내부 폭",
+    "datum": "N_Y; 개구 짧은 방향",
+    "direction": "개구 −Y 내벽 → +Y 내벽, +Y",
+    "owner": "can",
+    "stage": 4
+  },
+  {
+    "id": "C03",
+    "name": "캔 캐비티 깊이",
+    "datum": "N_A와 내바닥",
+    "direction": "개구 림 평면 → 내바닥, −Z",
+    "owner": "can",
+    "stage": 4
+  },
+  {
+    "id": "C04",
+    "name": "캔 측벽 두께",
+    "datum": "캔 내벽",
+    "direction": "각 내벽 → 대응 외벽, 바깥 법선",
+    "owner": "can",
+    "stage": 4
+  },
+  {
+    "id": "C05",
+    "name": "캔 바닥 두께",
+    "datum": "캔 내바닥",
+    "direction": "내바닥 → 외바닥, −Z",
+    "owner": "can",
+    "stage": 4
+  },
+  {
+    "id": "A01",
+    "name": "삽입 행정 위치",
+    "datum": "N_A, K_A, 공통 Z축",
+    "direction": "N_A → K_A, +Z 부호; 종료 0",
+    "owner": "prism-insert",
+    "stage": 4
+  },
+  {
+    "id": "A02",
+    "name": "스택 −X 간극",
+    "datum": "N_X, 절연 외면과 내벽",
+    "direction": "−X 내벽 → 절연 −X 면, +X",
+    "owner": null,
+    "stage": 4
+  },
+  {
+    "id": "A03",
+    "name": "스택 +X 간극",
+    "datum": "N_X, 절연 외면과 내벽",
+    "direction": "절연 +X 면 → +X 내벽, +X",
+    "owner": null,
+    "stage": 4
+  },
+  {
+    "id": "A04",
+    "name": "스택 −Y 간극",
+    "datum": "N_Y, 절연 외면과 내벽",
+    "direction": "−Y 내벽 → 절연 −Y 면, +Y",
+    "owner": null,
+    "stage": 4
+  },
+  {
+    "id": "A05",
+    "name": "스택 +Y 간극",
+    "datum": "N_Y, 절연 외면과 내벽",
+    "direction": "절연 +Y 면 → +Y 내벽, +Y",
+    "owner": null,
+    "stage": 4
+  },
+  {
+    "id": "A06",
+    "name": "안착 후 바닥 간극",
+    "datum": "N_A에서 깊이 참조",
+    "direction": "캔 내바닥 → 절연 바닥, +Z; u=0",
+    "owner": null,
+    "stage": 4
+  },
+  {
+    "id": "A07",
+    "name": "가시 접속부 +X 평면 여유",
+    "datum": "N_X, J_X, +X 내벽",
+    "direction": "공통 J_X/T_X → +X 내벽, +X",
+    "owner": null,
+    "stage": 4
+  },
+  {
+    "id": "A08",
+    "name": "캡–캔 끝단 단차 X",
+    "datum": "공통 중심면 N_X=K_X",
+    "direction": "캔 +X 외끝 → 캡 +X 끝, +X 부호",
+    "owner": null,
+    "stage": 4
+  },
+  {
+    "id": "A09",
+    "name": "캡–캔 측단 단차 Y",
+    "datum": "공통 중심면 N_Y=K_Y",
+    "direction": "캔 +Y 외끝 → 캡 +Y 끝, +Y 부호",
+    "owner": null,
+    "stage": 4
+  },
+  {
+    "id": "W01",
+    "name": "용접 화면 표시 폭",
+    "datum": "캔 외주 투영선 P",
+    "direction": "표시 띠 안쪽 끝 → 바깥 끝, XY 국소 법선",
+    "owner": "display",
+    "stage": 5
+  },
+  {
+    "id": "W02",
+    "name": "용접 표시 중심선 길이",
+    "datum": "P=안착한 캔 외주 투영선",
+    "direction": "P 시작점 → 둘레 1회 귀환, 선을 따라",
+    "owner": null,
+    "stage": 5
+  }
+]
