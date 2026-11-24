@@ -12,6 +12,7 @@ import { rebuildRequest } from "../src/geometry/request.js";
 import { previewExamples } from "../src/preview/examples.js";
 import { designIdentity, sha256 } from "../src/preview/identity.js";
 import { packSuccess, restoreResponse, stripRequestFields } from "../src/preview/codec.js";
+import { recordedExamples, stages as prismStages, validate as validatePrism } from "../src/prismatic/project.js";
 import { checkDirectory } from "./preview-limits.mjs";
 
 process.chdir(fileURLToPath(new URL("../", import.meta.url)));
@@ -44,24 +45,24 @@ async function capture(base, project) {
   return { status: response.status, raw, body: stripRequestFields(text) };
 }
 
-async function record(host, health, folder) {
+async function record(host, health, folder, examples = previewExamples, ids = stages, reconcile = reconcileProject, validate = validateProject) {
   await mkdir(folder, { recursive: true });
   const manifest = {
     formatVersion: 1, sourceCommit: commit, sourceDirty: dirty,
     cadQueryVersion: health.version, generatedAt: new Date().toISOString(), designs: [],
   };
   const stats = [];
-  for (const [name, example] of Object.entries(previewExamples)) {
-    const original = reconcileProject(example());
+  for (const [name, example] of Object.entries(examples)) {
+    const original = reconcile(example());
     const designId = sha256(designIdentity(original));
     const dataset = { formatVersion: 1, designId, parts: {}, stages: {} };
     const descriptor = { name, designId, modelId: original.modelIdentity?.modelId ?? original.product.id,
       modelRevision: original.modelIdentity?.revision ?? null, file: name + ".json", stages: {} };
     const originals = new Map();
     let rawBytes = 0, normalizedBytes = 0;
-    for (const stage of stages) {
-      const project = reconcileProject({ ...example(), stage });
-      validateProject(project);
+    for (const stage of ids) {
+      const project = reconcile({ ...example(), stage });
+      validate(project);
       assert.equal(sha256(designIdentity(project)), designId);
       const reply = await capture(host, project);
       rawBytes += reply.raw.length;
@@ -158,7 +159,10 @@ async function publish() {
 
 try {
   const assets = join(work, "public");
-  const stats = await withServer((base, health) => record(base, health, join(assets, "preview")));
+  const stats = await withServer(async (base, health) => [
+    ...await record(base, health, join(assets, "preview")),
+    ...await record(base, health, join(assets, "prismatic-preview"), recordedExamples, Object.keys(prismStages), p => p, validatePrism),
+  ]);
   await build({ mode: "recorded-preview", base: "./", publicDir: assets, build: { outDir: dest } });
   const deployment = await checkDirectory(dest);
   await publish();

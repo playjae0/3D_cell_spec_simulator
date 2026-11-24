@@ -15,6 +15,7 @@ export function validateProject(p) {
     throw Error(m);
   };
   if (
+    (p?.productType !== undefined && p.productType !== "pouch") ||
     ![3, 4].includes(p?.schemaVersion) ||
     p.modelVersion !== "pouch-process-cad-2" ||
     p.unit !== "mm"
