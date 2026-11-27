@@ -130,3 +130,29 @@ def cap_parts(
         occupied.append(bounds)
         shapes[name] = terminal(x, y, l, w, h, topside)
     return shapes
+
+
+def patent_cap(shapes, terminals, base, plate_height, px, bottom, width, gauge):
+    """Illustrative EP2581968A1 Fig. 4 connection on the observed (+X) end."""
+    x, y, length, breadth, rise = terminals["terminal-b"]
+    shoulder = base - 0.6
+    landing = shoulder - 1.0
+    radius = min(length, breadth) * 0.25
+    pin_radius = radius * 0.45
+    if x + length/2 >= px or abs(y) + breadth/2 > width/2 or bottom >= landing-gauge:
+        raise ModelError(["42a · 단자 플랜지, 측판과 접촉대의 배치를 확인하세요"])
+
+    def cylinder(r, z0, z1):
+        return cq.Solid.makeCylinder(r, z1-z0, (x,y,z0))
+
+    post = cylinder(radius, shoulder, base+plate_height+rise)
+    flange = box(x-length/2,x+length/2,y-breadth/2,y+breadth/2,landing,shoulder)
+    pin = cylinder(pin_radius,landing-gauge,landing)
+    shapes["terminal-b"] = post.fuse(flange,pin).clean()
+    sleeve = cylinder(radius+0.6,shoulder,base+plate_height)
+    shapes["cap"] = shapes["cap"].cut(sleeve)
+    pad = box(x-length/2,x+length/2,y-breadth/2,y+breadth/2,shoulder,base)
+    shapes["cap-insulator"] = sleeve.fuse(pad).cut(post).clean()
+    shelf = box(x-length/2,px+gauge,-width/2,width/2,landing-gauge,landing)
+    side = box(px,px+gauge,-width/2,width/2,bottom,landing)
+    shapes["collector"] = shelf.fuse(side).cut(pin).clean()

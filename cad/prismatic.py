@@ -8,7 +8,7 @@ import cadquery as cq
 
 from geometry_metrics import exact_bounds
 from process import ModelError
-from prismatic_parts import box, stack_parts, cap_parts
+from prismatic_parts import box, stack_parts, cap_parts, patent_cap
 
 STAGES = ("prism-stack", "prism-join", "prism-insulate", "prism-insert", "prism-weld")
 HARDWARE = json.loads(
@@ -19,6 +19,7 @@ HARDWARE = json.loads(
 GROUPS = {"T": 10, "S": 7, "K": 8, "J": 2, "I": 2, "C": 5, "A": 1, "W": 1}
 EPS = 1e-7
 PARTS = {
+    "cap-insulator": ("단자 관통 절연체", "#57b5ac"),
     "stack": ("적층 스택", "#8292a0"),
     "tab": ("포일 자유단", "#cd8243"),
     "cap": ("캡 몸체", "#a7b6bd"),
@@ -91,6 +92,8 @@ def build(product, stage):
     cb, ct = u - ka - kh, u - ka
     terminals = {"terminal-a": g["T"][:5], "terminal-b": g["T"][5:]}
     hardware = cap_parts(kl, kw, kt, u, px, cb, bw, gauge, terminals)
+    if product.get("capVariant") == "ep2581968":
+        patent_cap(hardware, terminals, u, kt, px, cb, bw, gauge)
     stack, tab, cap = core["stack"], core["tab"], hardware["cap"]
     contact_face = rectangle(
         [(px, -bw / 2, cb), (px, bw / 2, cb), (px, bw / 2, ct), (px, -bw / 2, ct)]

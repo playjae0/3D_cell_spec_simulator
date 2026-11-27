@@ -1,4 +1,5 @@
 import example from "../../examples/prismatic.json" with { type: "json" };
+import patentExample from "../../examples/prismatic-patent.json" with { type: "json" };
 import hardware from "./hardware.json" with { type: "json" };
 import baseDimensions from "./dimensions.json" with { type: "json" };
 
@@ -10,6 +11,7 @@ export const capIds = [
   "terminal-b",
   "cap-outline",
   "collector",
+  "cap-insulator",
 ];
 const foilIds = ["foil-root", "foil-gather", "tab"];
 export const stages = {
@@ -42,6 +44,7 @@ export function initial(changes = {}) {
 
 export const recordedExamples = {
   standard: () => initial(),
+  patent: () => validate(structuredClone(patentExample)),
   approach: () => initial({ A01: 95 }),
   halfway: () => initial({ A01: 45 }),
   interference: () => initial({ S02: 32 }),
