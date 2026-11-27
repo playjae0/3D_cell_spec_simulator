@@ -1,0 +1,122 @@
+{
+  "sourceCommit": "b2f8a3694e19399dfe08708169a3cae68c2f6125",
+  "app": {
+    "zip": "CellStudio-win-x64-b2f8a3694e19.zip",
+    "zipBytes": 221043132,
+    "unpackedBytes": 762041968,
+    "fileCount": 7340
+  },
+  "intakeKit": {
+    "zip": "CellStudio-IntakeKit-b2f8a3694e19.zip",
+    "zipBytes": 80456,
+    "unpackedBytes": 1739562
+  },
+  "largestFiles": [
+    {
+      "path": "runtime/Lib/site-packages/OCP/OCP.cp312-win_amd64.pyd",
+      "bytes": 127308288,
+      "sha256": "0006d52ee7e33bc00d5308fc7040d06bb222525d078e20f69b9ac6f62687c8b8"
+    },
+    {
+      "path": "runtime/Lib/site-packages/numpy.libs/libscipy_openblas64_-9e3e5a4229c1ca39f10dc82bba9e2b2b.dll",
+      "bytes": 20403712,
+      "sha256": "9e3e5a4229c1ca39f10dc82bba9e2b2bf48037790932566f37aff1a7ccf3588f"
+    },
+    {
+      "path": "runtime/Lib/site-packages/casadi/libcasadi-tp-openblas.dll",
+      "bytes": 18176567,
+      "sha256": "7b78accfffba19f8738d701ce3f2420c9b120be5c921bf45c337dbb37720df75"
+    },
+    {
+      "path": "runtime/Lib/site-packages/casadi/std-e414687e404555e5.dll",
+      "bytes": 15165358,
+      "sha256": "5486e8143b0d42d74214a1d658ff17ec196db7ede7e4de4957df3b2b76fb0afa"
+    },
+    {
+      "path": "runtime/Lib/site-packages/casadi/libcasadi.dll",
+      "bytes": 12859276,
+      "sha256": "de690f47d7ac85e5daf58f6905e374030c8765f626ee7c33c708cd747372853f"
+    },
+    {
+      "path": "runtime/Lib/site-packages/vtk.libs/vtkCommonCore-9.3-2b002c5aa8518622262a8d925d912cd9.dll",
+      "bytes": 12092928,
+      "sha256": "a1977619b86d45d50cbf55fbe742fb3c94a8cb3e2742d676d911cb18785feadd"
+    },
+    {
+      "path": "runtime/Lib/site-packages/vtk.libs/vtkFiltersCore-9.3-3e6ac57fea1cf65fde02aa165190b10a.dll",
+      "bytes": 8498176,
+      "sha256": "2bb2b9caae897ad625ed6f0a16dbc86550b33f84ebb2af5e674e336f6c25db99"
+    },
+    {
+      "path": "runtime/Lib/site-packages/PIL/_avif.cp312-win_amd64.pyd",
+      "bytes": 7893504,
+      "sha256": "3c31d65c8b3b4c91ac2838d5c843a6b2479d775b6904fe654d60b56d41772411"
+    },
+    {
+      "path": "runtime/Lib/site-packages/vtk.libs/vtkm_filter_vector_analysis-9.3-b51518aa86d405fdddb03918e6eb589d.dll",
+      "bytes": 7276544,
+      "sha256": "f4c6b32722be997990bb9ceb2e3817ed2195dd368799265c65e91cb286bcb336"
+    },
+    {
+      "path": "runtime/Lib/site-packages/casadi/_casadi.pyd",
+      "bytes": 7074696,
+      "sha256": "8d06e74e5360297686ee024522429d8d97557c387e764c510c3c7eea4cfb21bc"
+    },
+    {
+      "path": "_internal/python312.dll",
+      "bytes": 6945272,
+      "sha256": "9a0e3435aaa680d868150f87ab3e388ad2eebc22f87e036155c7b4eda8cd2120"
+    },
+    {
+      "path": "runtime/python312.dll",
+      "bytes": 6945272,
+      "sha256": "9a0e3435aaa680d868150f87ab3e388ad2eebc22f87e036155c7b4eda8cd2120"
+    },
+    {
+      "path": "runtime/Lib/site-packages/cadquery_ocp.libs/TKDESTEP-f654eadf1060966d66028f1d510850a3.dll",
+      "bytes": 6347776,
+      "sha256": "41a667ae83710b0ed31310b52a46fc9d1c82626d5607cfdeeb12faf7d487a295"
+    },
+    {
+      "path": "runtime/Lib/site-packages/vtk.libs/vtkm_cont-9.3-b8e807b12542c73d2f088ca96cdbbafc.dll",
+      "bytes": 6182400,
+      "sha256": "8f9d0691a881fec4465a47659961e9c97a9ed48b1714c4c7a64187f3e0700fac"
+    },
+    {
+      "path": "runtime/Lib/site-packages/vtk.libs/vtkm_filter_contour-9.3-40da0544afa68b62b08179f7cf2bd5dd.dll",
+      "bytes": 5924864,
+      "sha256": "c34243512d88c3caacfefe304ff538fff8f9f2c31039c8157dd0a126705ab6b8"
+    },
+    {
+      "path": "runtime/Lib/site-packages/casadi/libhighs.dll",
+      "bytes": 5790694,
+      "sha256": "46e3e8a1d044e889c6578caf2434ef18b33c6b1b0651b770b1e5a7d8f039da1a"
+    },
+    {
+      "path": "_internal/libcrypto-3.dll",
+      "bytes": 5231472,
+      "sha256": "ccfffddcd3defb8d899026298af9af43bc186130f8483d77e97c93233d5f27d7"
+    },
+    {
+      "path": "runtime/libcrypto-3.dll",
+      "bytes": 5231472,
+      "sha256": "ccfffddcd3defb8d899026298af9af43bc186130f8483d77e97c93233d5f27d7"
+    },
+    {
+      "path": "runtime/Lib/site-packages/casadi/lapack.lib",
+      "bytes": 5017944,
+      "sha256": "4c5b11a36d4a46d27844cc9dc77079980a2cb6fb0f12aa058fcd720d9cfd10a4"
+    },
+    {
+      "path": "runtime/Lib/site-packages/casadi/libcasadi.dll.a",
+      "bytes": 4968960,
+      "sha256": "864d0bcefdd8d8a14f1fee9cdb70ed9c7f7a1d49981d8ed1317ec158c5f644d2"
+    }
+  ],
+  "largeComponentsReasons": {
+    "runtime/Lib/site-packages/OCP": "OpenCascade 정확 형상/불리언/STEP 커널",
+    "runtime/Lib/site-packages/vtkmodules": "CadQuery/OCP 시각화·메시 의존 라이브러리",
+    "runtime/Lib/site-packages/casadi": "CadQuery 수치 계산 의존성",
+    "CellStudio.exe": "표준 라이브러리 포함 독립 런처; CAD 라이브러리는 runtime에서만 로드"
+  }
+}
