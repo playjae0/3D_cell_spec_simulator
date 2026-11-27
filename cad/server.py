@@ -1,11 +1,12 @@
 """Local-only geometry API + production static host. No network dependency at runtime."""
-from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
+from http.server import SimpleHTTPRequestHandler
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import json, hashlib, threading, traceback, os
 import cadquery as cq
 from model import build, serialize, ModelError
 from process import STAGES
+from local_host import bind_local, publish_bound_port
 import prismatic
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -66,6 +67,7 @@ class Handler(SimpleHTTPRequestHandler):
 
 if __name__=='__main__':
     port=int(os.environ.get('POUCH_PORT','8765'))
-    with ThreadingHTTPServer(('127.0.0.1',port), Handler) as server:
+    with bind_local(Handler, port, automatic=os.environ.get('POUCH_AUTO_PORT')=='1') as server:
+        publish_bound_port(server, os.environ.get('POUCH_LAUNCH_READY'))
         print(f'Pouch Cell CAD + web: http://127.0.0.1:{server.server_port}', flush=True)
         server.serve_forever()

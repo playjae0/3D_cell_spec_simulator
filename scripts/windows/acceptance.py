@@ -4,20 +4,22 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import socket
 import time
 from urllib.parse import urlparse
 from playwright.sync_api import sync_playwright,expect
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--bundle',type=Path);p.add_argument('--url');p.add_argument('--intake',type=Path,required=True);p.add_argument('--out',type=Path,required=True);p.add_argument('--browser');p.add_argument('--offline',action='store_true');a=p.parse_args()
-    a.out.mkdir(parents=True,exist_ok=True);ready=a.out/'ready.json';process=None;log=None
+    a.out.mkdir(parents=True,exist_ok=True);ready=a.out/'ready.json';process=None;log=None;blocker=None
     def start():
         nonlocal process,log
         ready.unlink(missing_ok=True)
         log=(a.out/'launcher.log').open('a',encoding='utf-8')
         env={k:v for k,v in os.environ.items() if not k.startswith(('PYTHON','CONDA','VIRTUAL_ENV'))}
         env['PATH']=str(Path(os.environ.get('SystemRoot','C:/Windows'))/'System32')
-        process=subprocess.Popen([str(a.bundle/'CellStudio.exe'),'--ready-file',str(ready),'--port','18765'],cwd=a.bundle,env=env,stdout=log,stderr=subprocess.STDOUT)
+        env['LOCALAPPDATA']=str(a.out/'local-profile')
+        process=subprocess.Popen([str(a.bundle/'CellStudio.exe'),'--ready-file',str(ready)],cwd=a.bundle,env=env,stdout=log,stderr=subprocess.STDOUT)
         end=time.monotonic()+150
         while time.monotonic()<end:
             if process.poll() is not None:raise RuntimeError('EXE exited: '+(a.out/'launcher.log').read_text())
@@ -33,6 +35,15 @@ def main():
     result={'environment':'extracted Windows ZIP' if a.bundle else 'Linux development build','offlineFirewall':a.offline,'offlineScope':'application/runtime/browser; runner control channel stays online' if a.offline else 'none','errors':[],'externalRequests':[]}
     try:
         if a.bundle:
+            # Keep the default occupied throughout import/edit/save/restart.
+            # The launcher must not mistake this unrelated listener for its CAD.
+            blocker=socket.socket()
+            if os.name=='nt':blocker.setsockopt(socket.SOL_SOCKET,socket.SO_EXCLUSIVEADDRUSE,1)
+            try:blocker.bind(('127.0.0.1',8765));blocker.listen()
+            except OSError:blocker.close();blocker=None
+            settings=a.out/'local-profile/CellStudio/launcher.json'
+            settings.parent.mkdir(parents=True,exist_ok=True)
+            settings.write_text('{"lastPort":8765}',encoding='utf-8')
             v=json.loads((a.bundle/'VERSION.json').read_text(encoding='utf-8'));result['sourceCommit']=v['sourceCommit']
             probe=subprocess.check_output([str(a.bundle/'runtime/python.exe'),'-I','-X','utf8',str(Path(__file__).resolve().with_name('runtime_probe.py'))],cwd=a.bundle)
             result['runtimeProvenance']=json.loads(probe)
@@ -45,8 +56,10 @@ def main():
                 assert blocked.returncode==0 and b'blocked' in blocked.stdout
                 result['runtimeExternalHttpsBlocked']=True
             state=start();url=state['url'];result['launcher']=state
+            assert state['automaticPort'] and state['preferredPort']==8765 and state['actualPort']!=8765
+            result['occupiedDefaultAutomaticallySkipped']=True
             kitVersion=json.loads((a.intake.parent/'VERSION.json').read_text(encoding='utf-8'));assert kitVersion['sourceCommit']==v['sourceCommit']
-            conflict=subprocess.run([str(a.bundle/'CellStudio.exe'),'--no-browser','--port','18765'],cwd=a.bundle,capture_output=True,timeout=30)
+            conflict=subprocess.run([str(a.bundle/'CellStudio.exe'),'--no-browser','--port',str(state['actualPort'])],cwd=a.bundle,capture_output=True,timeout=30)
             assert conflict.returncode!=0 and '사용 중' in conflict.stderr.decode('utf-8')
             result['portConflictRejected']=True
         else:url=a.url
@@ -119,6 +132,9 @@ def main():
             ctx.close()
             if a.bundle:
                 stop();time.sleep(1);result['relaunched']=start()
+                assert result['relaunched']['url']==url
+                assert result['relaunched']['preferredPort']==state['actualPort']
+                result['lastPortReusedAfterRestart']=True
             ctx=browser.new_context(viewport={'width':1440,'height':1080},accept_downloads=True)
             page=ctx.new_page();page.set_default_timeout(180000);page.on('response',response);page.on('pageerror',lambda e:result['errors'].append(str(e)))
             page.goto(url);expect(page.locator('#component-overview')).to_be_visible()
@@ -137,6 +153,8 @@ def main():
             result['passed']=True
             browser.close()
     finally:
-        stop();(a.out/'acceptance.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
+        stop()
+        if blocker:blocker.close()
+        (a.out/'acceptance.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
     print(json.dumps(result,ensure_ascii=False,indent=2))
 if __name__=='__main__':main()
