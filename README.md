@@ -12,6 +12,8 @@ Python·Node를 설치할 수 없는 Windows x64 사용자는 같은 커밋의 `
 
 Windows ZIP은 Actions의 **Core and intake regression → Run workflow**에서 원하는 버전을 수동으로 만듭니다. 일반 커밋에는 Windows 패키지를 만들지 않습니다. [빌드·검증 구분과 재현 명령](docs/windows/build-and-test.md) · [현업 사용 안내](docs/windows/user-guide.txt). 새 입력키트 1.4에는 최신 공구 치수의 출처와 검토 CSV를 포함하며 구버전 입력은 계속 읽습니다.
 
+[b2f8a36 시험판 다운로드·환경별 검증 결과](docs/windows/verification.md): 별도 Windows 러너에서 배포 ZIP의 EXE → 입력 → 3→4 mm 실제 CAD → 저장 → 재실행·복원을 통과했습니다. 깨끗한 Windows 10/11 및 사내 정책 PC 실기는 별도 확인이 필요합니다.
+
 ## 제품 공정도와 단품 설계
 
 첫 화면은 대표 셀의 **제품 공정도 → 전체보기**다. 고정 CAD 카드 13개 중 **가용접 S2**를 선택하고 왼쪽의 **실링바 단품**을 누른다. **부품·요소기술** 탭 왼쪽에는 같은 모델의 공구 도면, 오른쪽에는 S2 제품과 적용 상태가 표시된다. 상단 **제품 공정도**를 다시 누르면 S2로 복귀한다. **전체보기**에서 모든 공정 카드를 다시 볼 수 있다.
@@ -58,7 +60,7 @@ Windows ZIP은 Actions의 **Core and intake regression → Run workflow**에서 
 
 [현재 명세·호환 정책](docs/spec-integrated.md) · [자동 검증 결과](docs/validation-integrated.md) · [실제 UI 검증·수정](docs/validation-ui-v1.4.md) · [진행 기록](docs/plan-integrated.md). 이전 v1.3 기록은 [명세](docs/spec-v1.3.md)와 [검증](docs/validation-v1.3.md)에 보존합니다.
 
-**실행 요건은 기존과 같습니다:** Node.js 22.12+ / Python 3.12 64-bit / CadQuery 2.7 / Chrome 또는 Edge. Docker는 필요 없습니다. 실행 중 CDN/외부 API는 사용하지 않습니다. Python은 CAD 계산 엔진과 로컬 웹 서버를 실행합니다. 이번 변경에서 EXE·설치 프로그램·배포 업데이트는 만들지 않았습니다.
+**소스에서 실행할 때의 요건:** Node.js 22.12+ / Python 3.12 64-bit / CadQuery 2.7 / Chrome 또는 Edge. Docker는 필요 없습니다. 실행 중 CDN/외부 API는 사용하지 않습니다. Python은 CAD 계산 엔진과 로컬 웹 서버를 실행합니다. Windows 시험판은 위 런타임을 동봉하므로 별도 설치 없이 실행하며, 설치 관리자·자동 업데이트는 제공하지 않습니다.
 
 ## 기존 전체 프로그램 사용 흐름
 

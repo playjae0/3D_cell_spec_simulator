@@ -1,0 +1,36 @@
+{
+  "scope": "Linux actual CAD solid and mesh",
+  "before": {
+    "bounds": {
+      "min": [
+        -138.5,
+        -14.000000000000002,
+        0.49999999999999983
+      ],
+      "max": [
+        -133.5,
+        11.999999999999998,
+        3.5
+      ]
+    },
+    "volume": 389.8969911184315
+  },
+  "after": {
+    "bounds": {
+      "min": [
+        -138.5,
+        -14.000000000000002,
+        0.49999999999999983
+      ],
+      "max": [
+        -133.5,
+        11.999999999999998,
+        4.5
+      ]
+    },
+    "volume": 519.8626548245754
+  },
+  "meshChanged": true,
+  "codeCommit": "b2f8a36",
+  "CADSourcesUnchangedFromBaseline": true
+}

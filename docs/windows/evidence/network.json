@@ -1,0 +1,12 @@
+{
+  "programs": [
+    "D:\\a\\_temp\\사내 시험 Cell Studio\\CellStudio-win-x64-b2f8a3694e19/CellStudio.exe",
+    "D:\\a\\_temp\\사내 시험 Cell Studio\\CellStudio-win-x64-b2f8a3694e19/runtime/python.exe",
+    "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
+  ],
+  "appPythonInstalled": false,
+  "image": "win22",
+  "hostname": "runnervm9zap3",
+  "policy": "application/runtime/browser outbound blocked; Actions control channel online",
+  "note": "Hosted runner has developer tools; application PATH isolated. This is not a clean/offline Windows PC certification."
+}
