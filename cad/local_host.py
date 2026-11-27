@@ -17,14 +17,14 @@ class LocalHTTPServer(ThreadingHTTPServer):
         super().server_bind()
 
 
-def bind_local(handler, preferred=8765, automatic=False):
+def bind_local(handler, preferred=8765, automatic=False, host='127.0.0.1'):
     if not 1024 <= preferred <= 65535:
         raise ValueError('포트는 1024~65535 사이여야 합니다.')
     # The OS chooses AND reserves the final free port. No probe/release race.
     candidates = list(dict.fromkeys([preferred, 8765, 0] if automatic else [preferred]))
     for i, port in enumerate(candidates):
         try:
-            return LocalHTTPServer(('127.0.0.1', port), handler)
+            return LocalHTTPServer((host, port), handler)
         except OSError as exc:
             occupied = exc.errno in (errno.EADDRINUSE, errno.EACCES) or getattr(exc, 'winerror', None) in (10048, 10013)
             if not occupied or i == len(candidates) - 1:

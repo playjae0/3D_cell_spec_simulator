@@ -6,6 +6,8 @@
 
 ## Windows 사내 시험판
 
+Linux 한 대에서 여러 사용자가 브라우저로 접속하려면 [사내 서버 설치·실행 안내](docs/linux-server.md)를 사용합니다. 고정 서버 주소와 허용 URL을 명시하며, 각 사용자의 모델 저장은 현재 브라우저/셀 JSON 단위입니다.
+
 Python·Node를 설치할 수 없는 Windows x64 사용자는 같은 커밋의 `CellStudio-win-x64-<commit>.zip`과 `CellStudio-IntakeKit-<commit>.zip`을 사용합니다. 실행 ZIP 전체를 풀고 `CellStudio.exe`를 열면 기본 브라우저와 실제 로컬 CAD 엔진이 시작됩니다. 인터넷/CDN/공용 CAD 서버가 필요하지 않습니다. 셀 파일은 프로그램 폴더 밖에 저장합니다.
 
 Windows ZIP은 Actions의 **Core and intake regression → Run workflow**에서 원하는 버전을 수동으로 만듭니다. 일반 커밋에는 Windows 패키지를 만들지 않습니다. [빌드·검증 구분과 재현 명령](docs/windows/build-and-test.md) · [현업 사용 안내](docs/windows/user-guide.txt). 새 입력키트 1.4에는 최신 공구 치수의 출처와 검토 CSV를 포함하며 구버전 입력은 계속 읽습니다.

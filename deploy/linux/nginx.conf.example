@@ -1,0 +1,16 @@
+# Adapt to the existing internal HTTPS/SSO gateway; this is not an auth setup.
+server {
+    listen 443 ssl;
+    server_name cell.example.internal;
+    ssl_certificate /etc/nginx/certs/cell.example.internal.crt;
+    ssl_certificate_key /etc/nginx/certs/cell.example.internal.key;
+    client_max_body_size 12m;
+    location / {
+        proxy_pass http://127.0.0.1:8765;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        # Keep the original Origin; the CAD server validates it.
+        proxy_read_timeout 300s;
+        proxy_send_timeout 300s;
+    }
+}
