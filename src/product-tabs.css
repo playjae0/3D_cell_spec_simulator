@@ -1,0 +1,19 @@
+#product-types {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 6px 18px;
+  background: #152e38;
+  font: 600 13px system-ui;
+  color: white;
+}
+#product-types a {
+  padding: 5px 17px;
+  border-radius: 4px;
+  color: #d8e8e8;
+  text-decoration: none;
+}
+#product-types a[aria-current] {
+  color: #183f42;
+  background: #c7e9de;
+}

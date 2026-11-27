@@ -1,0 +1,101 @@
+[
+  {
+    "id": "T01",
+    "owner": "terminal-a",
+    "name": "터미널 A X 위치",
+    "datum": "캡 X 중심면",
+    "direction": "중심 → 단자 중심, X",
+    "default": -56,
+    "stage": 2
+  },
+  {
+    "id": "T02",
+    "owner": "terminal-a",
+    "name": "터미널 A Y 위치",
+    "datum": "캡 Y 중심면",
+    "direction": "중심 → 단자 중심, Y",
+    "default": 0,
+    "stage": 2
+  },
+  {
+    "id": "T03",
+    "owner": "terminal-a",
+    "name": "터미널 A 외곽 길이",
+    "datum": "단자 베이스 양끝",
+    "direction": "−X → +X",
+    "default": 26,
+    "stage": 2
+  },
+  {
+    "id": "T04",
+    "owner": "terminal-a",
+    "name": "터미널 A 외곽 폭",
+    "datum": "단자 베이스 측면",
+    "direction": "−Y → +Y",
+    "default": 15,
+    "stage": 2
+  },
+  {
+    "id": "T05",
+    "owner": "terminal-a",
+    "name": "터미널 A 돌출 높이",
+    "datum": "캡 플레이트 상면",
+    "direction": "상면 → 단자 상단, +Z",
+    "default": 4,
+    "stage": 2
+  },
+  {
+    "id": "T06",
+    "owner": "terminal-b",
+    "name": "터미널 B X 위치",
+    "datum": "캡 X 중심면",
+    "direction": "중심 → 단자 중심, X",
+    "default": 56,
+    "stage": 2
+  },
+  {
+    "id": "T07",
+    "owner": "terminal-b",
+    "name": "터미널 B Y 위치",
+    "datum": "캡 Y 중심면",
+    "direction": "중심 → 단자 중심, Y",
+    "default": 0,
+    "stage": 2
+  },
+  {
+    "id": "T08",
+    "owner": "terminal-b",
+    "name": "터미널 B 외곽 길이",
+    "datum": "단자 베이스 양끝",
+    "direction": "−X → +X",
+    "default": 26,
+    "stage": 2
+  },
+  {
+    "id": "T09",
+    "owner": "terminal-b",
+    "name": "터미널 B 외곽 폭",
+    "datum": "단자 베이스 측면",
+    "direction": "−Y → +Y",
+    "default": 15,
+    "stage": 2
+  },
+  {
+    "id": "T10",
+    "owner": "terminal-b",
+    "name": "터미널 B 돌출 높이",
+    "datum": "캡 플레이트 상면",
+    "direction": "상면 → 단자 상단, +Z",
+    "default": 4,
+    "stage": 2
+  },
+  {
+    "id": "K08",
+    "owner": "collector",
+    "name": "집전체 모델 두께",
+    "datum": "접촉 기준면 J_X",
+    "direction": "J_X → 외측면, +X",
+    "default": 0.8,
+    "stage": 2
+  }
+]
