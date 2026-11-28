@@ -1,4 +1,5 @@
 import example from "../../examples/prismatic.json" with { type: "json" };
+import demoB from "../../examples/prismatic-demo-b.json" with { type: "json" };
 import patentExample from "../../examples/prismatic-patent.json" with { type: "json" };
 import hardware from "./hardware.json" with { type: "json" };
 import baseDimensions from "./dimensions.json" with { type: "json" };
@@ -44,6 +45,7 @@ export function initial(changes = {}) {
 
 export const recordedExamples = {
   standard: () => initial(),
+  demoB: () => validate(structuredClone(demoB)),
   patent: () => validate(structuredClone(patentExample)),
   approach: () => initial({ A01: 95 }),
   halfway: () => initial({ A01: 45 }),
@@ -63,18 +65,31 @@ export function validate(project) {
     !project.product.id
   )
     throw Error("각형 셀 형식·단위·모델 개정을 확인하세요.");
+  const spec = project.product.terminalSpec;
+  if (
+    spec !== undefined &&
+    (spec !== "DEMO-B@1" || project.product.capVariant !== "ep2581968")
+  )
+    throw Error("지원하지 않는 단자 규격 또는 캡 결합입니다.");
+  const applicable = spec
+    ? Object.fromEntries(
+        Object.entries(defaults).filter(
+          ([id]) => !["T08", "T09", "T10"].includes(id),
+        ),
+      )
+    : defaults;
   const values = project.product.values;
   if (values && !hardware.some((d) => Object.hasOwn(values, d.id)))
-    Object.assign(values, defaults);
+    Object.assign(values, applicable);
   const keys = [
     ...Object.keys(example.product.values),
-    ...Object.keys(defaults),
+    ...Object.keys(applicable),
   ];
   if (
     !values ||
     Object.keys(values).length !== keys.length ||
     keys.some((key) => !Number.isFinite(values[key]))
   )
-    throw Error("독립 입력 36개의 mm 값이 필요합니다.");
+    throw Error(`독립 입력 ${keys.length}개의 mm 값이 필요합니다.`);
   return project;
 }

@@ -41,8 +41,29 @@ def inputs(product):
     values = product.get("values", {})
     if not isinstance(values, dict):
         raise ModelError(["각형 치수 목록이 필요합니다"])
+    spec = product.get("terminalSpec")
+    if spec is not None and (
+        spec != "DEMO-B@1" or product.get("capVariant") != "ep2581968"
+    ):
+        raise ModelError(["지원하지 않는 단자 규격 또는 캡 결합입니다"])
+    fixed_keys = {"T08", "T09", "T10"} if spec else set()
+    if fixed_keys.intersection(values):
+        raise ModelError(["DEMO-B 규격값과 조립 결과 T10은 입력할 수 없습니다"])
     if not any(item["id"] in values for item in HARDWARE):
-        values = {**{item["id"]: item["default"] for item in HARDWARE}, **values}
+        values = {
+            **{
+                item["id"]: item["default"]
+                for item in HARDWARE
+                if item["id"] not in fixed_keys
+            },
+            **values,
+        }
+    if spec:
+        # Catalogue Rev1 dimensions, in mm. Post top is 6 mm above the cap underside.
+        k = values.get("K03")
+        if type(k) not in (int, float) or not 0 < k < 6:
+            raise ModelError(["DEMO-B · 캡 두께는 0 초과 6 mm 미만이어야 합니다"])
+        values = {**values, "T08": 26, "T09": 15, "T10": 6 - k}
     groups = {}
     for letter, count in GROUPS.items():
         group = []
@@ -93,7 +114,9 @@ def build(product, stage):
     terminals = {"terminal-a": g["T"][:5], "terminal-b": g["T"][5:]}
     hardware = cap_parts(kl, kw, kt, u, px, cb, bw, gauge, terminals)
     if product.get("capVariant") == "ep2581968":
-        patent_cap(hardware, terminals, u, kt, px, cb, bw, gauge)
+        # The catalogue pin keeps its length even when the collector gauge changes.
+        pin_length = 0.8 if product.get("terminalSpec") else None
+        patent_cap(hardware, terminals, u, kt, px, cb, bw, gauge, pin_length=pin_length)
     stack, tab, cap = core["stack"], core["tab"], hardware["cap"]
     contact_face = rectangle(
         [(px, -bw / 2, cb), (px, bw / 2, cb), (px, bw / 2, ct), (px, -bw / 2, ct)]
@@ -144,6 +167,35 @@ def build(product, stage):
         dimension(3, 0, bounds.xmin, bounds.xmax, (0, ty, u + kt))
         dimension(4, 1, bounds.ymin, bounds.ymax, (tx, 0, u + kt))
         dimension(5, 2, kb.zmax, bounds.zmax, (tx + tl * 0.3, ty, 0))
+    if product.get("terminalSpec"):
+
+        def top_face(part):
+            return max(
+                (
+                    f
+                    for f in part.Faces()
+                    if f.geomType() == "PLANE" and f.normalAt().z > 0.999999
+                ),
+                key=lambda f: f.Center().z,
+            )
+
+        metal = top_face(cap)
+        disk = top_face(hardware["terminal-b"])
+        tx, ty, tz = disk.Center().toTuple()
+        holes = metal.innerWires()
+        if len(holes) != 1:
+            raise ModelError(["DEMO-B · 단자 관통 구멍이 캡 금속 상면 안에 있어야 합니다"])
+        hole = holes[0]
+        ay = (kb.ymin + exact_bounds(hole).ymin) / 2
+        cz = metal.Center().z
+        outside_y = kb.ymin - 5
+        measurements["T10"] = dict(
+            start=[tx, ay, cz],
+            end=[tx, ty, tz],
+            value=tz - cz,
+            axis=2,
+            dimensionLine=[[tx, outside_y, cz], [tx, outside_y, tz]],
+        )
     line("J01", 1, 0, y, (0, 0, z))
     line("J02", 2, kb.zmin, sb.zmax, (0, y, 0), -1)
     line("J03", 0, 0, x, (0, y, z))
@@ -183,7 +235,7 @@ def build(product, stage):
         axis=0,
     )
     val = lambda key: measurements[key]["value"]
-    joint = min(val("J04"), val("J05")) > EPS
+    joint = min(val("J04"), val("J05")) > EPS and abs(tb.xmax - jb.xmin) <= EPS
     messages = []
     if index >= 1 and not joint:
         messages.append("접합 불성립 · 탭과 집전체 접촉대의 겹침이 없습니다.")

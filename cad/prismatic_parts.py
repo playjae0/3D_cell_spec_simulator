@@ -132,7 +132,7 @@ def cap_parts(
     return shapes
 
 
-def patent_cap(shapes, terminals, base, plate_height, px, bottom, width, gauge):
+def patent_cap(shapes, terminals, base, plate_height, px, bottom, width, gauge, *, pin_length=None):
     """Illustrative EP2581968A1 Fig. 4 connection on the observed (+X) end."""
     x, y, length, breadth, rise = terminals["terminal-b"]
     shoulder = base - 0.6
@@ -147,7 +147,8 @@ def patent_cap(shapes, terminals, base, plate_height, px, bottom, width, gauge):
 
     post = cylinder(radius, shoulder, base+plate_height+rise)
     flange = box(x-length/2,x+length/2,y-breadth/2,y+breadth/2,landing,shoulder)
-    pin = cylinder(pin_radius,landing-gauge,landing)
+    bore = cylinder(pin_radius,landing-gauge,landing)
+    pin = bore if pin_length is None else cylinder(pin_radius,landing-pin_length,landing)
     shapes["terminal-b"] = post.fuse(flange,pin).clean()
     sleeve = cylinder(radius+0.6,shoulder,base+plate_height)
     shapes["cap"] = shapes["cap"].cut(sleeve)
@@ -155,4 +156,4 @@ def patent_cap(shapes, terminals, base, plate_height, px, bottom, width, gauge):
     shapes["cap-insulator"] = sleeve.fuse(pad).cut(post).clean()
     shelf = box(x-length/2,px+gauge,-width/2,width/2,landing-gauge,landing)
     side = box(px,px+gauge,-width/2,width/2,bottom,landing)
-    shapes["collector"] = shelf.fuse(side).cut(pin).clean()
+    shapes["collector"] = shelf.fuse(side).cut(bore).clean()

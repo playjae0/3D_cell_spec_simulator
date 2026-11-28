@@ -112,7 +112,14 @@ export class PrismView {
   paint() {
     this.renderer.render(this.scene, this.camera);
   }
-  fit(preset = "standard") {
+  fitWitness(measure) {
+    const bounds = new T.Box3().setFromPoints(
+      [measure.start, measure.end, ...measure.dimensionLine].map(v),
+    );
+    bounds.expandByScalar(6);
+    this.fit("witness", bounds);
+  }
+  fit(preset = "standard", bounds) {
     const detail = ["joint", "foil", "underside"].includes(preset);
     const targets = detail
       ? this.solids.children.filter(
@@ -126,8 +133,8 @@ export class PrismView {
             ).includes(o.userData.id),
         )
       : this.solids.children;
-    const b = new T.Box3();
-    for (const obj of targets) b.expandByObject(obj);
+    const b = bounds ?? new T.Box3();
+    if (!bounds) for (const obj of targets) b.expandByObject(obj);
     if (b.isEmpty()) return;
     if (preset === "seam") {
       const corner = b.max.clone();
@@ -140,6 +147,7 @@ export class PrismView {
     }
     const direction = (
       {
+        witness: v([0.9, -0.55, 0.42]),
         top: v([0.17, -0.48, 1]),
         bottom: v([0.38, -0.55, -1]),
         underside: v([0.7, -0.8, -0.75]),
@@ -261,10 +269,15 @@ export class PrismView {
   }
   guide(m) {
     const color = m.value < 0 ? "#c83428" : "#007f78";
-    this.line(m.path || [m.start, m.end], color);
+    const endpoints = m.dimensionLine || [m.start, m.end];
+    this.line(m.path || endpoints, color);
+    if (m.dimensionLine) {
+      this.line([m.start, endpoints[0]], color);
+      this.line([m.end, endpoints[1]], color);
+    }
     const a = v(m.start),
       b = v(m.end),
-      delta = b.clone().sub(a);
+      delta = v(endpoints[1]).sub(v(endpoints[0]));
     const radius = Math.min(1.2, Math.max(0.18, delta.length() / 10));
     for (const p of [a, b]) {
       const marker = new T.Mesh(
@@ -274,6 +287,7 @@ export class PrismView {
       marker.renderOrder = 6;
       marker.position.copy(p);
       this.guides.add(marker);
+      if (m.dimensionLine) continue;
       // Two square outlines lie in the datum/end planes, normal to the measurement.
       const axes = [0, 1, 2].filter((i) => i !== m.axis),
         points = [];
@@ -296,7 +310,7 @@ export class PrismView {
         head = Math.min(3, length * 0.35);
       const arrow = new T.ArrowHelper(
         delta.normalize(),
-        a,
+        v(endpoints[0]),
         length,
         color,
         head,
@@ -361,7 +375,14 @@ export function sectionDrawing(canvas, model, parts, axis, m) {
     );
   if (m) {
     const color = m.value < 0 ? "#c43128" : "#075d6d";
-    line(m.start, m.end, color, 3);
+    if (m.dimensionLine) {
+      const [a, b] = m.dimensionLine;
+      line(m.start, a, color, 1);
+      line(m.end, b, color, 1);
+      line(a, b, color, 3);
+    } else {
+      line(m.start, m.end, color, 3);
+    }
     for (const p of [m.start, m.end]) {
       ctx.beginPath();
       ctx.arc(...project(p), 4, 0, Math.PI * 2);
