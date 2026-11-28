@@ -33,7 +33,7 @@ app.innerHTML = `
 <div class="actions"><span id="engine" role="status">CAD 연결 중</span><button id="undo">되돌리기</button><button id="redo">다시 하기</button><button id="save">셀 JSON 저장</button><button id="open">불러오기</button><input type="file" accept=".json" id="file" hidden></div></header>
 <nav class="work-nav"><div><button id="process">제품 공정도</button><button id="components">부품·요소기술</button></div><div><button id="overview">전체보기</button><button id="detail">상세보기</button></div></nav>
 <div id="errors" role="alert" hidden></div>
-<section id="gallery"><h2></h2><div id="cards"></div><div id="parallel" hidden><button id="parallel-cap"><canvas id="parallel-art" width="250" height="80"></canvas><span>병행 준비 · 캡 조립체 보기</span></button> <button id="patent-cap">특허 참고 캡 조립체</button></div></section>
+<section id="gallery"><h2></h2><div id="cards"></div><div id="parallel" hidden><button id="parallel-cap"><canvas id="parallel-art" width="250" height="80"></canvas><span>병행 준비 · 캡 조립체 보기</span></button> <button id="patent-cap">특허 참고 캡 조립체</button> <button id="demo-b">DEMO-B Rev1 · 고정 단자</button></div></section>
 <section id="workspace" hidden><aside id="tree"><h2></h2><div id="siblings"></div><h3>현재 장면 부품</h3><div id="parts"></div></aside>
 <article><div class="scene-title"><h2 id="scene-title"></h2><span id="approval"></span></div>
 <div id="scene-options" class="view-tools"></div><div id="canvas"></div><div class="view-tools"><button id="fit">화면 맞춤</button><button id="labels" aria-pressed="true">치수·라벨</button><label>중심 단면 <select id="section"><option value="">전체 형상</option><option value="x">Y–Z 단면</option><option value="y">X–Z 단면</option><option value="z">X–Y 단면</option></select></label></div>
@@ -85,7 +85,7 @@ function toolbar() {
   // A navigation click during an edit must not issue a new CAD request from
   // the previous project and silently discard the submitted dimensions.
   for (const button of app.querySelectorAll(
-    ".work-nav button,#cards button,#parallel-cap,#siblings button,#positions button",
+    ".work-nav button,#cards button,#parallel-cap,#demo-b,#patent-cap,#siblings button,#positions button",
   ))
     button.disabled = pending;
   $("undo").disabled = pending || !history.undoList.length;
@@ -344,6 +344,7 @@ function highlight(id) {
   for (const row of $("dimensions").querySelectorAll("[data-measure]"))
     row.classList.toggle("active", row.dataset.measure === id);
   draw(false);
+  if (labels && f.dimensionLine) view.fitWitness(f);
 }
 function showList(host, entries, active, fn) {
   host.replaceChildren(
@@ -389,9 +390,21 @@ function drawFields() {
         ),
       );
   }
+  const fixed = project.product.terminalSpec === "DEMO-B@1";
+  if (
+    fixed &&
+    page === "components" &&
+    ["cap", "terminal-b"].includes(component)
+  ) {
+    const note = document.createElement("p");
+    note.textContent = "DEMO-B Rev1 · 시연 규격 · 캡 하면 기준 / 결합축 +Z";
+    form.append(note);
+  }
   const list = dimensions.filter((d) =>
     page === "components"
-      ? d.owner === component
+      ? fixed && d.id === "T10"
+        ? component === "cap"
+        : d.owner === component
       : d.owner === project.stage ||
         (!d.owner && d.stage === n) ||
         (d.owner === "display" && n === 5),
@@ -411,7 +424,7 @@ function drawFields() {
     const name = button(d.id + "  " + d.name, () => highlight(d.id));
     name.title = d.datum + " · " + d.direction;
     row.append(name);
-    if (d.owner) {
+    if (d.owner && !(fixed && ["T08", "T09", "T10"].includes(d.id))) {
       hasInput = true;
       const input = document.createElement("input");
       input.type = "number";
@@ -571,7 +584,20 @@ $("components").onclick = () => go({ page: "components", detail: false });
 $("overview").onclick = () => go({ detail: false });
 $("detail").onclick = () =>
   page === "components" ? part(component) : stage(project.stage);
-$("patent-cap").onclick = () => go({project: recordedExamples.patent(), page: "components", component: "cap", detail: true});
+$("demo-b").onclick = () =>
+  go({
+    project: recordedExamples.demoB(),
+    page: "components",
+    component: "cap",
+    detail: true,
+  });
+$("patent-cap").onclick = () =>
+  go({
+    project: recordedExamples.patent(),
+    page: "components",
+    component: "cap",
+    detail: true,
+  });
 $("parallel-cap").onclick = () => part("cap");
 $("labels").onclick = () => {
   labels = !labels;

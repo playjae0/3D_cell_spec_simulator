@@ -4,6 +4,7 @@ import {
   components,
   dimensions,
   initial,
+  recordedExamples,
   stages,
   validate,
 } from "../src/prismatic/project.js";
@@ -60,4 +61,19 @@ test("Older prismatic files acquire complete virtual terminal dimensions; partia
   assert.deepEqual(validate(legacy), initial());
   delete legacy.product.values.T03;
   assert.throws(() => validate(legacy));
+});
+
+test("Fixed Rev1 persists a spec reference; only custom terminals store editable T10", () => {
+  const fixed = recordedExamples.demoB();
+  fixed.product.values.K03 = 3;
+  assert.deepEqual(validate(JSON.parse(JSON.stringify(fixed))), fixed);
+  for (const id of ["T08", "T09", "T10"]) {
+    assert.ok(!Object.hasOwn(fixed.product.values, id));
+    const invalid = structuredClone(fixed);
+    invalid.product.values[id] = 4;
+    assert.throws(() => validate(invalid));
+  }
+  const custom = recordedExamples.patent();
+  custom.product.values.T10 = 5;
+  assert.deepEqual(validate(JSON.parse(JSON.stringify(custom))), custom);
 });
